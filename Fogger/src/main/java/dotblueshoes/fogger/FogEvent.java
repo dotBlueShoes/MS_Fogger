@@ -20,6 +20,8 @@ import net.minecraft.world.biome.Biome;
 
 public class FogEvent {
 
+    private final float increaseValue = 0.001F;
+
     private float 
         fogMinIntensity = 0F, 
         fogMaxIntensity = 0F;
@@ -72,13 +74,13 @@ public class FogEvent {
 
                     /* fogMaxIntensity */
                     if (fogMaxIntensity < ConfigHandler.biomeFogs[i].fogMaxClamp) {
-                        fogMaxIntensity += 0.001F;
+                        fogMaxIntensity += increaseValue;
                         /* This is a correction that assures as that we're gonna hit the defined Max 
                         and that we're not gonna calculate fogMaxIntensity every call. */
                         if (fogMaxIntensity > ConfigHandler.biomeFogs[i].fogMaxClamp)
                             fogMaxIntensity = ConfigHandler.biomeFogs[i].fogMaxClamp;
                     } else if (fogMaxIntensity > ConfigHandler.biomeFogs[i].fogMaxClamp) {
-                        fogMaxIntensity -= 0.001F;
+                        fogMaxIntensity -= increaseValue;
                         /* This is a correction that assures as that we're gonna hit the defined Max 
                         and that we're not gonna calculate fogMaxIntensity every call. */
                         if (fogMaxIntensity < ConfigHandler.biomeFogs[i].fogMaxClamp)
@@ -87,13 +89,13 @@ public class FogEvent {
 
                     /* fogMinIntensity */
                     if (fogMinIntensity < ConfigHandler.biomeFogs[i].fogMinClamp) {
-                        fogMinIntensity += 0.001F;
+                        fogMinIntensity += increaseValue;
                         /* This is a correction that assures as that we're gonna hit the defined Max 
                         and that we're not gonna calculate fogMinIntensity every call. */
                         if (fogMinIntensity > ConfigHandler.biomeFogs[i].fogMinClamp)
                             fogMinIntensity = ConfigHandler.biomeFogs[i].fogMinClamp;
                     } else if (fogMinIntensity > ConfigHandler.biomeFogs[i].fogMinClamp) {
-                        fogMinIntensity -= 0.001F;
+                        fogMinIntensity -= increaseValue;
                         /* This is a correction that assures as that we're gonna hit the defined Max 
                         and that we're not gonna calculate fogMinIntensity every call. */
                         if (fogMinIntensity < ConfigHandler.biomeFogs[i].fogMinClamp)
@@ -107,39 +109,4 @@ public class FogEvent {
                     break;
                 }
     }
-
-    // @SubscribeEvent
-	// public void colorFog(FogColors event) {
-	// 	//WorldClient worldclient = Minecraft.getMinecraft().world;
-    //     //Entity entity = event.getEntity();
-    //     // This might not be needed.. biomeName = ...
-
-    //     worldClient = Minecraft.getMinecraft().world;
-    //     entity = event.getEntity();
-    //     biomeName = worldClient.getBiome(new BlockPos(entity.posX, entity.posY, entity.posZ)).getRegistryName().toString();
-        
-    //     for (int i = 0; i < ConfigHandler.biomeFogs.length; i++)
-    //         if(biomeName.equals(ConfigHandler.biomeFogs[i].biomeName)) {
-    //             //event.setRed(ConfigHandler.biomeFogs[i].red);
-    //             //event.setGreen(ConfigHandler.biomeFogs[i].green);
-    //             //event.setBlue(ConfigHandler.biomeFogs[i].blue);
-    //             event.setRed(0F);
-    //             event.setGreen(0F);
-    //             event.setBlue(0F);
-    //         }
-
-
-    //     // event.setGreen(0.5F);
-    //     // event.setBlue(0.5F);
-    //     // event.setRed(0.5F);
-
-    //     // event.setRed(168/255F * event.getRed());
-    //     // event.setGreen(201/255F * event.getGreen());
-    //     // event.setBlue(255/255F * event.getBlue());
-
-    //     //event.setRed(1 * event.getRed());
-    //     //event.setGreen(1 * event.getGreen());
-    //     //event.setBlue(1 * event.getBlue());
-        
-	// }
 }

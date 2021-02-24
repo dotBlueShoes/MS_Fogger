@@ -4,7 +4,7 @@
   "description": "This mods gives better fog control.",
   "version": "${version}",
   "mcversion": "${mcversion}",
-  "url": "",
+  "url": "https://github.com/dotBlueShoes/MS_Fogger",
   "updateUrl": "",
   "authorList": ["dotBlueShoes"],
   "credits": "Creadits To all the people having their tutorials and github repositories. :)",

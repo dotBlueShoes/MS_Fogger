@@ -9,31 +9,43 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 
+import dotblueshoes.fogger.ConfigHandler;
 import dotblueshoes.fogger.Fogger;
 
 public class GlobalFogEvent {
 
-    private final float fogMaxClamp = 0.95F, fogMinClamp = 0.05F; 
-    private float fogDistance;
+    private float visibleDistance;
 
     @SubscribeEvent
     public void renderFog(RenderFogEvent event) {
 
         GlStateManager.setFog(GlStateManager.FogMode.LINEAR);
-        fogDistance = event.getFarPlaneDistance();
+        visibleDistance = event.getFarPlaneDistance();
 
         /* Is the horizontal vertical. -1 stands for ceiling Fog. */
 		if (event.getFogMode() == 0) {
-			GlStateManager.setFogStart(fogDistance * fogMinClamp);
-			GlStateManager.setFogEnd(fogDistance * fogMaxClamp);
+			GlStateManager.setFogStart(visibleDistance * ConfigHandler.globalFogMinIntensity);
+			GlStateManager.setFogEnd(visibleDistance * ConfigHandler.globalFogMaxIntensity);
 		}
 
     }
 
     // @SubscribeEvent
 	// public void colorFog(FogColors event) {
-	// 	WorldClient worldclient = Minecraft.getMinecraft().world;
-    //     Entity entity = event.getEntity();
+
+    //     worldClient = Minecraft.getMinecraft().world;
+    //     entity = event.getEntity();
+    //     biomeName = worldClient.getBiome(new BlockPos(entity.posX, entity.posY, entity.posZ)).getRegistryName().toString();
+        
+    //     for (int i = 0; i < ConfigHandler.biomeFogs.length; i++)
+    //         if(biomeName.equals(ConfigHandler.biomeFogs[i].biomeName)) {
+    //             //event.setRed(ConfigHandler.biomeFogs[i].red);
+    //             //event.setGreen(ConfigHandler.biomeFogs[i].green);
+    //             //event.setBlue(ConfigHandler.biomeFogs[i].blue);
+    //             event.setRed(0F);
+    //             event.setGreen(0F);
+    //             event.setBlue(0F);
+    //          }
 
     //     event.setGreen(0.5F);
     //     event.setBlue(0.5F);
