@@ -1,4 +1,8 @@
-## MS_Fogger 
+## MS_Fogger          
+[![GitHub license](https://img.shields.io/github/license/dotBlueShoes/MS_Fogger.svg)](https://github.com/dotBlueShoes/MS_Fogger/blob/master/LICENSE.txt)
+[![GitHub tag](https://img.shields.io/github/tag/dotBlueShoes/MS_Fogger.svg)](https://github.com/dotBlueShoes/MS_Fogger/tags)
+
+[![CurseForge downloads](http://cf.way2muchnoise.eu/full_449209_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/fogger)
 
 Fogger is a modification for **minecraft** currently for version **1.12.2** only. The mod in it's current state cant offer much however it will give you more control over the fog then vanilla. 
 
