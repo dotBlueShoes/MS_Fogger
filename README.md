@@ -10,13 +10,13 @@ It is also possible to apply a "globalFog" that works biome independent.
 
 ### How it works
 
-You can switch from using biome dependant fog to global fog via config. Same goes for defining new and changing their values.
+You can switch from using biome dependent fog to global fog via config. Same goes for defining new and changing their values.
 
 Simply edit the config file. First you'll need to run the modification at least once so the config file generates.
 Find the 'config' folder in your minecraft instance and search for file called "fogger.cfg".
 Then open the file with any text-editor like "notepad".
 
-To add a biome to the "S:Biomes" list enter a new line and write the values in the folowing syntax. Remember to include all the needed values and watch out for typos.
+To add a biome to the "S:Biomes" list enter a new line and write the values in the following syntax. Remember to include all the needed values and watch out for typos.
 
 { Mod/Vanilla:BiomeName } { WhereTheFogStarts } { WhereTheFogEnds }
 
