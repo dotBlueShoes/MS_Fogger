@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.0] - 2021-03-01
+
+### Added
+- Ability to specify default (for non specified values) fog. (previously when specific biome wasn't specified vanilla fog rules were used.)
+
+### Changed
+- Config optin "globalFogMinIntensity" & "globalFogMaxIntensity" changed to "defaultFogSetting" which works for both global and default.
+
 ## [1.0.1] - 2021-02-24
 
 ### Added

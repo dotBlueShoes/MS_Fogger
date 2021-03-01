@@ -16,23 +16,17 @@ import dotblueshoes.fogger.Fogger;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 
-//import java.awt.Color;
-
 public class FogEvent {
-
-    private final float increaseValue = 0.001F;
-
-    private float 
-        fogMinIntensity = 0F, 
-        fogMaxIntensity = 0F;
-        //redIntensity = 0F,
-        //greenIntensity = 0F,
-        //blueIntensity = 0F;
 
     private WorldClient worldClient;
     private String biomeName;
     private Entity entity;
-    private float visibleDistance;
+
+    private final float increaseValue = 0.001F;
+    private float 
+        cFogMinIntensity = 0F, // c - current
+        cFogMaxIntensity = 0F,
+        visibleDistance;
 
     // Functional Mod
     // - different dimensions
@@ -63,50 +57,57 @@ public class FogEvent {
 
         biomeName = worldClient.getBiome(new BlockPos(entity.posX, entity.posY, entity.posZ)).getRegistryName().toString();
 
-        GlStateManager.setFog(GlStateManager.FogMode.LINEAR);
+        GlStateManager.setFog(GlStateManager.FogMode.LINEAR); // ? does it rly have to be here
         
-        if (event.getFogMode() == 0) /* Is the horizontal vertical. -1 stands for ceiling Fog. */
+        if (event.getFogMode() == 0) { /* Is the horizontal vertical. -1 stands for ceiling Fog. */
             for (int i = 0; i < ConfigHandler.biomeFogs.length; i++) /* Looping throught all the defined biomes. */
-                if(biomeName.equals(ConfigHandler.biomeFogs[i].biomeName)) {
+                if (biomeName.equals(ConfigHandler.biomeFogs[i].biomeName))
+                    if (entity.posY >= ConfigHandler.biomeFogs[i].yLevel) {
+                        Fogger.LogInfo(Float.toString(ConfigHandler.biomeFogs[i].yLevel));
+                    
 
                     // Co jeśli bym definiował przy patrzeniu czy biom się zmienił 0% - jako previus i 100% jako current.
                     // i procentowo zmieniał jedną wartośc w drugą.
 
                     /* fogMaxIntensity */
-                    if (fogMaxIntensity < ConfigHandler.biomeFogs[i].fogMaxClamp) {
-                        fogMaxIntensity += increaseValue;
+                    if (cFogMaxIntensity < ConfigHandler.biomeFogs[i].fogSetting.fogMaxIntensity) {
+                        cFogMaxIntensity += increaseValue;
                         /* This is a correction that assures as that we're gonna hit the defined Max 
-                        and that we're not gonna calculate fogMaxIntensity every call. */
-                        if (fogMaxIntensity > ConfigHandler.biomeFogs[i].fogMaxClamp)
-                            fogMaxIntensity = ConfigHandler.biomeFogs[i].fogMaxClamp;
-                    } else if (fogMaxIntensity > ConfigHandler.biomeFogs[i].fogMaxClamp) {
-                        fogMaxIntensity -= increaseValue;
+                        and that we're not gonna enter upper if statement every odd call */
+                        if (cFogMaxIntensity > ConfigHandler.biomeFogs[i].fogSetting.fogMaxIntensity)
+                            cFogMaxIntensity = ConfigHandler.biomeFogs[i].fogSetting.fogMaxIntensity;
+                    } else if (cFogMaxIntensity > ConfigHandler.biomeFogs[i].fogSetting.fogMaxIntensity) {
+                        cFogMaxIntensity -= increaseValue;
                         /* This is a correction that assures as that we're gonna hit the defined Max 
-                        and that we're not gonna calculate fogMaxIntensity every call. */
-                        if (fogMaxIntensity < ConfigHandler.biomeFogs[i].fogMaxClamp)
-                            fogMaxIntensity = ConfigHandler.biomeFogs[i].fogMaxClamp;
+                        and that we're not gonna enter upper if statement every odd call */
+                        if (cFogMaxIntensity < ConfigHandler.biomeFogs[i].fogSetting.fogMaxIntensity)
+                            cFogMaxIntensity = ConfigHandler.biomeFogs[i].fogSetting.fogMaxIntensity;
                     }
 
                     /* fogMinIntensity */
-                    if (fogMinIntensity < ConfigHandler.biomeFogs[i].fogMinClamp) {
-                        fogMinIntensity += increaseValue;
+                    if (cFogMinIntensity < ConfigHandler.biomeFogs[i].fogSetting.fogMinIntensity) {
+                        cFogMinIntensity += increaseValue;
                         /* This is a correction that assures as that we're gonna hit the defined Max 
-                        and that we're not gonna calculate fogMinIntensity every call. */
-                        if (fogMinIntensity > ConfigHandler.biomeFogs[i].fogMinClamp)
-                            fogMinIntensity = ConfigHandler.biomeFogs[i].fogMinClamp;
-                    } else if (fogMinIntensity > ConfigHandler.biomeFogs[i].fogMinClamp) {
-                        fogMinIntensity -= increaseValue;
+                        and that we're not gonna enter upper if statement every odd call */
+                        if (cFogMinIntensity > ConfigHandler.biomeFogs[i].fogSetting.fogMinIntensity)
+                            cFogMinIntensity = ConfigHandler.biomeFogs[i].fogSetting.fogMinIntensity;
+                    } else if (cFogMinIntensity > ConfigHandler.biomeFogs[i].fogSetting.fogMinIntensity) {
+                        cFogMinIntensity -= increaseValue;
                         /* This is a correction that assures as that we're gonna hit the defined Max 
-                        and that we're not gonna calculate fogMinIntensity every call. */
-                        if (fogMinIntensity < ConfigHandler.biomeFogs[i].fogMinClamp)
-                            fogMinIntensity = ConfigHandler.biomeFogs[i].fogMinClamp;
+                        and that we're not gonna enter upper if statement every odd call */
+                        if (cFogMinIntensity < ConfigHandler.biomeFogs[i].fogSetting.fogMinIntensity)
+                            cFogMinIntensity = ConfigHandler.biomeFogs[i].fogSetting.fogMinIntensity;
                     }
 
+                    //Fogger.LogInfo(Float.toString(cFogMaxIntensity));
                     //Fogger.LogInfo(Double.toString(entity.posY));
 
-		    	    GlStateManager.setFogStart(visibleDistance * fogMinIntensity);
-                    GlStateManager.setFogEnd(visibleDistance * fogMaxIntensity);
-                    break;
-                }
+		    	    GlStateManager.setFogStart(visibleDistance * cFogMinIntensity);
+                    GlStateManager.setFogEnd(visibleDistance * cFogMaxIntensity);
+                    return;
+                    }
+            Fogger.LogInfo("LOOOOOOOOOOOOOOOOOOL");
+        }
     }
+
 }

@@ -3,6 +3,8 @@
 
 // if i ever plan to try again adding the resourcepack via this mod 
 // https://forge.yue.moe/javadoc/1.12.2/ "iresourcepack"
+// https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/ - newer url
+
 // https://jabelarminecraft.blogspot.com/p/minecraft-forge-1721710-modding-tips_9.html
 // https://forums.minecraftforge.net/topic/26907-special-resourcelocation/
 

@@ -1,30 +1,28 @@
 package dotblueshoes.fogger;
 
+import dotblueshoes.fogger.FogDefinition; 
+
 public class FogConfiguration {
     public String biomeName;
-    public float 
-        fogMinClamp, fogMaxClamp; 
-        //red, green, blue; 
+    public FogDefinition fogSetting;
+    public float yLevel = 64F;
 
-    public FogConfiguration(
-        String biomeName, float fogMinClamp, float fogMaxClamp
-        //float red, float green, float blue
-    ) {
+    public FogConfiguration( String biomeName, FogDefinition fogSetting) {
         this.biomeName = biomeName;
-        this.fogMinClamp = fogMinClamp;
-        this.fogMaxClamp = fogMaxClamp;
-        //this.red = red;
-        //this.green = green;
-        //this.blue = blue;
-
+        this.fogSetting = fogSetting;
     }
 
     public String toString() {
         return biomeName + " " + 
-            Float.toString(fogMinClamp) + " " +
-               Float.toString(fogMaxClamp); // + " " +
-            //Float.toString(red) + " " +
-            //Float.toString(green) + " " +
-            //Float.toString(blue);
+            Float.toString(fogSetting.fogMinIntensity) + " " +
+            Float.toString(fogSetting.fogMaxIntensity);
+    }
+
+    public static FogConfiguration parseString(String data) {
+        final String[] separatedData = data.split(" ");
+        return new FogConfiguration(
+            separatedData[0], 
+			new FogDefinition("", Float.parseFloat(separatedData[1]), Float.parseFloat(separatedData[2]))
+        );
     }
 };

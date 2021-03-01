@@ -24,8 +24,8 @@ public class GlobalFogEvent {
 
         /* Is the horizontal vertical. -1 stands for ceiling Fog. */
 		if (event.getFogMode() == 0) {
-			GlStateManager.setFogStart(visibleDistance * ConfigHandler.globalFogMinIntensity);
-			GlStateManager.setFogEnd(visibleDistance * ConfigHandler.globalFogMaxIntensity);
+			GlStateManager.setFogStart(visibleDistance * ConfigHandler.defaultFogDefinition.fogMinIntensity);
+			GlStateManager.setFogEnd(visibleDistance * ConfigHandler.defaultFogDefinition.fogMaxIntensity);
 		}
 
     }
