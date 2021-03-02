@@ -8,25 +8,7 @@
 
 It is also possible to apply a "globalFog" that works biome independent.
 
-### How it works
-
-You can switch from using biome dependent fog to global fog via config. Same goes for defining new and changing their values.
-
-Simply edit the config file. First you'll need to run the modification at least once so the config file generates.
-Find the 'config' folder in your minecraft instance and search for file called "fogger.cfg".
-Then open the file with any text-editor like "notepad".
-
-To add a biome to the "S:Biomes" list enter a new line and write the values in the following syntax. Remember to include all the needed values and watch out for typos.
-
-{ Mod/Vanilla:BiomeName } { WhereTheFogStarts } { WhereTheFogEnds }
-
- - *Note that when the biome is not being defined in the list and the globalFog ain't set to true then the vanilla fog will be applied.*
-
- - *Make sure u're not defining the biome already as this will slow down the mod.*
-
- - *It is recommended to not over specify biomes. Simply specify the biomes you're using in your current **minecraft** instance. If u're not using **Biomes'OPlenty** biomes feel free to remove them.* 
-
- - *For comparision the vanilla fog values are* 0.75 *for fog to start and* 1.00 *for fog to end.*
+### [How It Works - wiki page](https://github.com/dotBlueShoes/MS_Fogger/wiki/How-It-Works)
 
 ### Mod Compatibility
 
