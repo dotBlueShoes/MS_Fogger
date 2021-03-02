@@ -1,4 +1,4 @@
-package dotblueshoes.fogger;
+package dotblueshoes.fogger.config;
 
 public class FogDefinition {
     public String name;
@@ -13,15 +13,15 @@ public class FogDefinition {
     }
 
     public String toString() {
-        return Float.toString(fogMinIntensity) + " " + Float.toString(fogMaxIntensity);
+        return name + " " + Float.toString(fogMinIntensity) + " " + Float.toString(fogMaxIntensity);
     }
 
     public static FogDefinition parseString(String data) {
         final String[] separatedData = data.split(" ");
         return new FogDefinition ( 
-            "",
-            Float.parseFloat(separatedData[0]), 
-            Float.parseFloat(separatedData[1])
+            separatedData[0],
+            Float.parseFloat(separatedData[1]), 
+            Float.parseFloat(separatedData[2])
         );
     }
 }

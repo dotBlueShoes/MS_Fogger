@@ -5,13 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.1.0] - 2021-03-01
+## [1.1.0] - 2021-03-02
 
 ### Added
-- Ability to specify default (for non specified values) fog. (previously when specific biome wasn't specified vanilla fog rules were used.)
+- Default Fog Setting. Instead of defining every single biome now it is possible to define a default Fog setting.
+- Y-Level Dependant Fog Setting. Now u can define from which y-level-up does the fog apply.
+- Fog Definitions. A config system to better organize fog settings. Checkout the config and wiki page for more info. 
+- Github Wiki page.
 
 ### Changed
-- Config optin "globalFogMinIntensity" & "globalFogMaxIntensity" changed to "defaultFogSetting" which works for both global and default.
+- Config option "globalFogMinIntensity" & "globalFogMaxIntensity" now works for both global and default fog setting.
+
+### Removed
+- Due to the implementation of fog definitions in config the previous S:Biomes list is now being removed.
 
 ## [1.0.1] - 2021-02-24
 

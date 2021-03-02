@@ -11,7 +11,8 @@ import net.minecraft.init.Blocks;
 
 import org.apache.logging.log4j.Logger;
 
-import dotblueshoes.fogger.ConfigHandler;
+import dotblueshoes.fogger.config.ConfigHandler;
+import dotblueshoes.fogger.FogEvent;
 
 @Mod( modid = Fogger.MODID,  version = Fogger.VERSION, useMetadata = true)
 public class Fogger {
@@ -31,17 +32,19 @@ public class Fogger {
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        //FogEvent.setupFogRendering();
-        ConfigHandler.biomeFogs[3].yLevel = 60;
+        ConfigHandler.mappedFogDefinitions[3].yLevel = 60;
         if(ConfigHandler.globalFog)
             MinecraftForge.EVENT_BUS.register(new GlobalFogEvent());
-        else
+        else {
+            FogEvent.initialize(ConfigHandler.fogDefinitions, ConfigHandler.mappedFogDefinitions);
             MinecraftForge.EVENT_BUS.register(new FogEvent());
+        }
+            
     }
 
-    public static void LogInfo(String msg) {
-        final String prefix = "$$$###$$$###";
-        logger.info(prefix + msg);
-    }
+    //public static void LogInfo(String msg) {
+    //    final String prefix = "$$$###$$$###";
+    //    logger.info(prefix + msg);
+    //}
 
 }

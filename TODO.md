@@ -1,5 +1,8 @@
 5. See What i can optimize via making global variables, getting neeed information in different calls.
-8. Implement different-y levels, different weather support. 
+8. Implement different weather support.
+9. Time. 
+10. Implement const fog ranges
+11. Create a better curseforge icon.
 
 // if i ever plan to try again adding the resourcepack via this mod 
 // https://forge.yue.moe/javadoc/1.12.2/ "iresourcepack"
