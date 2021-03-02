@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Config option "globalFogMinIntensity" & "globalFogMaxIntensity" now works for both global and default fog setting.
 
 ### Removed
-- Due to the implementation of fog definitions in config the previous S:Biomes list is now being removed.
+- Due to the implementation of fog definitions in config the previous "S:Biomes" list is now being removed.
 
 ## [1.0.1] - 2021-02-24
 

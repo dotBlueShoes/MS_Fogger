@@ -32,7 +32,6 @@ public class Fogger {
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        ConfigHandler.mappedFogDefinitions[3].yLevel = 60;
         if(ConfigHandler.globalFog)
             MinecraftForge.EVENT_BUS.register(new GlobalFogEvent());
         else {
