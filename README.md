@@ -4,9 +4,7 @@
 
 [![CurseForge downloads](http://cf.way2muchnoise.eu/full_449209_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/fogger)
 
-**Fogger** is a modification for **minecraft** currently for version **1.12.2** only. The mod in it's current state cant offer much however it will give you more control over the fog then vanilla. It Gives you the ability to change where the fog starts and where it ends. *This setting can be changed for every biome.* 
-
-It is also possible to apply a "globalFog" that works biome independent.
+**Fogger** is a modification for **minecraft** currently for version **1.12.2** only. The mod in it's current state cant offer much however it will give you more control over the fog then vanilla. It Gives you the ability to change where the fog starts and where it ends. *This setting can be changed for every biome and corresponding world's y-level.* It is also possible to apply a "globalFog" that works biome independent.
 
 ### [How It Works - wiki page](https://github.com/dotBlueShoes/MS_Fogger/wiki/How-It-Works)
 
@@ -18,10 +16,12 @@ I am not aware of any incompatibility. this mod works as intended with **Optifin
 
 ### Fog Colors & Optifine Recommendation
 
-It is highly **Recommended** to use this mod alongside **Optifine** and ***ResourcePacks** that support biome dependent fog colors introduced by **optifine mcpacher***. **Optifine** does Colors so well that i don't plan to implement that logic myself into the mod.
+It is highly **Recommended** to use this mod alongside **Optifine** and ***ResourcePacks** that support biome dependent fog colors introduced by **optifine mcpacher***. 
+
+**Optifine** does Colors so well that i don't plan to implement that logic myself into the mod.
 
 ***There will be a link in future to such resourcepack crated by myself.***
 
 ### Soon
 
-- I plan to expend this idea and give possibility to change these values depending on the current world weather, time and player y-level position.
+- I plan to expend this idea and give possibility to change these values depending on the current world weather, time.
