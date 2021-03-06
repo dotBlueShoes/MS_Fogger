@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 
-import dotblueshoes.fogger.config.FogDefinitionMapper;
+import dotblueshoes.fogger.config.FogMapDefinition;
 import dotblueshoes.fogger.config.FogDefinition;
 import dotblueshoes.fogger.config.ConfigHandler;
 import dotblueshoes.fogger.Fogger;
@@ -25,8 +25,8 @@ public class FogEvent {
 
     private static final float increaseValue = 0.001F;
     private static float 
-        currentFogMinIntensity = 0F,
-        currentFogMaxIntensity = 0F,
+        currentFogStartPoint = 0F,
+        currentFogEndPoint = 0F,
         visibleDistance;
 
     /* Different Weather */
@@ -36,101 +36,30 @@ public class FogEvent {
 
     private static FogSetting[] fogSettings;
 
-    public static void initialize(FogDefinition[] fogDefinitions, FogDefinitionMapper[] mappedDefinitions) {
+    public static void initialize(FogDefinition[] fogDefinitions, FogMapDefinition[] fogMapDefinitions) {
+        // Sort
+        FogMapDefinition.sort(fogMapDefinitions);
 
-        /* Parsing logic (getting rid of duplications, y-level, spaces, tabs, newlines) */
-        // idea - FogDefinitionMapper[] sortedMapper = sort();
-        // to be done.
-
-        // // get rid of duplicates
-        // for (int i = 0; i < mappedDefinitions.length; i++) {
-        //     int duplicationCount = 0;
-        //     for (int j = 0; j < mappedDefinitions.length; j++) {
-        //         if (mappedDefinitions[i].equals(mappedDefinitions[j])) {
-        //             duplicationCount += 1;
-        //         }
-        //     }
-        //     Fogger.LogInfo(mappedDefinitions[i].biomeName + Integer.toString(duplicationCount));
-        // }
-
-        // // sort them y-level
-        // int temp;
-        // for (int i = 0; i < mappedDefinitions.length; i++)
-        //     for (int j = 0; j < mappedDefinitions.length; j++)
-        //         if (mappedDefinitions[i].yLevel > mappedDefinitions[j].yLevel) {
-                    
-        //         }
-
-        /* More on parsing */
-        // 1. look for biomes with the same name 
-        // 2. see if the biome isn't a full duplicate, if so 
-        // 3. 
-
-        // for (int i = 0; i < mappedDefinitions.length; i++) {
-        //     FogDefinitionMapper[] biomeFogs;
-        //     int count;
-
-        //     for (int j = 0; j < mappedDefinitions.length; j++) { // Get the length of biomeFogs.
-        //         if (mappedDefinitions[i].biomeName.equals(mappedDefinitions[j].biomeName)) {
-        //             if (mappedDefinitions[i].equals(mappedDefinitions[j])) // If its a full duplicate then ignore it. (user-config-error)
-        //                 continue;
-        //             count++;
-        //         }
-        //     }
-
-        //     biomeFogs = FogDefinitionMapper[count];
-
-        //     for (int j = 0; j < mappedDefinitions.length; j++) { // Load the elements it.
-        //         if (mappedDefinitions[i].biomeName.equals(mappedDefinitions[j].biomeName)) {
-        //             if (mappedDefinitions[i].equals(mappedDefinitions[j])) // If its a full duplicate then ignore it. (user-config-error)
-        //                 continue;
-        //             biomeFogs[j] = mappedDefinitions[j];
-        //         }
-        //     }
-        // }
-
-        // FogDefinitionMapper[] proccessedDefinitions;
-        // int count = mappedDefinitions.length;
-
-        // for (int i = 0; i < mappedDefinitions.length; i++) {
-
-        //     /* Getting rid of duplicates */
-        //     for (int j = 0; j < mappedDefinitions.length; j++) {
-        //         if (mappedDefinitions[i].biomeName.equals(mappedDefinitions[j].biomeName)) {
-        //             if (mappedDefinitions[i].equals(mappedDefinitions[j])) {
-        //                 count--;
-        //             }
-        //         }
-        //     }
-
-        //     proccessedDefinitions = new FogDefinitionMapper[mappedDefinitions.length];
-
-        //     /* Loading not duplicate elements in. */
-        //     for (int j = 0; j < mappedDefinitions.length; j++) {
-        //         if (mappedDefinitions[i].biomeName.equals(mappedDefinitions[j].biomeName)) {
-        //             if (mappedDefinitions[i].equals(mappedDefinitions[j])) {
-        //                 continue;
-        //             }
-        //             proccessedDefinitions[i] = 
-        //         }
-        //     }
-
-        // }
-
-        fogSettings = new FogSetting[mappedDefinitions.length];
+        fogSettings = new FogSetting[fogMapDefinitions.length];
 
         for (int i = 0; i < fogSettings.length; i++)
             for (int j = 0; j < fogDefinitions.length; j++)
-                if(mappedDefinitions[i].fogDefinition.equals(fogDefinitions[j].name)) {
+                if(fogMapDefinitions[i].fogDefinition.equals(fogDefinitions[j].name)) {
                     fogSettings[i] = new FogSetting (
-                        mappedDefinitions[i].biomeName, 
-                        mappedDefinitions[i].yLevel, 
-                        fogDefinitions[j].fogMinIntensity, 
-                        fogDefinitions[j].fogMaxIntensity
+                        fogMapDefinitions[i].biomeName, 
+                        fogMapDefinitions[i].yLevel, 
+                        fogDefinitions[j].fogStartPoint, 
+                        fogDefinitions[j].fogEndPoint
                     );
                     break;
                 }
     }
+
+    // Options distanceView Event Search
+    // https://forums.minecraftforge.net/topic/42952-list-of-all-events-available/
+    // https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/
+    // https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraftforge/event/world/package-frame.html
+    // https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraftforge/event/package-frame.html
 
     @SubscribeEvent
     public void renderFogEvent(RenderFogEvent event) {
@@ -146,51 +75,51 @@ public class FogEvent {
             for (int i = 0; i < fogSettings.length; i++) /* Looping throught all the defined biomes. */
                 if (biomeName.equals(fogSettings[i].biomeName)) /* Checking the biome. */
                     if (entity.posY >= fogSettings[i].yLevel) { /* checking the y-level. */
-                        renderFog (fogSettings[i].fogMaxIntensity, fogSettings[i].fogMinIntensity);
+                        renderFog (fogSettings[i].fogStartPoint, fogSettings[i].fogEndPoint);
                         return;
                     }
-            renderFog ( /* If not matched with the list use Default Fog setting. */
-                ConfigHandler.defaultFogMaxIntensity, 
-                ConfigHandler.defaultFogMinIntensity
+            renderFog ( /* If not matched with the list use Default Fog setting. */ 
+                ConfigHandler.defaultDefinition.fogStartPoint,
+                ConfigHandler.defaultDefinition.fogEndPoint
             );
         }
     }
 
     // The main thing where the fog is being set. // i do hope jvm inlines this function.
-    private static void renderFog(float fogMaxIntensity, float fogMinIntensity) {
+    private static void renderFog(float fogStartPoint, float fogEndPoint) {
 
-        /* fogMaxIntensity */
-        if (currentFogMaxIntensity < fogMaxIntensity) {
-            currentFogMaxIntensity += increaseValue;
+        /* fogEndPoint */
+        if (currentFogEndPoint < fogEndPoint) {
+            currentFogEndPoint += increaseValue;
             /* This is a correction that assures as that we're gonna hit the defined Max 
             and that we're not gonna enter upper if statement every odd call */
-            if (currentFogMaxIntensity > fogMaxIntensity)
-                currentFogMaxIntensity = fogMaxIntensity;
-        } else if (currentFogMaxIntensity > fogMaxIntensity) {
-            currentFogMaxIntensity -= increaseValue;
+            if (currentFogEndPoint > fogEndPoint)
+                currentFogEndPoint = fogEndPoint;
+        } else if (currentFogEndPoint > fogEndPoint) {
+            currentFogEndPoint -= increaseValue;
             /* This is a correction that assures as that we're gonna hit the defined Max 
             and that we're not gonna enter upper if statement every odd call */
-            if (currentFogMaxIntensity < fogMaxIntensity)
-                currentFogMaxIntensity = fogMaxIntensity;
+            if (currentFogEndPoint < fogEndPoint)
+                currentFogEndPoint = fogEndPoint;
         }
 
-         /* fogMinIntensity */
-        if (currentFogMinIntensity < fogMinIntensity) {
-            currentFogMinIntensity += increaseValue;
+         /* fogStartPoint */
+        if (currentFogStartPoint < fogStartPoint) {
+            currentFogStartPoint += increaseValue;
             /* This is a correction that assures as that we're gonna hit the defined Max 
             and that we're not gonna enter upper if statement every odd call */
-            if (currentFogMinIntensity > fogMinIntensity)
-                currentFogMinIntensity = fogMinIntensity;
-        } else if (currentFogMinIntensity > fogMinIntensity) {
-            currentFogMinIntensity -= increaseValue;
+            if (currentFogStartPoint > fogStartPoint)
+                currentFogStartPoint = fogStartPoint;
+        } else if (currentFogStartPoint > fogStartPoint) {
+            currentFogStartPoint -= increaseValue;
             /* This is a correction that assures as that we're gonna hit the defined Max 
             and that we're not gonna enter upper if statement every odd call */
-            if (currentFogMinIntensity < fogMinIntensity)
-                currentFogMinIntensity = fogMinIntensity;
+            if (currentFogStartPoint < fogStartPoint)
+                currentFogStartPoint = fogStartPoint;
         }
 
-        GlStateManager.setFogStart(visibleDistance * currentFogMinIntensity);
-        GlStateManager.setFogEnd(visibleDistance * currentFogMaxIntensity);
+        GlStateManager.setFogStart(visibleDistance * currentFogStartPoint);
+        GlStateManager.setFogEnd(visibleDistance * currentFogEndPoint);
     }
 
 }

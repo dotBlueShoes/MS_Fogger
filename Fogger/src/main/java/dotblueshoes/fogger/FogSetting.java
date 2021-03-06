@@ -3,13 +3,13 @@ package dotblueshoes.fogger;
 public class FogSetting {
     public String biomeName;
     public float
-        fogMinIntensity,
-        fogMaxIntensity,
+        fogStartPoint,
+        fogEndPoint,
         yLevel;
 
-    FogSetting(String biomeName, float yLevel, float fogMinIntensity, float fogMaxIntensity) {
-        this.fogMinIntensity = fogMinIntensity;
-        this.fogMaxIntensity = fogMaxIntensity;
+    FogSetting(String biomeName, float yLevel, float fogStartPoint, float fogEndPoint) {
+        this.fogStartPoint = fogStartPoint;
+        this.fogEndPoint = fogEndPoint;
         this.biomeName = biomeName;
         this.yLevel = yLevel;
     }
