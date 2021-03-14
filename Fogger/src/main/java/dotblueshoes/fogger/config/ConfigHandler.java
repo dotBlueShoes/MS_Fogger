@@ -46,7 +46,7 @@ public class ConfigHandler {
 	// }
 
 	public static Configuration config;
-	public static boolean globalFog = false;
+	public static boolean isFogGlobal = false, isFogConstant = false;
 
 	public static FogDefinition defaultDefinition = 
 		new FogDefinition("default", 0.10F, 0.95F);
@@ -151,19 +151,28 @@ public class ConfigHandler {
 			commentDefaultFogStartPoint = "Procentage value of where the fog starts relative to the full visible distance",
 			commentDefaultFogEndPoint = "Procentage value of where the fog ends relative to the full visible distance",
 			commentFogDefinitions = "Define or use exsisting fog references to use them in FogMapDefinitions List.",
-			commentGlobalFog = "Set it to true to simplify Fog rendering and apply single rule to all the biomes.",
+			commentIsFogConstant = "Set it to true to make fog rendering independant from view distance. Remember to change fog start, end values as they're no longer in percents. '2F' is a distance of two blocks.",
+			commentIsFogGlobal = "Set it to true to simplify Fog rendering and apply single rule to all the biomes.",
 			headingDefault = "default-fog",
-			headingGlobal = "global-fog",
-			headingBiome = "dependant-fog";
+			headingBiome = "dependant-fog",
+			headingGeneral = "general";
+			
         
         config = new Configuration(file);
         config.load();
 
-		globalFog = loadBool (
-			headingGlobal,
-			"GlobalFog",
-			commentGlobalFog,
-			globalFog
+		isFogConstant = loadBool (
+			headingGeneral,
+			"IsFogConstant",
+			commentIsFogConstant,
+			isFogConstant
+		);
+
+		isFogGlobal = loadBool (
+			headingGeneral,
+			"IsFogGlobal",
+			commentIsFogGlobal,
+			isFogGlobal
 		);
 
 		defaultDefinition.fogStartPoint = loadFloat (

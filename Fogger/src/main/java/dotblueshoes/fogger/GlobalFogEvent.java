@@ -9,23 +9,21 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 
+import dotblueshoes.fogger.VisibleDistanceListener;
 import dotblueshoes.fogger.config.ConfigHandler;
 import dotblueshoes.fogger.Fogger;
 
 public class GlobalFogEvent {
 
-    private float visibleDistance;
-
     @SubscribeEvent
     public void renderFog(RenderFogEvent event) {
 
         GlStateManager.setFog(GlStateManager.FogMode.LINEAR);
-        visibleDistance = event.getFarPlaneDistance();
 
         /* Is the horizontal vertical. -1 stands for ceiling Fog. */
 		if (event.getFogMode() == 0) {
-			GlStateManager.setFogStart(visibleDistance * ConfigHandler.defaultDefinition.fogStartPoint);
-			GlStateManager.setFogEnd(visibleDistance * ConfigHandler.defaultDefinition.fogEndPoint);
+			GlStateManager.setFogStart(VisibleDistanceListener.visibleDistance * ConfigHandler.defaultDefinition.fogStartPoint);
+			GlStateManager.setFogEnd(VisibleDistanceListener.visibleDistance * ConfigHandler.defaultDefinition.fogEndPoint);
 		}
     }
     

@@ -5,17 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.1.1] - 2021-03-06
+## [1.1.1] - 2021-03-14
 
 ## Added
+- Support for constant fog setting (independant from view distance).
 - Few new default config values.
 - No restricitions to y-level order.
 
 ## Changed
-- Few default config values.
+- Few default config default values.
+- Config option "globalFog" name changed to "isFogGlobal".
 
 ## Removed
-- Mistakenly left code that changed how list 3rd value behaved.
+- Mistakenly left code that changed how list 3rd value behaved. yeah sorry.
 
 ## [1.1.0] - 2021-03-02
 

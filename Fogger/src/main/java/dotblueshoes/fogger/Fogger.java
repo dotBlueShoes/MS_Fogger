@@ -32,22 +32,16 @@ public class Fogger {
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        //ConfigHandler.getFogMapDefinitions();
-        if(ConfigHandler.globalFog)
-            MinecraftForge.EVENT_BUS.register(new GlobalFogEvent());
-        else {
-            FogEvent.initialize (
-                ConfigHandler.getFogDefinitions(),
-                ConfigHandler.fogMapDefinitions
-            );
+        MinecraftForge.EVENT_BUS.register(new VisibleDistanceListener());
+        if(ConfigHandler.isFogGlobal == false) {
+            FogEvent.initialize (ConfigHandler.getFogDefinitions(), ConfigHandler.fogMapDefinitions);
             MinecraftForge.EVENT_BUS.register(new FogEvent());
-        }
-            
+        } else MinecraftForge.EVENT_BUS.register(new GlobalFogEvent());
     }
 
-    // public static void LogInfo(String msg) {
-    //     final String prefix = "$$$###$$$###";
-    //     logger.info(prefix + msg);
-    // }
+    //public static void logInfo(String msg) {
+    //    final String prefix = "$$$###$$$###";
+    //    logger.info(prefix + msg);
+    //}
 
 }

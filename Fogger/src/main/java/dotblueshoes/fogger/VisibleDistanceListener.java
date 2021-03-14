@@ -1,0 +1,87 @@
+package dotblueshoes.fogger;
+
+import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
+import net.minecraftforge.client.event.GuiScreenEvent.KeyboardInputEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.event.world.WorldEvent.Load;
+
+import net.minecraft.client.Minecraft;
+import org.lwjgl.input.Keyboard;
+
+import dotblueshoes.fogger.config.ConfigHandler;
+
+// I belive this would make it sync with server viewDistance instead of client viewDiestance.
+//  but i would need a better event and anything to check wheater the player is in a world(server/integrated-server) or in screenmenu.
+// visibleDistance = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getViewDistance() * chunkLength;
+
+public class VisibleDistanceListener {
+
+    public static float visibleDistance = 0F;
+
+    private static final int gui_btn_backToGame = 4, chunkLength = 16;
+
+    // About...
+    //  The gui_btn_backToGame Button is only available to be pressed
+    // when we're ingame and in settings menu. So it's save to use it
+    // for any action that requires world instance and any action that 
+    // needs to take place right after any of the game settings could 
+    // have changed.
+    //  Sadly this line gets changed just after this event. So it reads the previous set distance.
+    // visibleDistance = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getViewDistance() * chunkLength;
+    @SubscribeEvent
+    public void globalGuiEvent(ActionPerformedEvent event) {
+        if (event.getButton().id == gui_btn_backToGame) {
+            setVisibleDistance();
+        }
+    }
+
+    // About...
+    //  Well due to the fact that player can exit options by pressing 'escape'
+    // now i have to Subscribe to that event to first check the escape key 
+    // and second check if the player loaded a world. So that i can work it out.
+    // whats funny is that the ESC key "release" action is being processed by something else
+    //  while ingame when opening options but when we exit the options it gets it.
+    @SubscribeEvent
+    public void keyboardInputEvent(KeyboardInputEvent event) {
+        // GameSettings gameSettings = new GameSettings();
+        //KeyBinding keyESC = new KeyBinding("key.structure.desc", Keyboard.KEY_ESCAPE, "key.magicbeans.category");
+        if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE && Keyboard.getEventKeyState())
+            setVisibleDistance();
+    }
+
+    // About...
+    //  This Event is being called when
+    // 1. We're loading the server both multiplier and integrated one.
+    //  it gets called for each world there is to load so typiclly 3 times (overworld, nether, end).
+    // 2. A little later when we load the selective world.
+    @SubscribeEvent
+    public void worldEventLoad(WorldEvent.Load event) {
+        setVisibleDistance();
+    }
+
+    public void setVisibleDistance() {
+        if (ConfigHandler.isFogConstant == false)
+            visibleDistance = Minecraft.getMinecraft().gameSettings.renderDistanceChunks * chunkLength;
+        else visibleDistance = 1F;
+    }
+}
+
+
+    // Options distanceView Event Search
+    // https://forums.minecraftforge.net/topic/42952-list-of-all-events-available/
+    // https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/
+    // https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraftforge/event/world/package-frame.html
+    // https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraftforge/event/package-frame.html
+
+    // Other
+    // https://www.curseforge.com/minecraft/mc-mods/improved-mobs
+    // https://www.programcreek.com/java-api-examples/?api=net.minecraftforge.client.event.RenderGameOverlayEvent
+    // https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraftforge/client/event/EntityViewRenderEvent.CameraSetup.html
+    // https://github.com/Gjum/morechunks-forge
+    // https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/ f(event)
+    // https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraftforge/client/event/EntityViewRenderEvent.RenderFogEvent.html
+    // https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraftforge/event/package-frame.html
+
+    // - THIS!
+    // https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraftforge/event/terraingen/package-frame.html

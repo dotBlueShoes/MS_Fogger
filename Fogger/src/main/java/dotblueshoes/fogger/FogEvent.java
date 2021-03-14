@@ -9,35 +9,32 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 
+import dotblueshoes.fogger.VisibleDistanceListener;
+import dotblueshoes.fogger.Fogger;
 import dotblueshoes.fogger.config.FogMapDefinition;
 import dotblueshoes.fogger.config.FogDefinition;
 import dotblueshoes.fogger.config.ConfigHandler;
-import dotblueshoes.fogger.Fogger;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 
+// Different Weather 
+//  This seems a littile bit more compicated.
+//  i guess i can support rain and thunder.
+
 public class FogEvent {
 
-    private WorldClient worldClient;
     private String biomeName;
     private Entity entity;
 
     private static final float increaseValue = 0.001F;
-    private static float 
-        currentFogStartPoint = 0F,
-        currentFogEndPoint = 0F,
-        visibleDistance;
-
-    /* Different Weather */
-    // This seems a littile bit more compicated.
-    // i guess i can support rain and thunder. 
-    // but the more i think about it the more i think about using json.
 
     private static FogSetting[] fogSettings;
+    private static float 
+        currentFogStartPoint = 0F,
+        currentFogEndPoint = 0F;
 
     public static void initialize(FogDefinition[] fogDefinitions, FogMapDefinition[] fogMapDefinitions) {
-        // Sort
         FogMapDefinition.sort(fogMapDefinitions);
 
         fogSettings = new FogSetting[fogMapDefinitions.length];
@@ -55,19 +52,11 @@ public class FogEvent {
                 }
     }
 
-    // Options distanceView Event Search
-    // https://forums.minecraftforge.net/topic/42952-list-of-all-events-available/
-    // https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/
-    // https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraftforge/event/world/package-frame.html
-    // https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraftforge/event/package-frame.html
-
     @SubscribeEvent
     public void renderFogEvent(RenderFogEvent event) {
-        visibleDistance = event.getFarPlaneDistance();
-        worldClient = Minecraft.getMinecraft().world;
+        //visibleDistance = event.getFarPlaneDistance();
         entity = event.getEntity();
-
-        biomeName = worldClient.getBiome(new BlockPos(entity.posX, entity.posY, entity.posZ)).getRegistryName().toString();
+        biomeName = Minecraft.getMinecraft().world.getBiome(new BlockPos(entity.posX, entity.posY, entity.posZ)).getRegistryName().toString();
 
         GlStateManager.setFog(GlStateManager.FogMode.LINEAR); // ? does it rly have to be here
         
@@ -118,8 +107,8 @@ public class FogEvent {
                 currentFogStartPoint = fogStartPoint;
         }
 
-        GlStateManager.setFogStart(visibleDistance * currentFogStartPoint);
-        GlStateManager.setFogEnd(visibleDistance * currentFogEndPoint);
+        GlStateManager.setFogStart(VisibleDistanceListener.visibleDistance * currentFogStartPoint);
+        GlStateManager.setFogEnd(VisibleDistanceListener.visibleDistance * currentFogEndPoint);
     }
 
 }
