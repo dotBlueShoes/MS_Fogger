@@ -7,18 +7,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.1.1] - 2021-03-22
 
-## Added
+### Added
 - Support for constant fog setting (independant from view distance).
 - Few new default config values.
 - No restricitions to y-level order.
 - No performance drawback for specifing non-existing current minecarft instance biomes.
 - Possibility to space out array values in config using both spaces and tabs. No new-lines tho. 
 
-## Changed
+### Changed
 - Few default config default values.
 - Config option "globalFog" name changed to "isFogGlobal".
 
-## Removed
+### Removed
 - Mistakenly left code that changed how list 3rd value behaved. yeah sorry.
 
 ## [1.1.0] - 2021-03-02
