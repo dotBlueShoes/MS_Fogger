@@ -12,7 +12,7 @@ import org.lwjgl.input.Keyboard;
 import dotblueshoes.fogger.config.ConfigHandler;
 
 // I belive this would make it sync with server viewDistance instead of client viewDiestance.
-//  but i would need a better event and anything to check wheater the player is in a world(server/integrated-server) or in screenmenu.
+//  but i would need a better event and anything to check whether the player is in a world(server/integrated-server) or in screenmenu.
 // visibleDistance = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getViewDistance() * chunkLength;
 
 public class VisibleDistanceListener {
@@ -67,21 +67,36 @@ public class VisibleDistanceListener {
     }
 }
 
+// Options distanceView Event Search
+// https://forums.minecraftforge.net/topic/42952-list-of-all-events-available/
+// https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/
+// https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraftforge/event/world/package-frame.html
+// https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraftforge/event/package-frame.html
 
-    // Options distanceView Event Search
-    // https://forums.minecraftforge.net/topic/42952-list-of-all-events-available/
-    // https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/
-    // https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraftforge/event/world/package-frame.html
-    // https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraftforge/event/package-frame.html
+// Other
+// https://www.curseforge.com/minecraft/mc-mods/improved-mobs
+// https://www.programcreek.com/java-api-examples/?api=net.minecraftforge.client.event.RenderGameOverlayEvent
+// https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraftforge/client/event/EntityViewRenderEvent.CameraSetup.html
+// https://github.com/Gjum/morechunks-forge
+// https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/ f(event)
+// https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraftforge/client/event/EntityViewRenderEvent.RenderFogEvent.html
+// https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraftforge/event/package-frame.html
 
-    // Other
-    // https://www.curseforge.com/minecraft/mc-mods/improved-mobs
-    // https://www.programcreek.com/java-api-examples/?api=net.minecraftforge.client.event.RenderGameOverlayEvent
-    // https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraftforge/client/event/EntityViewRenderEvent.CameraSetup.html
-    // https://github.com/Gjum/morechunks-forge
-    // https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/ f(event)
-    // https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraftforge/client/event/EntityViewRenderEvent.RenderFogEvent.html
-    // https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraftforge/event/package-frame.html
+// https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraftforge/event/terraingen/package-frame.html
 
-    // - THIS!
-    // https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraftforge/event/terraingen/package-frame.html
+// https://forums.minecraftforge.net/topic/31795-18-events-dont-fire-on-server/
+    
+// https://jabelarminecraft.blogspot.com/p/minecraft-forge-1721710-keybinding.html
+// https://github.com/jaideepheer/MinecraftForge-Mods-ServerPropertiesLAN/blob/master/common/ServerPropertiesLAN.java
+// https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraft/world/ServerWorldEventHandler.html
+// https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraftforge/common/ForgeChunkManager.ForceChunkEvent.html
+// https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraftforge/event/world/ChunkDataEvent.html
+// https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraftforge/event/terraingen/ChunkGeneratorEvent.html
+
+// https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/net/minecraft/client/gui/GuiScreen.html
+// https://nekoyue.github.io/ForgeJavaDocs-NG/javadoc/1.12.2/
+// https://jabelarminecraft.blogspot.com/p/minecraft-forge-1721710-keybinding.html
+// https://leo3418.github.io/2020/09/09/forge-mod-config-screen.html
+// file:///C:/Users/Admin/Downloads/forgeevents.html
+// https://www.programcreek.com/java-api-examples/?class=net.minecraftforge.fml.common.gameevent.InputEvent&method=KeyInputEvent
+// https://jabelarminecraft.blogspot.com/p/minecraft-forge-172-event-handling.html

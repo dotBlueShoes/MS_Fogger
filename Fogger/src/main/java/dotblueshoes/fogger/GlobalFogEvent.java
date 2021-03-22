@@ -14,14 +14,10 @@ import dotblueshoes.fogger.config.ConfigHandler;
 import dotblueshoes.fogger.Fogger;
 
 public class GlobalFogEvent {
-
     @SubscribeEvent
     public void renderFog(RenderFogEvent event) {
-
-        GlStateManager.setFog(GlStateManager.FogMode.LINEAR);
-
-        /* Is the horizontal vertical. -1 stands for ceiling Fog. */
-		if (event.getFogMode() == 0) {
+		if (event.getFogMode() == 0) {  /* Is the horizontal vertical. -1 stands for ceiling Fog. */
+            GlStateManager.setFog(GlStateManager.FogMode.LINEAR);
 			GlStateManager.setFogStart(VisibleDistanceListener.visibleDistance * ConfigHandler.defaultDefinition.fogStartPoint);
 			GlStateManager.setFogEnd(VisibleDistanceListener.visibleDistance * ConfigHandler.defaultDefinition.fogEndPoint);
 		}

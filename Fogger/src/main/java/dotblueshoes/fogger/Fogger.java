@@ -21,27 +21,26 @@ public class Fogger {
 
     @Instance(MODID)
     public static Fogger instance;
-
-    private static Logger logger;
+    //private static Logger logger;
 
     @EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
+    public void preInitialize(FMLPreInitializationEvent event) {
         ConfigHandler.loadConfigurationFile(event.getSuggestedConfigurationFile());
-        logger = event.getModLog();
+    //    logger = event.getModLog();
     }
 
     @EventHandler
-    public void init(FMLInitializationEvent event) {
+    public void initialize(FMLInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(new VisibleDistanceListener());
-        if(ConfigHandler.isFogGlobal == false) {
-            FogEvent.initialize (ConfigHandler.getFogDefinitions(), ConfigHandler.fogMapDefinitions);
-            MinecraftForge.EVENT_BUS.register(new FogEvent());
-        } else MinecraftForge.EVENT_BUS.register(new GlobalFogEvent());
+        if(ConfigHandler.isFogGlobal == false)
+            MinecraftForge.EVENT_BUS.register(new FogEvent(ConfigHandler.getFogDefinitions(), ConfigHandler.getFogMapDefinitions()));
+        else 
+            MinecraftForge.EVENT_BUS.register(new GlobalFogEvent());
     }
 
-    //public static void logInfo(String msg) {
-    //    final String prefix = "$$$###$$$###";
-    //    logger.info(prefix + msg);
-    //}
+    // public static void logInfo(String msg) {
+    //     final String prefix = "$$$###$$$###";    
+    //     logger.info(prefix + msg);
+    // }
 
 }

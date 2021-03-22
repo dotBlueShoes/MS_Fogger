@@ -2,17 +2,21 @@ package dotblueshoes.fogger.config;
 
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraft.world.biome.Biome;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.io.File;
 
 import dotblueshoes.fogger.config.FogMapDefinition;
 import dotblueshoes.fogger.config.FogDefinition;
 import dotblueshoes.fogger.Fogger;
 
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+
 
 public class ConfigHandler {
 
@@ -28,22 +32,31 @@ public class ConfigHandler {
 	public static FogDefinition[] getFogDefinitions() {
         FogDefinition[] definitions = new FogDefinition[fogDefinitions.length + 1];
         definitions[0] = defaultDefinition;
+
         for (int i = 1; i < definitions.length; i++)
             definitions[i] = fogDefinitions[i - 1];
+
 		return definitions;
 	}
 
-	// public static FogMapDefinition[] getFogMapDefinitions() {
-	// 	// Count all the duplicates in FogMapDefinitions
-    //     for (int i = 0; i < fogMapDefinitions.length; i++)
-    //         for (int j = 0; j < fogMapDefinitions.length; j++)
-    //             if (fogMapDefinitions[i].equals(fogMapDefinitions[j]))
-    //                 Fogger.LogInfo(fogMapDefinitions[i].toString());
+	public static FogMapDefinition[] getFogMapDefinitions() {
+		Biome[] registeredBiomes = ForgeRegistries.BIOMES.getValues().toArray(new Biome[0]);	// Registered biomes.
+		List<FogMapDefinition> mapDefinitions = new ArrayList<FogMapDefinition>();				// Real mapDefinitions.
 
-	// 	// Get registered biomes. - With this config file could be over-identifing biomes.
-	// 	Fogger.LogInfo(ForgeRegistries.BIOMES.getValuesCollection()); // - returns a list of those biomes.
-	// 	return new FogMapDefinition[3];
-	// }
+		for (int i = 0; i < fogMapDefinitions.length; i++)
+			for (int j = 0; j < registeredBiomes.length; j++)
+				if (fogMapDefinitions[i].biomeName.equals(registeredBiomes[j].getRegistryName().toString())) {
+					mapDefinitions.add(fogMapDefinitions[i]);
+					break;
+				}
+
+		// FogMapDefinition biomes[] = mapDefinitions.toArray(new FogMapDefinition[0]);
+		// for (int i = 0; i < biomes.length; i++) {
+		// 	Fogger.logInfo(biomes[i].biomeName);
+		// }
+
+		return mapDefinitions.toArray(new FogMapDefinition[0]);
+	}
 
 	public static Configuration config;
 	public static boolean isFogGlobal = false, isFogConstant = false;
@@ -52,7 +65,6 @@ public class ConfigHandler {
 		new FogDefinition("default", 0.10F, 0.95F);
 
 	private static FogDefinition[] fogDefinitions = {
-		new FogDefinition("crazy-1",			0.49F, 0.50F),
 		new FogDefinition("warm-forest-1", 		0.10F, 0.85F),
 		new FogDefinition("warm-desert-1", 		0.05F, 0.75F),
 		new FogDefinition("warm-desert-2", 		0.10F, 0.80F),
@@ -75,15 +87,17 @@ public class ConfigHandler {
 		new FogDefinition("cold-water-1", 		0.10F, 0.75F),
 		new FogDefinition("cold-beach-1", 		0.10F, 0.75F),
 		new FogDefinition("mushroom-island", 	0.20F, 0.95F),
-		new FogDefinition("mangrove", 			0.05F, 0.75F)
+		new FogDefinition("mangrove", 			0.05F, 0.75F),
+		new FogDefinition("sample-ramp",		0.49F, 0.50F),
+		new FogDefinition("sample-contant",		100F, 200F)
 	};
 
     public static FogMapDefinition[] fogMapDefinitions = {
 		new FogMapDefinition("minecraft:desert", 							0F,		"warm-desert-1"),
 		new FogMapDefinition("minecraft:extreme_hills", 					0F,		"temperate-hills-1"),
-		new FogMapDefinition("minecraft:river", 							70F,	"default"),
+		new FogMapDefinition("minecraft:river", 							74F,	"default"),
 		new FogMapDefinition("minecraft:river", 							46F, 	"temperate-river-1"),
-		new FogMapDefinition("minecraft:frozen_river", 						70F, 	"default"),
+		new FogMapDefinition("minecraft:frozen_river", 						74F, 	"default"),
 		new FogMapDefinition("minecraft:frozen_river", 						46F, 	"cold-river-1"),
 		new FogMapDefinition("minecraft:ice_flats", 						0F, 	"cold-fields-1"),
 		new FogMapDefinition("minecraft:ice_mountains", 					0F, 	"cold-hills-1"),
@@ -198,7 +212,7 @@ public class ConfigHandler {
 
 		fogMapDefinitions = loadFogDefinitionsMapper (
 			headingBiome,
-		 	"MappedFogDefinitions",
+		 	"FogDefinitionMaps",
 		 	commentFogMapDefinitions,
 		 	fogMapDefinitions
 		);
