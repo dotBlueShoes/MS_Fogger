@@ -1,8 +1,8 @@
 # Environmental and licensed stuff.
-/Fogger/.gradle/
-/Fogger/build/
-/Fogger/libs/
-/Fogger/run/
+/.gradle/
+/build/
+/libs/
+/run/
 
 
 # Compiled class file
