@@ -12,7 +12,7 @@ import net.minecraft.init.Blocks;
 import org.apache.logging.log4j.Logger;
 
 import dotblueshoes.fogger.config.ConfigHandler;
-import dotblueshoes.fogger.FogEvent;
+import dotblueshoes.fogger.event.*;
 
 @Mod( modid = Fogger.MODID,  version = Fogger.VERSION, useMetadata = true)
 public class Fogger {
@@ -31,7 +31,7 @@ public class Fogger {
 
     @EventHandler
     public void initialize(FMLInitializationEvent event) {
-        MinecraftForge.EVENT_BUS.register(new VisibleDistanceListener());
+        MinecraftForge.EVENT_BUS.register(new FogHelper());
         if(ConfigHandler.isFogGlobal == false)
             MinecraftForge.EVENT_BUS.register(new FogEvent(ConfigHandler.getFogDefinitions(), ConfigHandler.getFogMapDefinitions()));
         else 

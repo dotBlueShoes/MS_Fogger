@@ -1,4 +1,4 @@
-package dotblueshoes.fogger.config;
+package dotblueshoes.fogger.config.util;
 
 public class FogDefinition {
     public String name;

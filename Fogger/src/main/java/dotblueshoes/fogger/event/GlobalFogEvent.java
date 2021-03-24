@@ -1,4 +1,4 @@
-package dotblueshoes.fogger;
+package dotblueshoes.fogger.event;
 
 import net.minecraftforge.client.event.EntityViewRenderEvent.RenderFogEvent;
 import net.minecraftforge.client.event.EntityViewRenderEvent.FogColors;
@@ -9,8 +9,9 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 
-import dotblueshoes.fogger.VisibleDistanceListener;
+
 import dotblueshoes.fogger.config.ConfigHandler;
+import dotblueshoes.fogger.event.FogHelper;
 import dotblueshoes.fogger.Fogger;
 
 public class GlobalFogEvent {
@@ -18,8 +19,8 @@ public class GlobalFogEvent {
     public void renderFog(RenderFogEvent event) {
 		if (event.getFogMode() == 0) {  /* Is the horizontal vertical. -1 stands for ceiling Fog. */
             GlStateManager.setFog(GlStateManager.FogMode.LINEAR);
-			GlStateManager.setFogStart(VisibleDistanceListener.visibleDistance * ConfigHandler.defaultDefinition.fogStartPoint);
-			GlStateManager.setFogEnd(VisibleDistanceListener.visibleDistance * ConfigHandler.defaultDefinition.fogEndPoint);
+			GlStateManager.setFogStart(FogHelper.visibleDistance * ConfigHandler.defaultDefinition.fogStartPoint);
+			GlStateManager.setFogEnd(FogHelper.visibleDistance * ConfigHandler.defaultDefinition.fogEndPoint);
 		}
     }
     

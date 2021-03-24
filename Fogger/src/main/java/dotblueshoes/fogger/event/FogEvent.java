@@ -1,4 +1,4 @@
-package dotblueshoes.fogger;
+package dotblueshoes.fogger.event;
 
 import net.minecraftforge.client.event.EntityViewRenderEvent.RenderFogEvent;
 import net.minecraftforge.client.event.EntityViewRenderEvent.FogColors;
@@ -9,11 +9,12 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 
-import dotblueshoes.fogger.VisibleDistanceListener;
-import dotblueshoes.fogger.Fogger;
-import dotblueshoes.fogger.config.FogMapDefinition;
-import dotblueshoes.fogger.config.FogDefinition;
+import dotblueshoes.fogger.config.util.FogMapDefinition;
+import dotblueshoes.fogger.config.util.FogDefinition;
 import dotblueshoes.fogger.config.ConfigHandler;
+import dotblueshoes.fogger.util.FogSetting;
+import dotblueshoes.fogger.event.FogHelper;
+import dotblueshoes.fogger.Fogger;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
@@ -98,8 +99,8 @@ public class FogEvent {
         }
 
         GlStateManager.setFog(GlStateManager.FogMode.LINEAR);
-        GlStateManager.setFogStart(VisibleDistanceListener.visibleDistance * currentFogStartPoint);
-        GlStateManager.setFogEnd(VisibleDistanceListener.visibleDistance * currentFogEndPoint);
+        GlStateManager.setFogStart(FogHelper.visibleDistance * currentFogStartPoint);
+        GlStateManager.setFogEnd(FogHelper.visibleDistance * currentFogEndPoint);
     }
 
 }

@@ -1,4 +1,4 @@
-package dotblueshoes.fogger;
+package dotblueshoes.fogger.event;
 
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.KeyboardInputEvent;
@@ -15,7 +15,7 @@ import dotblueshoes.fogger.config.ConfigHandler;
 //  but i would need a better event and anything to check whether the player is in a world(server/integrated-server) or in screenmenu.
 // visibleDistance = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getViewDistance() * chunkLength;
 
-public class VisibleDistanceListener {
+public class FogHelper {
 
     public static float visibleDistance = 0F;
 

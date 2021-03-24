@@ -12,11 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.File;
 
-import dotblueshoes.fogger.config.FogMapDefinition;
-import dotblueshoes.fogger.config.FogDefinition;
+import dotblueshoes.fogger.config.util.FogMapDefinition;
+import dotblueshoes.fogger.config.util.FogDefinition;
 import dotblueshoes.fogger.Fogger;
-
-
 
 public class ConfigHandler {
 
@@ -65,34 +63,34 @@ public class ConfigHandler {
 		new FogDefinition("default", 0.10F, 0.95F);
 
 	private static FogDefinition[] fogDefinitions = {
-		new FogDefinition("warm-forest-1", 		0.10F, 0.85F),
-		new FogDefinition("warm-desert-1", 		0.05F, 0.75F),
-		new FogDefinition("warm-desert-2", 		0.10F, 0.80F),
-		new FogDefinition("warm-water-1", 		0.15F, 0.95F),
-		new FogDefinition("warm-swamp-1", 		0.10F, 0.75F),
-		new FogDefinition("warm-swamp-2", 		0.10F, 0.65F),
-		new FogDefinition("temperate-fields-1", 0.15F, 1.00F),
-		new FogDefinition("temperate-desert-1", 0.10F, 0.85F),
-		new FogDefinition("temperate-hills-1", 	0.05F, 0.95F),
-		new FogDefinition("temperate-river-1", 	0.05F, 0.60F),
-		new FogDefinition("cold-fields-1", 		0.05F, 0.65F),
-		new FogDefinition("cold-forest-1", 		0.05F, 0.85F),
-		new FogDefinition("cold-forest-2", 		0.05F, 0.75F),
-		new FogDefinition("cold-forest-3", 		0.05F, 0.55F),
-		new FogDefinition("cold-hills-1", 		0.05F, 0.65F),
-		new FogDefinition("cold-hills-2", 		0.05F, 0.80F),
-		new FogDefinition("cold-hills-3", 		0.05F, 0.75F),
-		new FogDefinition("cold-hills-4", 		0.05F, 0.85F),
-		new FogDefinition("cold-river-1", 		0.05F, 0.55F),
-		new FogDefinition("cold-water-1", 		0.10F, 0.75F),
-		new FogDefinition("cold-beach-1", 		0.10F, 0.75F),
-		new FogDefinition("mushroom-island", 	0.20F, 0.95F),
-		new FogDefinition("mangrove", 			0.05F, 0.75F),
-		new FogDefinition("sample-ramp",		0.49F, 0.50F),
-		new FogDefinition("sample-contant",		100F, 200F)
+		new FogDefinition("warm-forest-1", 		0.10F, 	0.85F),
+		new FogDefinition("warm-desert-1", 		0.05F, 	0.75F),
+		new FogDefinition("warm-desert-2", 		0.10F, 	0.80F),
+		new FogDefinition("warm-water-1", 		0.15F, 	0.95F),
+		new FogDefinition("warm-swamp-1", 		0.10F, 	0.75F),
+		new FogDefinition("warm-swamp-2", 		0.10F, 	0.65F),
+		new FogDefinition("temperate-fields-1", 0.15F, 	1.00F),
+		new FogDefinition("temperate-desert-1", 0.10F, 	0.85F),
+		new FogDefinition("temperate-hills-1", 	0.05F, 	0.95F),
+		new FogDefinition("temperate-river-1", 	0.05F, 	0.60F),
+		new FogDefinition("cold-fields-1", 		0.05F, 	0.65F),
+		new FogDefinition("cold-forest-1", 		0.05F, 	0.85F),
+		new FogDefinition("cold-forest-2", 		0.05F, 	0.75F),
+		new FogDefinition("cold-forest-3", 		0.05F, 	0.55F),
+		new FogDefinition("cold-hills-1", 		0.05F, 	0.65F),
+		new FogDefinition("cold-hills-2", 		0.05F, 	0.80F),
+		new FogDefinition("cold-hills-3", 		0.05F, 	0.75F),
+		new FogDefinition("cold-hills-4", 		0.05F, 	0.85F),
+		new FogDefinition("cold-river-1", 		0.05F, 	0.55F),
+		new FogDefinition("cold-water-1", 		0.10F, 	0.75F),
+		new FogDefinition("cold-beach-1", 		0.10F, 	0.75F),
+		new FogDefinition("mushroom-island", 	0.20F, 	0.95F),
+		new FogDefinition("mangrove", 			0.05F, 	0.75F),
+		new FogDefinition("sample-ramp",		0.49F, 	0.50F),
+		new FogDefinition("sample-constant",	100F, 	200F)
 	};
 
-    public static FogMapDefinition[] fogMapDefinitions = {
+    private static FogMapDefinition[] fogMapDefinitions = {
 		new FogMapDefinition("minecraft:desert", 							0F,		"warm-desert-1"),
 		new FogMapDefinition("minecraft:extreme_hills", 					0F,		"temperate-hills-1"),
 		new FogMapDefinition("minecraft:river", 							74F,	"default"),

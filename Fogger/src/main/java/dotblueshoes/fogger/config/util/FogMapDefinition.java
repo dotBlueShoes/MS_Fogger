@@ -1,6 +1,6 @@
-package dotblueshoes.fogger.config;
+package dotblueshoes.fogger.config.util;
 
-import dotblueshoes.fogger.config.FogDefinition; 
+import dotblueshoes.fogger.config.util.FogDefinition; 
 
 public class FogMapDefinition {
     public String biomeName, fogDefinition;

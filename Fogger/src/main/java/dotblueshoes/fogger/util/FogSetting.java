@@ -1,4 +1,4 @@
-package dotblueshoes.fogger;
+package dotblueshoes.fogger.util;
 
 public class FogSetting {
     public String biomeName;
@@ -7,7 +7,7 @@ public class FogSetting {
         fogEndPoint,
         yLevel;
 
-    FogSetting(String biomeName, float yLevel, float fogStartPoint, float fogEndPoint) {
+    public FogSetting(String biomeName, float yLevel, float fogStartPoint, float fogEndPoint) {
         this.fogStartPoint = fogStartPoint;
         this.fogEndPoint = fogEndPoint;
         this.biomeName = biomeName;
