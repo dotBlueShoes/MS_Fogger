@@ -1,7 +1,8 @@
 package dotblueshoes.fogger.config;
 
+import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
@@ -12,54 +13,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.File;
 
-import dotblueshoes.fogger.config.util.FogMapDefinition;
-import dotblueshoes.fogger.config.util.FogDefinition;
-import dotblueshoes.fogger.Fogger;
+import dotblueshoes.fogger.config.util.*;
+import dotblueshoes.fogger.*;
 
+//import net.minecraftforge.fml.common.eventhandler.EventPriority;
+//import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+
+//@EventBusSubscriber(modid = Fogger.MODID)
 public class ConfigHandler {
 
-	// Listener Object, registration thingy.
-	public static class ChangeListener {
-        @SubscribeEvent
-        public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
-            if (event.getModID() == Fogger.MODID);
-        }
-    }
+	public static final String
+        commentFogMapDefinitions = "Assign created Fog Definitions to specific minecraft biome and world's y-axis. Note that defining over 1000 biomes will become a bottleneck. To make the y-axis work define them by y-axis in descending order. Soon it will be fixed.",
+		commentDefaultFogStartPoint = "Procentage value of where the fog starts relative to the full visible distance",
+		commentDefaultFogEndPoint = "Procentage value of where the fog ends relative to the full visible distance",
+		commentFogDefinitions = "Define or use exsisting fog references to use them in FogMapDefinitions List.",
+		commentIsFogConstant = "Set it to true to make fog rendering independant from view distance. Remember to change fog start, end values as they're no longer in percents. '2F' is a distance of two blocks.",
+		commentIsFogGlobal = "Set it to true to simplify Fog rendering and apply single rule to all the biomes.",
+		headingDefault = "default-fog",
+		headingBiome = "dependant-fog",
+		headingGeneral = "general";
 
-	// Gets the DefaultDefinition into the definitions array.
-	public static FogDefinition[] getFogDefinitions() {
-        FogDefinition[] definitions = new FogDefinition[fogDefinitions.length + 1];
-        definitions[0] = defaultDefinition;
+	private static Configuration config;
+	private static File file;
 
-        for (int i = 1; i < definitions.length; i++)
-            definitions[i] = fogDefinitions[i - 1];
+	public static boolean 
+		isFogGlobal = false, isFogConstant = false;
 
-		return definitions;
-	}
-
-	public static FogMapDefinition[] getFogMapDefinitions() {
-		Biome[] registeredBiomes = ForgeRegistries.BIOMES.getValues().toArray(new Biome[0]);	// Registered biomes.
-		List<FogMapDefinition> mapDefinitions = new ArrayList<FogMapDefinition>();				// Real mapDefinitions.
-
-		for (int i = 0; i < fogMapDefinitions.length; i++)
-			for (int j = 0; j < registeredBiomes.length; j++)
-				if (fogMapDefinitions[i].biomeName.equals(registeredBiomes[j].getRegistryName().toString())) {
-					mapDefinitions.add(fogMapDefinitions[i]);
-					break;
-				}
-
-		// FogMapDefinition biomes[] = mapDefinitions.toArray(new FogMapDefinition[0]);
-		// for (int i = 0; i < biomes.length; i++) {
-		// 	Fogger.logInfo(biomes[i].biomeName);
-		// }
-
-		return mapDefinitions.toArray(new FogMapDefinition[0]);
-	}
-
-	public static Configuration config;
-	public static boolean isFogGlobal = false, isFogConstant = false;
-
-	public static FogDefinition defaultDefinition = 
+	public static FogDefinition defaultFogDefinition = 
 		new FogDefinition("default", 0.10F, 0.95F);
 
 	private static FogDefinition[] fogDefinitions = {
@@ -73,6 +53,7 @@ public class ConfigHandler {
 		new FogDefinition("temperate-desert-1", 0.10F, 	0.85F),
 		new FogDefinition("temperate-hills-1", 	0.05F, 	0.95F),
 		new FogDefinition("temperate-river-1", 	0.05F, 	0.60F),
+		new FogDefinition("temperate-water-1", 	0.05F, 	0.85F),
 		new FogDefinition("cold-fields-1", 		0.05F, 	0.65F),
 		new FogDefinition("cold-forest-1", 		0.05F, 	0.85F),
 		new FogDefinition("cold-forest-2", 		0.05F, 	0.75F),
@@ -82,7 +63,7 @@ public class ConfigHandler {
 		new FogDefinition("cold-hills-3", 		0.05F, 	0.75F),
 		new FogDefinition("cold-hills-4", 		0.05F, 	0.85F),
 		new FogDefinition("cold-river-1", 		0.05F, 	0.55F),
-		new FogDefinition("cold-water-1", 		0.10F, 	0.75F),
+		new FogDefinition("cold-water-1", 		0.10F, 	0.70F),
 		new FogDefinition("cold-beach-1", 		0.10F, 	0.75F),
 		new FogDefinition("mushroom-island", 	0.20F, 	0.95F),
 		new FogDefinition("mangrove", 			0.05F, 	0.75F),
@@ -91,6 +72,7 @@ public class ConfigHandler {
 	};
 
     private static FogMapDefinition[] fogMapDefinitions = {
+		new FogMapDefinition("minecraft:ocean", 							0F,		"temperate-water-1"),
 		new FogMapDefinition("minecraft:desert", 							0F,		"warm-desert-1"),
 		new FogMapDefinition("minecraft:extreme_hills", 					0F,		"temperate-hills-1"),
 		new FogMapDefinition("minecraft:river", 							74F,	"default"),
@@ -155,24 +137,57 @@ public class ConfigHandler {
   		new FogMapDefinition("biomesoplenty:rainforest", 					0F, 	"warm-forest-1")
 	};
 
-	// Here the config file gets created/loaded.
-	public static void loadConfigurationFile(File file) {
+	// This event is fired when the Done button has been clicked on a GuiConfig screen.
+	// https://github.com/jabelar/ExampleMod-1.12/blob/master/src/main/java/com/blogspot/jabelarminecraft/examplemod/init/ModConfig.java
+    // @SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = true)
+    // public void onConfigChanged(OnConfigChangedEvent event) {
+    //     if (event.getModID() == Fogger.MODID) {
+	// 		Fogger.logInfo("FUUUUUUU");
+    //         config.save();
+    //         syncConfig();
+    //     }
+    // }
 
-        final String
-            commentFogMapDefinitions = "Assign created Fog Definitions to specific minecraft biome and world's y-axis. Note that defining over 1000 biomes will become a bottleneck. To make the y-axis work define them by y-axis in descending order. Soon it will be fixed.",
-			commentDefaultFogStartPoint = "Procentage value of where the fog starts relative to the full visible distance",
-			commentDefaultFogEndPoint = "Procentage value of where the fog ends relative to the full visible distance",
-			commentFogDefinitions = "Define or use exsisting fog references to use them in FogMapDefinitions List.",
-			commentIsFogConstant = "Set it to true to make fog rendering independant from view distance. Remember to change fog start, end values as they're no longer in percents. '2F' is a distance of two blocks.",
-			commentIsFogGlobal = "Set it to true to simplify Fog rendering and apply single rule to all the biomes.",
-			headingDefault = "default-fog",
-			headingBiome = "dependant-fog",
-			headingGeneral = "general";
-			
-        
+	// Gets the defaultFogDefinition into the definitions array.
+	public static FogDefinition[] getFogDefinitions() {
+        FogDefinition[] definitions = new FogDefinition[fogDefinitions.length + 1];
+        definitions[0] = defaultFogDefinition;
+
+        for (int i = 1; i < definitions.length; i++)
+            definitions[i] = fogDefinitions[i - 1];
+
+		return definitions;
+	}
+
+	public static FogMapDefinition[] getFogMapDefinitions() {
+		Biome[] registeredBiomes = ForgeRegistries.BIOMES.getValues().toArray(new Biome[0]);	// Registered biomes.
+		List<FogMapDefinition> mapDefinitions = new ArrayList<FogMapDefinition>();				// Real mapDefinitions.
+
+		for (int i = 0; i < fogMapDefinitions.length; i++)
+			for (int j = 0; j < registeredBiomes.length; j++)
+				if (fogMapDefinitions[i].biomeName.equals(registeredBiomes[j].getRegistryName().toString())) {
+					mapDefinitions.add(fogMapDefinitions[i]);
+					break;
+				}
+
+		// FogMapDefinition biomes[] = mapDefinitions.toArray(new FogMapDefinition[0]);
+		// for (int i = 0; i < biomes.length; i++) {
+		// 	Fogger.logInfo(biomes[i].biomeName);
+		// }
+
+		return mapDefinitions.toArray(new FogMapDefinition[0]);
+	}
+
+	public static void initConfig(FMLPreInitializationEvent event) {
+		file = event.getSuggestedConfigurationFile();
         config = new Configuration(file);
-        config.load();
+        syncConfig();
+	}
 
+	private static void syncConfig() {
+		config.load();
+
+		// Variables Loading.
 		isFogConstant = loadBool (
 			headingGeneral,
 			"IsFogConstant",
@@ -187,18 +202,18 @@ public class ConfigHandler {
 			isFogGlobal
 		);
 
-		defaultDefinition.fogStartPoint = loadFloat (
+		defaultFogDefinition.fogStartPoint = loadFloat (
 			headingDefault,
 			"DefaultWhereTheFogStarts",
 			commentDefaultFogStartPoint,
-			defaultDefinition.fogStartPoint
+			defaultFogDefinition.fogStartPoint
 		);
 
-		defaultDefinition.fogEndPoint = loadFloat (
+		defaultFogDefinition.fogEndPoint = loadFloat (
 			headingDefault,
 			"DefaultWhereTheFogEnds",
 			commentDefaultFogEndPoint,
-			defaultDefinition.fogEndPoint
+			defaultFogDefinition.fogEndPoint
 		);
 
 		fogDefinitions = loadFogDefinitions (
@@ -215,10 +230,10 @@ public class ConfigHandler {
 		 	fogMapDefinitions
 		);
 
-        if (config.hasChanged()) config.save();
-        	MinecraftForge.EVENT_BUS.register(new ChangeListener());
-    }
+		//Fogger.logInfo(fogDefinitions[1].toString());
 
+		config.save();
+	}
 
 	private static FogMapDefinition[] loadFogDefinitionsMapper ( String category, String name, String comment, FogMapDefinition[] data) {
 

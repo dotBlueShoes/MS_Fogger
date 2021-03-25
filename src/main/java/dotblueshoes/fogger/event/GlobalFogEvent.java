@@ -18,9 +18,9 @@ public class GlobalFogEvent {
     @SubscribeEvent
     public void renderFog(RenderFogEvent event) {
 		if (event.getFogMode() == 0) {  /* Is the horizontal vertical. -1 stands for ceiling Fog. */
-            GlStateManager.setFog(GlStateManager.FogMode.LINEAR);
-			GlStateManager.setFogStart(FogHelper.visibleDistance * ConfigHandler.defaultDefinition.fogStartPoint);
-			GlStateManager.setFogEnd(FogHelper.visibleDistance * ConfigHandler.defaultDefinition.fogEndPoint);
+      		GlStateManager.setFog(GlStateManager.FogMode.LINEAR);
+			GlStateManager.setFogStart(FogHelper.visibleDistance * ConfigHandler.defaultFogDefinition.fogStartPoint);
+			GlStateManager.setFogEnd(FogHelper.visibleDistance * ConfigHandler.defaultFogDefinition.fogEndPoint);
 		}
     }
     

@@ -19,7 +19,7 @@ public class FogHelper {
 
     public static float visibleDistance = 0F;
 
-    private static final int gui_btn_backToGame = 4, chunkLength = 16;
+    private static final int GUI_BTN_BACKTOGAME = 4, CHUNK_LENGTH = 16;
 
     // About...
     //  The gui_btn_backToGame Button is only available to be pressed
@@ -31,7 +31,7 @@ public class FogHelper {
     // visibleDistance = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getViewDistance() * chunkLength;
     @SubscribeEvent
     public void globalGuiEvent(ActionPerformedEvent event) {
-        if (event.getButton().id == gui_btn_backToGame) {
+        if (event.getButton().id == GUI_BTN_BACKTOGAME) {
             setVisibleDistance();
         }
     }
@@ -62,7 +62,7 @@ public class FogHelper {
 
     public void setVisibleDistance() {
         if (ConfigHandler.isFogConstant == false)
-            visibleDistance = Minecraft.getMinecraft().gameSettings.renderDistanceChunks * chunkLength;
+            visibleDistance = Minecraft.getMinecraft().gameSettings.renderDistanceChunks * CHUNK_LENGTH;
         else visibleDistance = 1F;
     }
 }

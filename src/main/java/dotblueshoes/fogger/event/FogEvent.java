@@ -24,7 +24,7 @@ public class FogEvent {
     private String biomeName;
     private Entity entity;
 
-    private static final float increaseMuiltiplier = 0.001F;
+    private static final float INCREASE_MULTIPLIER = 0.001F;
 
     private static FogSetting[] fogSettings;
     private static float 
@@ -61,8 +61,8 @@ public class FogEvent {
                         return;
                     }
             renderFog ( /* If not matched with the list use Default Fog setting. */ 
-                ConfigHandler.defaultDefinition.fogStartPoint,
-                ConfigHandler.defaultDefinition.fogEndPoint
+                ConfigHandler.defaultFogDefinition.fogStartPoint,
+                ConfigHandler.defaultFogDefinition.fogEndPoint
             );
         }
     }
@@ -71,13 +71,13 @@ public class FogEvent {
     private static void renderFog(float fogStartPoint, float fogEndPoint) {
         
         if (currentFogStartPoint < fogStartPoint) { /* fogStartPoint */
-            currentFogStartPoint += fogStartPoint * increaseMuiltiplier;
+            currentFogStartPoint += fogStartPoint * INCREASE_MULTIPLIER;
             /* This is a correction that assures us that we're gonna hit the defined Max 
             and that we're not gonna enter lower if statement every odd call */
             if (currentFogStartPoint > fogStartPoint)
                 currentFogStartPoint = fogStartPoint;
         } else if (currentFogStartPoint > fogStartPoint) {
-            currentFogStartPoint -= fogStartPoint * increaseMuiltiplier;
+            currentFogStartPoint -= fogStartPoint * INCREASE_MULTIPLIER;
             /* This is a correction that assures us that we're gonna hit the defined Max 
             and that we're not gonna enter upper if statement every odd call */
             if (currentFogStartPoint < fogStartPoint)
@@ -85,13 +85,13 @@ public class FogEvent {
         }
 
         if (currentFogEndPoint < fogEndPoint) { /* fogEndPoint */
-            currentFogEndPoint += fogEndPoint * increaseMuiltiplier;
+            currentFogEndPoint += fogEndPoint * INCREASE_MULTIPLIER;
             /* This is a correction that assures us that we're gonna hit the defined Max 
             and that we're not gonna enter lower if statement every odd call */
             if (currentFogEndPoint > fogEndPoint)
                 currentFogEndPoint = fogEndPoint;
         } else if (currentFogEndPoint > fogEndPoint) {
-            currentFogEndPoint -= fogEndPoint * increaseMuiltiplier;
+            currentFogEndPoint -= fogEndPoint * INCREASE_MULTIPLIER;
             /* This is a correction that assures us that we're gonna hit the defined Max 
             and that we're not gonna enter upper if statement every odd call */
             if (currentFogEndPoint < fogEndPoint)

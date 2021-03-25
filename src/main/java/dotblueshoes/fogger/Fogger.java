@@ -25,22 +25,23 @@ public class Fogger {
 
     @EventHandler
     public void preInitialize(FMLPreInitializationEvent event) {
-        ConfigHandler.loadConfigurationFile(event.getSuggestedConfigurationFile());
-    //    logger = event.getModLog();
+        //logger = event.getModLog();
+        ConfigHandler.initConfig(event);
     }
 
     @EventHandler
     public void initialize(FMLInitializationEvent event) {
+        //MinecraftForge.EVENT_BUS.register(new ConfigHandler());
         MinecraftForge.EVENT_BUS.register(new FogHelper());
-        if(ConfigHandler.isFogGlobal == false)
+        if (ConfigHandler.isFogGlobal == false) 
             MinecraftForge.EVENT_BUS.register(new FogEvent(ConfigHandler.getFogDefinitions(), ConfigHandler.getFogMapDefinitions()));
         else 
             MinecraftForge.EVENT_BUS.register(new GlobalFogEvent());
     }
 
     // public static void logInfo(String msg) {
-    //     final String prefix = "$$$###$$$###";    
-    //     logger.info(prefix + msg);
+    //     final String PREFIX = "$$$###$$$###";    
+    //     logger.info(PREFIX + msg);
     // }
 
 }
