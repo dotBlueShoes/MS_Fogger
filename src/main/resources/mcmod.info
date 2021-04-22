@@ -10,5 +10,8 @@
   "credits": "Creadits To all the people having their tutorials and github repositories. :)",
   "logoFile": "",
   "screenshots": [],
-  "dependencies": []
+  "useDependencyInformation": true,
+  "dependencies": [
+    "dsurround"
+  ]
 }]

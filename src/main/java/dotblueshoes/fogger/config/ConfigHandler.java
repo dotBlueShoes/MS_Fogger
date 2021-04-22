@@ -1,7 +1,6 @@
 package dotblueshoes.fogger.config;
 
 import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.common.config.Configuration;
@@ -15,9 +14,6 @@ import java.io.File;
 
 import dotblueshoes.fogger.config.util.*;
 import dotblueshoes.fogger.*;
-
-//import net.minecraftforge.fml.common.eventhandler.EventPriority;
-//import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
 //@EventBusSubscriber(modid = Fogger.MODID)
 public class ConfigHandler {
@@ -34,7 +30,6 @@ public class ConfigHandler {
 		headingGeneral = "general";
 
 	private static Configuration config;
-	private static File file;
 
 	public static boolean 
 		isFogGlobal = false, isFogConstant = false;
@@ -142,7 +137,7 @@ public class ConfigHandler {
     // @SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = true)
     // public void onConfigChanged(OnConfigChangedEvent event) {
     //     if (event.getModID() == Fogger.MODID) {
-	// 		Fogger.logInfo("FUUUUUUU");
+	// 		Fogger.logInfo("aaa");
     //         config.save();
     //         syncConfig();
     //     }
@@ -170,16 +165,10 @@ public class ConfigHandler {
 					break;
 				}
 
-		// FogMapDefinition biomes[] = mapDefinitions.toArray(new FogMapDefinition[0]);
-		// for (int i = 0; i < biomes.length; i++) {
-		// 	Fogger.logInfo(biomes[i].biomeName);
-		// }
-
 		return mapDefinitions.toArray(new FogMapDefinition[0]);
 	}
 
-	public static void initConfig(FMLPreInitializationEvent event) {
-		file = event.getSuggestedConfigurationFile();
+	public static void initConfig(File file) {
         config = new Configuration(file);
         syncConfig();
 	}
@@ -229,8 +218,6 @@ public class ConfigHandler {
 		 	commentFogMapDefinitions,
 		 	fogMapDefinitions
 		);
-
-		//Fogger.logInfo(fogDefinitions[1].toString());
 
 		config.save();
 	}
@@ -284,13 +271,6 @@ public class ConfigHandler {
 		return output;
 	}
 
-	// private static FogDefinition loadFogDefinition(String category, String name, String comment, FogDefinition data) {
-	//  	final String line = data.toString();
-	//  	final Property prop = config.get(category, name, line);
-	//  	prop.setComment(comment);
-	//  	return FogDefinition.parseString(prop.getString());
-	// }
-
     private static boolean loadBool(String category, String name, String comment, boolean data) {
         final Property prop = config.get(category, name, data);
         prop.setComment(comment);
@@ -304,3 +284,10 @@ public class ConfigHandler {
     }
 
 }
+
+// private static FogDefinition loadFogDefinition(String category, String name, String comment, FogDefinition data) {
+//  	final String line = data.toString();
+//  	final Property prop = config.get(category, name, line);
+//  	prop.setComment(comment);
+//  	return FogDefinition.parseString(prop.getString());
+// }

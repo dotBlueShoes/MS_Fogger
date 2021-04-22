@@ -15,17 +15,46 @@ apply plugin: 'maven-publish';
 apply plugin: 'eclipse';
 
 /* Setting up the build variables. */
-version = project.minecraftVersion + "-" + GetVersion();
-group = "io.github.dotBlueShoes";
-archivesBaseName = "fogger";
+version = minecraftVersion + "-" + GetVersion();
+group = "io.github.dotBlueShoes"
+archivesBaseName = "fogger"
 
 /* Something i belive is needed for Eclipse only. */
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8;
 compileJava { sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8; }
 
+/* Places where the files we're compiling against might be stored. */
+repositories {
+	maven {
+        url = 'https://files.minecraftforge.net/maven'
+    }
+    maven {
+        name = "Jitpack"
+        url = "https://jitpack.io/"
+    }
+    maven {
+        name = "CurseForge"
+        url = "https://minecraft.curseforge.com/api/maven/"
+    }
+    maven {
+        url "https://www.cursemaven.com"
+    }
+    maven {
+        // location of the maven that hosts JEI files
+        name = "Progwml6 maven"
+        url = "https://dvs1.progwml6.com/files/maven/"
+    }
+    maven {
+        // location of a maven mirror for JEI files, as a fallback
+        name = "ModMaven"
+        url = "https://modmaven.k-4u.nl"
+    }
+    mavenLocal()
+}
+
 /* Setting up Minecraft for run. */
 minecraft { 
-    mappings channel: 'snapshot', version: '20171003-1.12';
+    mappings channel: 'snapshot', version: mappingsVersion;
     runs {
         client {
             workingDirectory project.file('run');
@@ -41,27 +70,39 @@ minecraft {
 
 /* Needed Compiled Files */
 dependencies {
-    minecraft 'net.minecraftforge:forge:' + project.minecraftVersion + '-' + project.forgeVersion;
+    minecraft 'net.minecraftforge:forge:' + minecraftVersion + '-' + forgeVersion;
+
+    // compileOnly - I only compile against it. it does not get included as a mod tho.
+    // fg - ForgeGradle
+    compileOnly fg.deobf("curse.maven:serene-seasons-291874:2710586");
+    compileOnly fg.deobf("curse.maven:orelib-307806:2820815");
+    compileOnly fg.deobf("curse.maven:dynamic-surroundings-238891:3098835");
+
+    // Those don't work due to the: ForgeGradle version, forge version, mappings version and things i dont know.
+
+    //compileOnly fg.deobf("mezz.jei:jei_1.12.2:4.16.1.302:api");
+    //runtimeOnly fg.deobf("mezz.jei:jei_1.12.2:4.16.1.302");
+    //runtimeOnly fg.deobf("curse.maven:jei-238222:3043174");
 }
 
-/* This is required for mcmod.info to be loaded in the first place 
+/* Required for mcmod.info to be loaded in the first place 
 and then reloaded with each build. */
 sourceSets { main { output.resourcesDir = output.classesDir; } }
 
 /* Proccesses mcmod.info file variables. */
 processResources { 
     /* This will ensure that it will change on build. */
-    inputs.property 'mcversion', project.minecraftVersion;
-    inputs.property 'version', project.version;
-    inputs.property 'modid', project.archivesBaseName;
+    inputs.property 'mcversion', minecraftVersion;
+    inputs.property 'version', version;
+    inputs.property 'modid', archivesBaseName;
     /* This replaces mcmod.info variables. */
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info';
 
         expand ([
-            'mcversion': project.minecraftVersion,
-            'version': project.version,
-            'modid': project.archivesBaseName
+            'mcversion': minecraftVersion,
+            'version': version,
+            'modid': archivesBaseName
         ]);
     }
     /* Means copy everything else except the mcmod.info file. */
@@ -78,15 +119,13 @@ jar {
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
             "Implementation-Vendor" :"dotBlueShoes",
             "Specification-Vendor": "dotBlueShoes",
-            "Implementation-Version": project.version,
-            "Implementation-Title": project.name,
-            "Specification-Title": project.archivesBaseName,
+            "Implementation-Version": version,
+            "Implementation-Title": name,
+            "Specification-Title": archivesBaseName,
             "Specification-Version": "1"
         ]);
     }
 }
-
-// Functions 
 
 // Acquires the version via newest git 'tag'/'release'. 
 //  If it fails it gets an "err-version_b" + build_number.
@@ -128,7 +167,6 @@ String GetBuildNumber() {
 	return "error_build_number";
 }
 
-// Tasks 
 task incrementBuildNumber; // Declaration of the Increasing Build Number task.
 task clearBuildNumber; // Sets build number to 0.
 
@@ -158,5 +196,5 @@ incrementBuildNumber.doFirst {
         println("Could not find 'gradleBuildNumber.properties' file! Ignoring increment.");
 }
 
-// This mean that it's gonna only increment on the successful builds.
+// Means that it's gonna only increment on the successful builds.
 build.finalizedBy incrementBuildNumber;

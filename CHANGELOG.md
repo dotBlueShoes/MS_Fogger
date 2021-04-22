@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [?] - ?
 
 ### Added
+- Fogger now overrides Dynamic Surroundings fog.
 - Few default fog settings.
 
 ### Changed

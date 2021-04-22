@@ -9,7 +9,8 @@ import net.minecraftforge.event.world.WorldEvent.Load;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.input.Keyboard;
 
-import dotblueshoes.fogger.config.ConfigHandler;
+import dotblueshoes.fogger.dependency.*;
+import dotblueshoes.fogger.config.*;
 
 // I belive this would make it sync with server viewDistance instead of client viewDiestance.
 //  but i would need a better event and anything to check whether the player is in a world(server/integrated-server) or in screenmenu.
@@ -17,11 +18,9 @@ import dotblueshoes.fogger.config.ConfigHandler;
 
 public class FogHelper {
 
+    private static final int GUI_BTN_BACKTOGAME = 4, CHUNK_LENGTH = 16;
     public static float visibleDistance = 0F;
 
-    private static final int GUI_BTN_BACKTOGAME = 4, CHUNK_LENGTH = 16;
-
-    // About...
     //  The gui_btn_backToGame Button is only available to be pressed
     // when we're ingame and in settings menu. So it's save to use it
     // for any action that requires world instance and any action that 
@@ -31,12 +30,10 @@ public class FogHelper {
     // visibleDistance = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getViewDistance() * chunkLength;
     @SubscribeEvent
     public void globalGuiEvent(ActionPerformedEvent event) {
-        if (event.getButton().id == GUI_BTN_BACKTOGAME) {
+        if (event.getButton().id == GUI_BTN_BACKTOGAME)
             setVisibleDistance();
-        }
     }
 
-    // About...
     //  Well due to the fact that player can exit options by pressing 'escape'
     // now i have to Subscribe to that event to first check the escape key 
     // and second check if the player loaded a world. So that i can work it out.
@@ -50,13 +47,12 @@ public class FogHelper {
             setVisibleDistance();
     }
 
-    // About...
     //  This Event is being called when
     // 1. We're loading the server both multiplier and integrated one.
     //  it gets called for each world there is to load so typiclly 3 times (overworld, nether, end).
     // 2. A little later when we load the selective world.
     @SubscribeEvent
-    public void worldEventLoad(WorldEvent.Load event) {
+    public void worldLoadEvent(WorldEvent.Load event) {
         setVisibleDistance();
     }
 
