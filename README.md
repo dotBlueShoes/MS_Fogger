@@ -14,6 +14,9 @@ I am not aware of any incompatibility. this mod works as intended with **Optifin
 
 *It does work with shaders. However **Optifine** gives u an option over fast fog and fancy fog and for some reason some shaders are locked on fast fog setting.*
 
+### Overrides
+- **DynamicSurroundings** ( Only fog oriented systems. )
+
 ### Fog Colors & Optifine Recommendation
 
 It is highly **Recommended** to use this mod alongside **Optifine** and ***ResourcePacks** that support biome dependent fog colors introduced by **optifine mcpacher***. 
