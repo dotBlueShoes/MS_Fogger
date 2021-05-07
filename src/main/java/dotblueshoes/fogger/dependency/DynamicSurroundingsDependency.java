@@ -1,6 +1,5 @@
 package dotblueshoes.fogger.dependency;
 
-//import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
