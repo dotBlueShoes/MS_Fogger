@@ -26,19 +26,18 @@ public class DynamicSurroundingsDependency {
     public static void checkPresence() {
         final String classPath = "org.orecruncher.dsurround.client.handlers.EffectManager";
 
-        isPresent = Reflection.isClassAvailableAtRuntime(classPath);
-        MinecraftForge.EVENT_BUS.register(new DynamicSurroundingsDependency());
-
-        Fogger.logInfo("DynamicSurroundings Are Present!");
+        if (isPresent = Reflection.isClassAvailableAtRuntime(classPath)) {
+            MinecraftForge.EVENT_BUS.register(new DynamicSurroundingsDependency());
+            Fogger.logInfo("DynamicSurroundings Are Present!");
+        }
     }
 
     // Unregisters FogEvent ds sets.
     public static void unregisterFogEvent() {
-        EffectManager effectManager = EffectManager.instance();
-        final int fogHandlerIndex = 2;
+        final int fogHandlerIndex = 2; // because he registers them in order we know the index.
 
         ObjectArray<EffectHandlerBase> effectHandlers = 
-            (ObjectArray<EffectHandlerBase>)Reflection.getObjectInstanceField(effectManager, "effectHandlers");
+            (ObjectArray<EffectHandlerBase>)Reflection.getObjectInstanceField(EffectManager.instance(), "effectHandlers");
 
         MinecraftForge.EVENT_BUS.unregister(effectHandlers.get(fogHandlerIndex));
 
