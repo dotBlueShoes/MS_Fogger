@@ -4,12 +4,10 @@ import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.KeyboardInputEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.event.world.WorldEvent.Load;
 
 import net.minecraft.client.Minecraft;
 import org.lwjgl.input.Keyboard;
 
-import dotblueshoes.fogger.dependency.*;
 import dotblueshoes.fogger.config.*;
 
 // I belive this would make it sync with server viewDistance instead of client viewDiestance.

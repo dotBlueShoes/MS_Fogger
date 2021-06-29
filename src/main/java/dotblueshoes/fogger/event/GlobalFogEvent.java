@@ -1,18 +1,12 @@
 package dotblueshoes.fogger.event;
 
 import net.minecraftforge.client.event.EntityViewRenderEvent.RenderFogEvent;
-import net.minecraftforge.client.event.EntityViewRenderEvent.FogColors;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
 
 
-import dotblueshoes.fogger.config.ConfigHandler;
-import dotblueshoes.fogger.event.FogHelper;
-import dotblueshoes.fogger.Fogger;
+import dotblueshoes.fogger.config.*;
 
 public class GlobalFogEvent {
     @SubscribeEvent

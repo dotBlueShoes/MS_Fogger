@@ -1,11 +1,8 @@
 package dotblueshoes.fogger.config;
 
-import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraft.world.biome.Biome;
 
 import java.util.ArrayList;
@@ -13,13 +10,12 @@ import java.util.List;
 import java.io.File;
 
 import dotblueshoes.fogger.config.util.*;
-import dotblueshoes.fogger.*;
 
 //@EventBusSubscriber(modid = Fogger.MODID)
 public class ConfigHandler {
 
 	public static final String
-        commentFogMapDefinitions = "Assign created Fog Definitions to specific minecraft biome and world's y-axis. Note that defining over 1000 biomes will become a bottleneck. To make the y-axis work define them by y-axis in descending order. Soon it will be fixed.",
+        commentFogMapDefinitions = "Assign created Fog Definitions to specific minecraft biome and world's y-axis.",
 		commentDefaultFogStartPoint = "Procentage value of where the fog starts relative to the full visible distance",
 		commentDefaultFogEndPoint = "Procentage value of where the fog ends relative to the full visible distance",
 		commentFogDefinitions = "Define or use exsisting fog references to use them in FogMapDefinitions List.",
@@ -155,7 +151,7 @@ public class ConfigHandler {
 	}
 
 	public static FogMapDefinition[] getFogMapDefinitions() {
-		Biome[] registeredBiomes = ForgeRegistries.BIOMES.getValues().toArray(new Biome[0]);	// Registered biomes.
+		Biome[] registeredBiomes = ForgeRegistries.BIOMES.getValuesCollection().toArray(new Biome[0]);	// Registered biomes.
 		List<FogMapDefinition> mapDefinitions = new ArrayList<FogMapDefinition>();				// Real mapDefinitions.
 
 		for (int i = 0; i < fogMapDefinitions.length; i++)

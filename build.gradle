@@ -16,10 +16,7 @@ apply plugin: 'eclipse';
 
 /* Setting up the build variables. */
 version = minecraftVersion + "-" + GetVersion();
-group = "io.github.dotBlueShoes"
-archivesBaseName = "fogger"
 
-/* Something i belive is needed for Eclipse only. */
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8;
 compileJava { sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8; }
 
@@ -85,8 +82,11 @@ dependencies {
     //runtimeOnly fg.deobf("curse.maven:jei-238222:3043174");
 }
 
-/* Required for mcmod.info to be loaded in the first place 
-and then reloaded with each build. */
+/* 
+ * Required for mcmod.info to be loaded in the first place and 
+ *  then reloaded with each build. 
+ * Otherwise processResources will not work.
+ */
 sourceSets { main { output.resourcesDir = output.classesDir; } }
 
 /* Proccesses mcmod.info file variables. */
@@ -113,17 +113,17 @@ processResources {
 
 /* Manifest File. I Guess it's not very needed. 
 But still it shows in the .jar file so let the values be. */
-jar { 
+jar {
     manifest {
         attributes([
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            "Implementation-Vendor" :"dotBlueShoes",
-            "Specification-Vendor": "dotBlueShoes",
-            "Implementation-Version": version,
-            "Implementation-Title": name,
             "Specification-Title": archivesBaseName,
-            "Specification-Version": "1"
-        ]);
+            "Specification-Vendor": author,
+            "Specification-Version": "1",
+            "Implementation-Title": name,
+            "Implementation-Version": version,
+            "Implementation-Vendor" :author,
+            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
     }
 }
 
@@ -167,7 +167,7 @@ String GetBuildNumber() {
 	return "error_build_number";
 }
 
-task incrementBuildNumber; // Declaration of the Increasing Build Number task.
+task incrementBuildNumber; /* Declaration of the "incrementBuildNumber" task. */
 task clearBuildNumber; // Sets build number to 0.
 
 task clearBuildNumber.doLast {

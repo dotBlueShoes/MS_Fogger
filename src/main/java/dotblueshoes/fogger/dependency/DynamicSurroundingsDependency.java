@@ -6,19 +6,16 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.world.World;
-import java.lang.reflect.*;
 
-import dotblueshoes.fogger.dependency.*;
 import dotblueshoes.fogger.*;
 
 import org.orecruncher.dsurround.client.handlers.EffectManager;
-import org.orecruncher.dsurround.client.handlers.FogHandler;
 import org.orecruncher.dsurround.client.handlers.EffectHandlerBase;
 import org.orecruncher.lib.collections.ObjectArray;
 
 public class DynamicSurroundingsDependency {
 
-    // Global variable to check wheater it's available or not.
+    // Global variable to check wheater mod is available or not.
     public static boolean isPresent = false;
 
     // Requires an instance. Sets the isPresent var to true as if it successes finding mod classes.
@@ -33,8 +30,9 @@ public class DynamicSurroundingsDependency {
 
     // Unregisters FogEvent ds sets.
     public static void unregisterFogEvent() {
-        final int fogHandlerIndex = 2; // because he registers them in order we know the index.
+        final int fogHandlerIndex = 2; // Because he registers them in order we know the index.
 
+        @SuppressWarnings("unchecked")
         ObjectArray<EffectHandlerBase> effectHandlers = 
             (ObjectArray<EffectHandlerBase>)Reflection.getObjectInstanceField(EffectManager.instance(), "effectHandlers");
 

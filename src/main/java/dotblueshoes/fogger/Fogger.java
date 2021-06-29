@@ -3,10 +3,9 @@ package dotblueshoes.fogger;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
+//import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraft.init.Blocks;
 
 import org.apache.logging.log4j.Logger;
 
@@ -14,13 +13,13 @@ import dotblueshoes.fogger.dependency.*;
 import dotblueshoes.fogger.config.*;
 import dotblueshoes.fogger.event.*;
 
-@Mod( modid = Fogger.MODID,  version = Fogger.VERSION, useMetadata = true)
+@Mod( modid = Fogger.MODID, version = Fogger.VERSION, useMetadata = true)
 public class Fogger {
     public static final String MODID = "fogger";
     public static final String VERSION = "3";
 
-    @Instance(MODID)
-    public static Fogger instance;
+    //@Instance(MODID)
+    //public static Fogger instance;
     private static Logger logger;
 
     @EventHandler
