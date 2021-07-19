@@ -1,10 +1,13 @@
 8.  Implement weather support.
 9.  Implement time support. 
+21. Implement Moon Phases or a week.
+31. Implement world support
+32. Modpack closed enviroment support. (an in code boolean that says whether we read config or not) + a doc on how to apply values without config but via different mod.
+
 13. Allow new-lines in config.
 15. Consider making it server frendly - this means that the mod would reather use server fogDistence then clinet one.
 17. Look for the "KeyBinding" logic.
 20. Make the README.md look more like here [NVIDIA README Sample](https://github.com/NVIDIA/Q2RTX#readme)
-21. Implement Moon Phases or a week.
 22. The color of when we're inside a block ; i dunno if optifine takes care of transparent water color. - check it out.
 by setting a water color to like green and then see if the in block transparent water overlay is being green.
 - https://jabelarminecraft.blogspot.com/p/minecraft-modding-creating-colored-fog.html
@@ -27,6 +30,7 @@ by setting a water color to like green and then see if the in block transparent 
 // - i guess its where my curseforge maven is.
 
 30. Check if nether fog works properly.
+33.
 
 
 

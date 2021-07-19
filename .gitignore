@@ -6,11 +6,11 @@
 
 # Not needed. People don't need my enviromental stuff.
 # However it might be easier for me to switch between mc versions.
-#/.settings/
-#/.vscode/
-#/bin/
-#.classpath
-#.project
+/.settings/
+/.vscode/
+/bin/
+.classpath
+.project
 
 # Compiled class file
 *.class

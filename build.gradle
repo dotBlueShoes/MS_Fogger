@@ -1,5 +1,4 @@
-/* Building Forge */
-buildscript {
+buildscript { /* Building Forge */
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
         jcenter()
@@ -22,30 +21,11 @@ compileJava { sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_
 
 /* Places where the files we're compiling against might be stored. */
 repositories {
-	maven {
-        url = 'https://files.minecraftforge.net/maven'
-    }
-    maven {
-        name = "Jitpack"
-        url = "https://jitpack.io/"
-    }
-    maven {
-        name = "CurseForge"
-        url = "https://minecraft.curseforge.com/api/maven/"
-    }
-    maven {
-        url "https://www.cursemaven.com"
-    }
-    maven {
-        // location of the maven that hosts JEI files
-        name = "Progwml6 maven"
-        url = "https://dvs1.progwml6.com/files/maven/"
-    }
-    maven {
-        // location of a maven mirror for JEI files, as a fallback
-        name = "ModMaven"
-        url = "https://modmaven.k-4u.nl"
-    }
+    maven { name = "Jitpack"; url = "https://jitpack.io/"; }
+    maven { name = "CurseForge"; url = "https://minecraft.curseforge.com/api/maven/"; }
+    maven { url "https://www.cursemaven.com"; }
+    maven { name = "Progwml6 maven"; url = "https://dvs1.progwml6.com/files/maven/"; }  // location of the maven that hosts JEI files
+    maven { name = "ModMaven"; url = "https://modmaven.k-4u.nl"; }                      // location of a maven mirror for JEI files, as a fallback
     mavenLocal()
 }
 
@@ -71,6 +51,7 @@ dependencies {
 
     // compileOnly - I only compile against it. it does not get included as a mod tho.
     // fg - ForgeGradle
+
     compileOnly fg.deobf("curse.maven:serene-seasons-291874:2710586");
     compileOnly fg.deobf("curse.maven:orelib-307806:2820815");
     compileOnly fg.deobf("curse.maven:dynamic-surroundings-238891:3098835");

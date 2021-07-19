@@ -24,7 +24,7 @@ public class FogEvent {
     private String biomeName;
     private Entity entity;
 
-    private static final float INCREASE_MULTIPLIER = 0.005F;
+    private static final float INCREASE_MULTIPLIER = 0.002F;
 
     private static FogSetting[] fogSettings;
     private static float 
