@@ -5,8 +5,8 @@
 /run/
 
 # Not needed. People don't need my enviromental stuff.
-# However it might be easier for me to switch between mc versions.
-/.settings/
+#  However it might be easier for me to switch between mc versions.
+#/.settings/ // It's a stupid dependency that throws an error. Tho it compiles with that err.
 /.vscode/
 /bin/
 .classpath
