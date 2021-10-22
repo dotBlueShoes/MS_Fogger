@@ -25,8 +25,8 @@ repositories {
 	maven { name "Jitpack"; 		url "https://jitpack.io/"; 							}
 	maven { name "CurseForge"; 		url "https://minecraft.curseforge.com/api/maven/"; 	}
 	maven { 						url "https://www.cursemaven.com"; 					}
-	maven { name "Progwml6 maven"; 	url "https://dvs1.progwml6.com/files/maven/"; 		}  // Location of the maven that hosts JEI files
-	maven { name "ModMaven"; 		url "https://modmaven.k-4u.nl"; 					}  // Location of a maven mirror for JEI files, as a fallback
+	maven { name "Progwml6 maven"; 	url "https://dvs1.progwml6.com/files/maven/"; 		}  // Location of the maven that hosts JEI files.
+	maven { name "ModMaven"; 		url "https://modmaven.k-4u.nl"; 					}  // Location of a maven mirror for JEI files, as a fallback.
 	mavenLocal()
 }
 
@@ -152,7 +152,7 @@ task clearBuildNumber;		// Sets build number to 0.
 task clearProject;			// Clears the project useful when swiching branches of different mdks.
 
 task clearProject.doLast {
-	delete "run", "build", "bin",".classpath", ".project"
+	delete "run", "build", "bin", ".classpath", ".project"
 	// .gradle cannot be removed via this task.
 }
 
