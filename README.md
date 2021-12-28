@@ -3,6 +3,8 @@
 [![GitHub tag](https://img.shields.io/github/tag/dotBlueShoes/MS_Fogger.svg)](https://github.com/dotBlueShoes/MS_Fogger/tags)
 
 [![CurseForge downloads](http://cf.way2muchnoise.eu/full_449209_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/fogger)
+[![CurseForge mc-versions](http://cf.way2muchnoise.eu/versions/For%20MC_fogger_all.svg)](https://www.curseforge.com/minecraft/mc-mods/fogger)
+
 
 **Fogger** is a modification for **minecraft** currently for version **1.12.2** only. The mod in it's current state cant offer much however it will give you more control over the fog then vanilla. It Gives you the ability to change where the fog starts and where it ends. *This setting can be changed for every biome and corresponding world's y-level.* It is also possible to apply a "globalFog" that works biome independent.
 
