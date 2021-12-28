@@ -1,7 +1,7 @@
 ## MS_Fogger          
 [![GitHub license](https://img.shields.io/github/license/dotBlueShoes/MS_Fogger.svg)](https://github.com/dotBlueShoes/MS_Fogger/blob/master/LICENSE.txt)
 [![GitHub tag](https://img.shields.io/github/tag/dotBlueShoes/MS_Fogger.svg)](https://github.com/dotBlueShoes/MS_Fogger/tags)
-[![CurseForge mc-versions](http://cf.way2muchnoise.eu/versions/fogger_all.svg)](https://www.curseforge.com/minecraft/mc-mods/fogger)
+[![CurseForge mc-versions](http://cf.way2muchnoise.eu/versions/available%20for_fogger_all.svg)](https://www.curseforge.com/minecraft/mc-mods/fogger)
 
 [![CurseForge downloads](http://cf.way2muchnoise.eu/full_449209_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/fogger)
 
