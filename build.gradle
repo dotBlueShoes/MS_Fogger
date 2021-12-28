@@ -1,7 +1,6 @@
 buildscript { 
 	repositories {
 		maven { url = 'https://files.minecraftforge.net/maven' }
-		jcenter()
 		mavenCentral()
 	}
 	dependencies {
@@ -9,55 +8,56 @@ buildscript {
 	}
 }
 
-apply plugin: 'net.minecraftforge.gradle';
-apply plugin: 'maven-publish';
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'maven-publish'
 // | UP TO HERE | Forge Required Code to include.
-apply plugin: 'eclipse';
+apply plugin: 'eclipse'
 
 // Setting up the build variables.
-version = minecraftVersion + "-" + GetVersion();
+version = minecraftVersion + "-" + GetVersion()
 
-sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8;
-compileJava { sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8; }
+//noinspection GroovyUnusedAssignment
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+compileJava { sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8 }
 
 // Places where the files we're compiling against might be stored.
 repositories {
-	maven { name "Jitpack"; 		url "https://jitpack.io/"; 							}
-	maven { name "CurseForge"; 		url "https://minecraft.curseforge.com/api/maven/"; 	}
-	maven { 						url "https://www.cursemaven.com"; 					}
-	maven { name "Progwml6 maven"; 	url "https://dvs1.progwml6.com/files/maven/"; 		}  // Location of the maven that hosts JEI files.
-	maven { name "ModMaven"; 		url "https://modmaven.k-4u.nl"; 					}  // Location of a maven mirror for JEI files, as a fallback.
+	maven { name "Jitpack";			url "https://jitpack.io/" 							}
+	maven { name "CurseForge"; 		url "https://minecraft.curseforge.com/api/maven/" 	}
+	maven { 						url "https://www.cursemaven.com" 					}
+	maven { name "Progwml6 maven"; 	url "https://dvs1.progwml6.com/files/maven/" 		}  // Location of the maven that hosts JEI files.
+	maven { name "ModMaven"; 		url "https://modmaven.k-4u.nl" 						}  // Location of a maven mirror for JEI files, as a fallback.
 	mavenLocal()
 }
 
 // Setting up Minecraft for run.
 minecraft { 
-	mappings channel: "snapshot", version: mappingsVersion;
+	mappings channel: "snapshot", version: mappingsVersion
 	runs {
 		client {
-			workingDirectory project.file("run");
-			property "forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP";
-			property "forge.logging.console.level", "debug";
+			workingDirectory project.file("run")
+			property "forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP"
+			property "forge.logging.console.level", "debug"
 		}
 		server {
-			property "forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP";
-			property "forge.logging.console.level", "debug";
+			property "forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP"
+			property "forge.logging.console.level", "debug"
 		}
 	}
 }
 
 // Needed Compiled Files
 dependencies {
-	minecraft "net.minecraftforge:forge:" + minecraftVersion + '-' + forgeVersion;
+	minecraft "net.minecraftforge:forge:" + minecraftVersion + '-' + forgeVersion
 
 	// compileOnly - I only compile against it. it does not get included as a mod tho.
 	// fg - ForgeGradle
 
-	compileOnly fg.deobf("curse.maven:serene-seasons-291874:2710586");
-	compileOnly fg.deobf("curse.maven:orelib-307806:2820815");
-	compileOnly fg.deobf("curse.maven:dynamic-surroundings-238891:3098835");
+	compileOnly fg.deobf("curse.maven:serene-seasons-291874:2710586")
+	compileOnly fg.deobf("curse.maven:orelib-307806:2820815")
+	compileOnly fg.deobf("curse.maven:dynamic-surroundings-238891:3098835")
 
-	// Those don't work due to the: ForgeGradle version, forge version, mappings version and things i dont know.
+	// Those don't work due to the: ForgeGradle version, forge version, mappings version and things i don't know.
 
 	//compileOnly fg.deobf("mezz.jei:jei_1.12.2:4.16.1.302:api");
 	//runtimeOnly fg.deobf("mezz.jei:jei_1.12.2:4.16.1.302");
@@ -67,27 +67,28 @@ dependencies {
 // Required for mcmod.info to be loaded in the first place and 
 //  then reloaded with each build. 
 //  Otherwise processResources will not work.
-sourceSets { main { output.resourcesDir = output.classesDir; } }
+//noinspection GroovyUnusedAssignment
+sourceSets { main({ output.resourcesDir = output.classesDir }) }
 
-// Proccesses mcmod.info file variables.
+// Processes mcmod.info file variables.
 processResources { 
 	// This will ensure that it will change on build.
-	inputs.property "mcversion", minecraftVersion;
-	inputs.property "version", version;
-	inputs.property "modid", archivesBaseName;
+	inputs.property "mcversion", minecraftVersion
+	inputs.property "version", version
+	inputs.property "modid", archivesBaseName
 	// This replaces mcmod.info variables.
 	from(sourceSets.main.resources.srcDirs) {
-		include "mcmod.info";
+		include "mcmod.info"
 
 		expand ([
 			"mcversion": minecraftVersion,
 			"version": version,
 			"modid": archivesBaseName
-		]);
+		])
 	}
 	// Means copy everything else except the mcmod.info file.
 	from(sourceSets.main.resources.srcDirs) {
-		exclude "mcmod.info";
+		exclude "mcmod.info"
 	}
 }
 
@@ -111,45 +112,49 @@ jar {
 //  If it fails it gets an "err-version_b" + build_number.
 String GetVersion() {
 	try {
-		return GetGitVersion();
-	} catch (Exception exception) {
-		// Apperanlty this gets 3 exceptions therefore it's evaluated 3 times.
-		println("Exception: Setting the version via Git failed!");
-		return "err_version_b" + GetBuildNumber();
+		return GetGitVersion()
+	} catch (Exception ignored) {
+		// Apparently this gets 3 exceptions therefore it's evaluated 3 times.
+		println("Exception: Setting the version via Git failed!")
+		return "err_version_b" + GetBuildNumber()
 	} 
 }
 
 // Calling git command to acquire major, minor, revision number from tag.
 String GetGitVersion() { 
 	def outStream = new ByteArrayOutputStream()
+
+	//noinspection GroovyUnusedAssignment
 	def result = exec {
-		executable = "git";
-		args = [ "describe", "--tags", "--long" ];
-		standardOutput = outStream;
+		executable = "git"
+		args = [ "describe", "--tags", "--long" ]
+		standardOutput = outStream
 	}
-	def fullVersion = outStream.toString().trim();
-	def matcher = fullVersion =~ /(\d+).(\d+).(\d+)-(.*)/;
-	def mj = matcher[0][1];
-	def mn = matcher[0][2];
-	def rv = matcher[0][3];
-	def bd = GetBuildNumber();
-	return "${mj}.${mn}.${rv}.${bd}".toString();
+
+	String fullVersion = outStream.toString().trim()
+	def matcher = fullVersion =~ /(\d+).(\d+).(\d+)-(.*)/
+	def mj = matcher[0][1]
+	def mn = matcher[0][2]
+	def rv = matcher[0][3]
+
+	def bd = GetBuildNumber()
+	return "${mj}.${mn}.${rv}.${bd}".toString()
 }
 
 // Acquiring Build Number
 String GetBuildNumber() { 
-	def buildFile = file("gradleBuildNumber.properties");
+	def buildFile = file("gradleBuildNumber.properties")
 	if (buildFile.canRead()) {
-		Properties versionProperties = new Properties();
-		versionProperties.load(new FileInputStream(buildFile));
-		return versionProperties["buildNumber"].toString();
+		Properties versionProperties = new Properties()
+		versionProperties.load(new FileInputStream(buildFile))
+		return versionProperties["buildNumber"].toString()
 	} 
-	return "error_build_number";
+	return "error_build_number"
 }
 
-task incrementBuildNumber;	// Declaration of the "incrementBuildNumber" task.
-task clearBuildNumber;		// Sets build number to 0.
-task clearProject;			// Clears the project useful when swiching branches of different mdks.
+task incrementBuildNumber	// Declaration of the "incrementBuildNumber" task.
+task clearBuildNumber		// Sets build number to 0.
+task clearProject			// Clears the project useful when switching branches of different mdks.
 
 task clearProject.doLast {
 	delete "run", "build", "bin", ".classpath", ".project"
@@ -157,30 +162,30 @@ task clearProject.doLast {
 }
 
 task clearBuildNumber.doLast {
-	def versionBuildFile = file("gradleBuildNumber.properties");
+	def versionBuildFile = file("gradleBuildNumber.properties")
 	if (versionBuildFile.canRead()) {
-		Properties versionProperties = new Properties();
-		versionProperties.load(new FileInputStream(versionBuildFile));
-		versionProperties["buildNumber"] = "0";
-		versionProperties.store(versionBuildFile.newWriter(), null);
-		println("BuildNumber has been set to 0");
+		Properties versionProperties = new Properties()
+		versionProperties.load(new FileInputStream(versionBuildFile))
+		versionProperties["buildNumber"] = "0"
+		versionProperties.store(versionBuildFile.newWriter(), null)
+		println("BuildNumber has been set to 0")
 	} else {
-		println("Could not find 'gradleBuildNumber.properties' file! Ignoring setting to zero.");
+		println("Could not find 'gradleBuildNumber.properties' file! Ignoring setting to zero.")
 	}
 }
 
 incrementBuildNumber.doFirst {
-	def versionBuildFile = file("gradleBuildNumber.properties");
+	def versionBuildFile = file("gradleBuildNumber.properties")
 	if (versionBuildFile.canRead()) {
-		Properties versionProperties = new Properties();
-		versionProperties.load(new FileInputStream(versionBuildFile));
-		int newNumber = versionProperties["buildNumber"].toInteger() + 1;
-		versionProperties["buildNumber"] = newNumber.toString();
-		versionProperties.store(versionBuildFile.newWriter(), null);
-		println("BuildNumber has incremented to: " + newNumber);
+		Properties versionProperties = new Properties()
+		versionProperties.load(new FileInputStream(versionBuildFile))
+		int newNumber = versionProperties["buildNumber"].toInteger() + 1
+		versionProperties["buildNumber"] = newNumber.toString()
+		versionProperties.store(versionBuildFile.newWriter(), null)
+		println("BuildNumber has incremented to: " + newNumber)
 	} else 
-		println("Could not find 'gradleBuildNumber.properties' file! Ignoring increment.");
+		println("Could not find 'gradleBuildNumber.properties' file! Ignoring increment.")
 }
 
 // Means that it's gonna only increment on the successful builds.
-build.finalizedBy incrementBuildNumber;
+build.finalizedBy incrementBuildNumber

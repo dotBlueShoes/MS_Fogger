@@ -32,15 +32,13 @@ public class Fogger {
     public void initialize(FMLInitializationEvent event) {
         // MinecraftForge.EVENT_BUS.register(new ConfigHandler()); - GUI thingy
 
-        // Registring the presence of DynamicSurroundings Mod.
+        // Registering the presence of DynamicSurroundings Mod.
         DynamicSurroundingsDependency.checkPresence();
 
-        // Registring Fog Event.
+        // Registering Fog Event.
         MinecraftForge.EVENT_BUS.register(new FogHelper());
-        if (ConfigHandler.isFogGlobal == false) {
-            MinecraftForge.EVENT_BUS.register(new FogEvent(ConfigHandler.getFogDefinitions(), ConfigHandler.getFogMapDefinitions()));
-        } else 
-            MinecraftForge.EVENT_BUS.register(new GlobalFogEvent());
+        if (!ConfigHandler.isFogGlobal) MinecraftForge.EVENT_BUS.register(new FogEvent(ConfigHandler.getFogDefinitions(), ConfigHandler.getFogMapDefinitions()));
+        else MinecraftForge.EVENT_BUS.register(new GlobalFogEvent());
     }
 
     // this.class.getName();

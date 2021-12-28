@@ -1,5 +1,6 @@
 package dotblueshoes.fogger.event;
 
+import dotblueshoes.fogger.dependency.SereneSeasonsDependency;
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.KeyboardInputEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -52,11 +53,12 @@ public class FogHelper {
     @SubscribeEvent
     public void worldLoadEvent(WorldEvent.Load event) {
         setVisibleDistance();
+        SereneSeasonsDependency.initializeSeasonHandler();
     }
 
     public void setVisibleDistance() {
         if (ConfigHandler.isFogConstant == false)
-            visibleDistance = Minecraft.getMinecraft().gameSettings.renderDistanceChunks * CHUNK_LENGTH;
+            visibleDistance = Minecraft.getMinecraft().gameSettings.renderDistanceChunks * CHUNK_LENGTH; // HERE!
         else visibleDistance = 1F;
     }
 }

@@ -156,6 +156,7 @@ public class ConfigHandler {
 
 		for (int i = 0; i < fogMapDefinitions.length; i++)
 			for (int j = 0; j < registeredBiomes.length; j++)
+				//noinspection ConstantConditions
 				if (fogMapDefinitions[i].biomeName.equals(registeredBiomes[j].getRegistryName().toString())) {
 					mapDefinitions.add(fogMapDefinitions[i]);
 					break;

@@ -1,9 +1,13 @@
 package dotblueshoes.fogger.dependency;
 
-//import java.lang.reflect.*;
 
-//import dotblueshoes.fogger.dependency.*;
-//import dotblueshoes.fogger.*;
+import dotblueshoes.fogger.Fogger;
+import sereneseasons.init.ModHandlers;
+import sereneseasons.handler.season.SeasonHandler;
+import sereneseasons.season.SeasonTime;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 public class SereneSeasonsDependency {
 
@@ -17,6 +21,35 @@ public class SereneSeasonsDependency {
         //if (isPresent = Reflection.isClassAvailableAtRuntime(classPath)) {
         //    Fogger.logInfo("SereneSeasons Are Present!");
         //}
+
+        //SeasonTime time = SeasonHandler.getServerSeasonState()
+    }
+
+    public static SeasonHandler seasonHandler;
+
+    public static void initializeSeasonHandler() {
+
+        try {
+            //Field field = ModHandlers.class.getField("SEASON_HANDLER");
+            //Class<?> type = field.getType();
+            Field field = ModHandlers.class.getDeclaredField("SEASON_HANDLER");
+
+
+            field.setAccessible(true);
+            //field.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+            //field.set(field, field.getModifiers() & ~Modifier.FINAL);
+
+            Object obj = field.get(null);
+            //if (obj == null) Fogger.logInfo("it's NULL Object");
+            seasonHandler = ((SeasonHandler) obj);
+            //if (seasonHandler == null) Fogger.logInfo("it's NULL SeasonHandler");
+        } catch (Exception exception) {
+            Fogger.logInfo("Catched an exception during possessing private static field from an object.");
+	        exception.printStackTrace();
+        }
+
+        //seasonHandler = (SeasonHandler)Reflection.getObjectInstanceField(ModHandlers.class, "SEASON_HANDLER");
+        Fogger.logInfo("SereneSeasons Are Present!");
     }
 
     // Links
