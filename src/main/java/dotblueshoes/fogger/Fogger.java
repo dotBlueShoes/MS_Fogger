@@ -32,8 +32,9 @@ public class Fogger {
     public void initialize(FMLInitializationEvent event) {
         // MinecraftForge.EVENT_BUS.register(new ConfigHandler()); - GUI thingy
 
-        // Registering the presence of DynamicSurroundings Mod.
+        // Registering presence of dependency mods.
         DynamicSurroundingsDependency.checkPresence();
+		SereneSeasonsDependency.checkPresence();
 
         // Registering Fog Event.
         MinecraftForge.EVENT_BUS.register(new FogHelper());

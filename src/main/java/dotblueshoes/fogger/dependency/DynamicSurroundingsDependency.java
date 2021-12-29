@@ -18,7 +18,7 @@ public class DynamicSurroundingsDependency {
     // Global variable to check wheater mod is available or not.
     public static boolean isPresent = false;
 
-    // Requires an instance. Sets the isPresent var to true as if it successes finding mod classes.
+    // Sets the isPresent var to true as if its successes finding mod classes.
     public static void checkPresence() {
         final String classPath = "org.orecruncher.dsurround.client.handlers.EffectManager";
 

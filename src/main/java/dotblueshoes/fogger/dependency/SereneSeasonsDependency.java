@@ -11,45 +11,23 @@ import java.lang.reflect.Modifier;
 
 public class SereneSeasonsDependency {
 
+    // Holds all information about the tick-season related stuff.
+    public static SeasonHandler seasonHandler = null;
     // Global variable to check wheater it's available or not.
     public static boolean isPresent = false;
 
-    // Requires an instance. Sets the isPresent var to true as if it successes finding mod classes.
+    // Sets the isPresent var to true as if its successes finding mod classes.
     public static void checkPresence() {
-        //final String classPath = "org.orecruncher.dsurround.client.handlers.EffectManager";
-
-        //if (isPresent = Reflection.isClassAvailableAtRuntime(classPath)) {
-        //    Fogger.logInfo("SereneSeasons Are Present!");
-        //}
-
-        //SeasonTime time = SeasonHandler.getServerSeasonState()
+        final String classPath = "sereneseasons.handler.season.SeasonHandler";
+        if (isPresent = Reflection.isClassAvailableAtRuntime(classPath)) {
+            Fogger.logInfo("SereneSeasons Is Present!");
+            initializeSeasonHandler();
+        }
     }
 
-    public static SeasonHandler seasonHandler;
-
-    public static void initializeSeasonHandler() {
-
-        try {
-            //Field field = ModHandlers.class.getField("SEASON_HANDLER");
-            //Class<?> type = field.getType();
-            Field field = ModHandlers.class.getDeclaredField("SEASON_HANDLER");
-
-
-            field.setAccessible(true);
-            //field.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-            //field.set(field, field.getModifiers() & ~Modifier.FINAL);
-
-            Object obj = field.get(null);
-            //if (obj == null) Fogger.logInfo("it's NULL Object");
-            seasonHandler = ((SeasonHandler) obj);
-            //if (seasonHandler == null) Fogger.logInfo("it's NULL SeasonHandler");
-        } catch (Exception exception) {
-            Fogger.logInfo("Catched an exception during possessing private static field from an object.");
-	        exception.printStackTrace();
-        }
-
+    private static void initializeSeasonHandler() {
+        seasonHandler = (SeasonHandler)Reflection.getObjectStaticFinalField(ModHandlers.class, "SEASON_HANDLER");
         //seasonHandler = (SeasonHandler)Reflection.getObjectInstanceField(ModHandlers.class, "SEASON_HANDLER");
-        Fogger.logInfo("SereneSeasons Are Present!");
     }
 
     // Links

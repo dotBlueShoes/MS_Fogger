@@ -1,8 +1,11 @@
 package dotblueshoes.fogger.event;
 
-import sereneseasons.api.season.ISeasonState;
+
+
+import net.minecraft.world.World;
 import sereneseasons.api.season.SeasonHelper.ISeasonDataProvider;
-import dotblueshoes.fogger.dependency.SereneSeasonsDependency;
+import sereneseasons.api.season.ISeasonState;
+
 import net.minecraftforge.client.event.EntityViewRenderEvent.RenderFogEvent;
 //import net.minecraftforge.client.event.EntityViewRenderEvent.FogColors;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -11,17 +14,17 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 
+import dotblueshoes.fogger.dependency.SereneSeasonsDependency;
 import dotblueshoes.fogger.config.util.FogMapDefinition;
 import dotblueshoes.fogger.config.util.FogDefinition;
 import dotblueshoes.fogger.config.ConfigHandler;
 import dotblueshoes.fogger.util.FogSetting;
+import dotblueshoes.fogger.Fogger;
 
 import net.minecraft.util.math.BlockPos;
 
-import dotblueshoes.fogger.*;
-import sereneseasons.handler.season.SeasonHandler;
 
-//import net.minecraft.world.World;
+
 
 public class FogEvent {
 
@@ -77,6 +80,33 @@ public class FogEvent {
         // This however would mean if the user wanted to commit a change in day cycle only
         //  he wouldn't be able to. He would have to create 8 x 12 (96) those commits to
         //  fulfill his needs. ( for a specific fog, at a specific y-level, in a specific world...)
+        // to cover all known timestamps we would need 480 keys (commits)
+
+        // also have in mind that I want to support custom events
+        // something like an array of bools connected with fog definitions and priority, so
+        // we know which "if" statement is most important. These bools can have a value of
+        // false and true.
+        // true - is set to insta trigger if priority allows.
+        // false - is set to not trigger
+        // events will not be exposed in config therefore it will be presented as a list that we
+        // can easily add up elements people will be able to.
+
+        // So how do we code it?
+        // I am fine with timestamps they're overall doing their job.
+        // However, I don't want to put that logic into a single FogEvent kind instead.
+        // I would like to add the information about world and weather to the "FogEvent" and
+        // Create a new one that would also hold information for timestamps and "custom events". called "AdvancedFogEvent"
+        // the bool isGlobal would be changed to enum.
+
+        // If I would ever implement fog colors
+        // I would keep the information about last fog color and
+        // slowly transition between last and new one.
+        // the speed might be dependant of fogStartPoint, fogEndPoint difference.
+        // making denser fog change faster.
+        //event.getWorld().weatherEffects
+        //event.getWorld().getCloudColorBody()
+        //event.getWorld().getCloudColour()
+        //FogColors event
 
         // after the setting I simply compare the obtained array to the
         //  vanilla:    max moon phase
@@ -153,29 +183,22 @@ public class FogEvent {
             Fogger.logInfo("SereneSeasons cycle duration: " + seasonState.getCycleDuration());
             Fogger.logInfo("SereneSeasons season cycle ticks: " + seasonState.getSeasonCycleTicks()); // THIS GUY!
             Fogger.logInfo("SereneSeasons day: " + seasonState.getDay()); // does not work or gives a broken value at least for client.
-        } else {
-            Fogger.logInfo("seasonHandler is null!");
+
+            Fogger.logInfo("SereneSeasons season name: " + seasonState.getSeason().name());
+            Fogger.logInfo("SereneSeasons season ordinal: " + seasonState.getSeason().ordinal());
+
+            Fogger.logInfo("SereneSeasons season name: " + seasonState.getSubSeason().name());
+            Fogger.logInfo("SereneSeasons season ordinal: " + seasonState.getSubSeason().ordinal());
+
+            Fogger.logInfo("SereneSeasons season name: " + seasonState.getTropicalSeason().name());
+            Fogger.logInfo("SereneSeasons season ordinal: " + seasonState.getTropicalSeason().ordinal());
         }
-
-//        registerTag("sereneseasonsdayduration", ISeasonState::getDayDuration);
-//        registerTag("sereneseasonssubseasonduration", ISeasonState::getSubSeasonDuration);
-//        registerTag("sereneseasonsseasonduration", ISeasonState::getSeasonDuration);
-//        registerTag("sereneseasonscycleduration", ISeasonState::getCycleDuration);
-//        registerTag("sereneseasonsseasoncycleticks", ISeasonState::getSeasonCycleTicks);
-//        registerTag("sereneseasonsday", ISeasonState::getDay);
-//        registerTag("sereneseasonscurrentseason", s -> s.getSeason().name());
-//        registerTag("sereneseasonscurrentsubseason", s -> s.getSubSeason().name());
-//        registerTag("sereneseasonscurrenttropicalseason", ISeasonState::getDay);
-//        registerTag("sereneseasonscurrentseasonord", s -> s.getSeason().ordinal());
-//        registerTag("sereneseasonscurrentsubseasonord", s -> s.getSubSeason().ordinal());
-//        registerTag("sereneseasonsdayofseason", s -> s.getDay() % (s.getSeasonDuration() / s.getDayDuration()));
-
     }
 
     @SubscribeEvent
     public void renderFogEvent(RenderFogEvent event) {
         Entity entity = event.getEntity();
-
+        //World world = entity.world;
         @SuppressWarnings("ConstantConditions")
         String biomeName = Minecraft.getMinecraft().world.getBiome(new BlockPos(entity.posX, entity.posY, entity.posZ)).getRegistryName().toString();
         

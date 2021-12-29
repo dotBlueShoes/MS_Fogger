@@ -1,12 +1,15 @@
 package dotblueshoes.fogger.event;
 
+import dotblueshoes.fogger.Fogger;
 import dotblueshoes.fogger.dependency.SereneSeasonsDependency;
 import net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.KeyboardInputEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.event.world.WorldEvent;
 
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import org.lwjgl.input.Keyboard;
 
 import dotblueshoes.fogger.config.*;
@@ -19,6 +22,7 @@ public class FogHelper {
 
     private static final int GUI_BTN_BACKTOGAME = 4, CHUNK_LENGTH = 16;
     public static float visibleDistance = 0F;
+    public static int dimension;
 
     //  The gui_btn_backToGame Button is only available to be pressed
     // when we're ingame and in settings menu. So it's save to use it
@@ -46,14 +50,24 @@ public class FogHelper {
             setVisibleDistance();
     }
 
+    //@SubscribeEvent
+    //public void renderWorldLastEvent(RenderWorldLastEvent event) {
+    //    Fogger.logInfo("RenderWorldLastEvent EVENT!");
+    //}
+
+    //@SubscribeEvent
+    //public void playerChangedDimensionEvent(PlayerEvent.PlayerChangedDimensionEvent event) {
+    //    Fogger.logInfo("PlayerChangedDimensionEvent EVENT!");
+    //}
+
     //  This Event is being called when
     // 1. We're loading the server both multiplier and integrated one.
     //  it gets called for each world there is to load so typiclly 3 times (overworld, nether, end).
     // 2. A little later when we load the selective world.
     @SubscribeEvent
     public void worldLoadEvent(WorldEvent.Load event) {
+        dimension = event.getWorld().provider.getDimension();
         setVisibleDistance();
-        SereneSeasonsDependency.initializeSeasonHandler();
     }
 
     public void setVisibleDistance() {

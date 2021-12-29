@@ -1,6 +1,7 @@
 package dotblueshoes.fogger.dependency;
 
 import dotblueshoes.fogger.*;
+
 import java.lang.reflect.*;
 
 public class Reflection {
@@ -22,27 +23,20 @@ public class Reflection {
 		return null;
 	}
 
-//	static void setFinalStatic(Field field, Object newValue) throws Exception {
-//		field.setAccessible(true);
-//		Field modifiersField = Field.class.getDeclaredField("modifiers");
-//		modifiersField.setAccessible(true);
-//		modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-//		field.set(null, newValue);
-//	}
-//	// Same but for static fields.
-//	public static Object getObjectStaticField(Class classType, String fieldName) {
-//	    try {
-//	        Field field = classType.getDeclaredField(fieldName);
-//	        field.setAccessible(true);
-//	        return field;
-//	    } catch (Exception exception) {
-//	        Fogger.logInfo("Catched an exception during possessing private static field from an object.");
-//	        exception.printStackTrace();
-//	    }
-//	    return null;
-//	}
+	// Same but for static fields.
+	public static Object getObjectStaticFinalField(Class<?> type, String fieldName) {
+		try {
+			Field field = type.getDeclaredField(fieldName);
+			field.setAccessible(true);
+			return field.get(null);
+		} catch (Exception exception) {
+			Fogger.logInfo("Catched an exception during possessing private static field from an object.");
+			exception.printStackTrace();
+		}
+	    return null;
+	}
 
-	// Checks wheater a class is available at runtime or not.
+	// Checks whether a class is available at runtime or not.
 	public static boolean isClassAvailableAtRuntime(final String classPackage) {
 		try { Class.forName(classPackage, false, Reflection.class.getClassLoader());
 		} catch (ClassNotFoundException exception) {
