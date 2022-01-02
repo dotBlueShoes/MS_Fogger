@@ -1,4 +1,4 @@
-package dotblueshoes.fogger.config.util;
+package dotblueshoes.fogger.config.utility;
 
 
 public class FogMapDefinition {

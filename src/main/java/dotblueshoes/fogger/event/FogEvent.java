@@ -2,8 +2,6 @@ package dotblueshoes.fogger.event;
 
 
 
-import net.minecraft.world.World;
-import sereneseasons.api.season.SeasonHelper.ISeasonDataProvider;
 import sereneseasons.api.season.ISeasonState;
 
 import net.minecraftforge.client.event.EntityViewRenderEvent.RenderFogEvent;
@@ -15,10 +13,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 
 import dotblueshoes.fogger.dependency.SereneSeasonsDependency;
-import dotblueshoes.fogger.config.util.FogMapDefinition;
-import dotblueshoes.fogger.config.util.FogDefinition;
+import dotblueshoes.fogger.config.utility.FogMapDefinition;
+import dotblueshoes.fogger.config.utility.FogDefinition;
 import dotblueshoes.fogger.config.ConfigHandler;
-import dotblueshoes.fogger.util.FogSetting;
+import dotblueshoes.fogger.utility.FogSetting;
 import dotblueshoes.fogger.Fogger;
 
 import net.minecraft.util.math.BlockPos;

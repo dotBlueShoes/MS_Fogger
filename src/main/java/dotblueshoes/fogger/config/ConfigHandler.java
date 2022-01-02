@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.File;
 
-import dotblueshoes.fogger.config.util.*;
+import dotblueshoes.fogger.config.utility.*;
 
 //@EventBusSubscriber(modid = Fogger.MODID)
 public class ConfigHandler {

@@ -1,4 +1,4 @@
-package dotblueshoes.fogger.util;
+package dotblueshoes.fogger.utility;
 
 public class FogSetting {
     public String biomeName;
