@@ -1,5 +1,6 @@
 # Environmental and licensed stuff.
 /.gradle/
+/.idea/
 /build/
 /libs/
 /run/
