@@ -11,12 +11,15 @@ import net.minecraft.client.render.FogManager;
 import net.minecraft.client.render.OpenGLHelper;
 import net.minecraft.client.render.camera.CameraUtil;
 import net.minecraft.core.block.material.Material;
+import net.minecraft.core.data.registry.Registries;
 import net.minecraft.core.world.Dimension;
+import net.minecraft.core.world.biome.Biome;
 import net.minecraft.core.world.weather.Weather;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.*;
 
 import java.nio.FloatBuffer;
+import java.util.Objects;
 
 @Mixin(
 	value = FogManager.class,
@@ -51,6 +54,16 @@ public abstract class FogManagerMixin {
 	@Unique public float lastFogEnd = FogDefinition.ZERO.end;
 	@Unique public FogColor lastFogColor = FogColor.DEFAULT;
 
+	@Unique public void setLastFog(final float start, final float end, final FogColor color) {
+		lastFogStart = start;
+		lastFogEnd = end;
+		lastFogColor = color;
+	}
+
+	// TODO:
+	// This function/mechanism could be optimized by presetting ranges
+	//  of said dimensions, weathers, biomes so we wouldn't lose time looking through all
+	//  keys in fogSettings but only spend minimal time there looking at a subset.
 	@Unique public int findFogEffect(final float partialTick) {
 
 		Weather weather = this.mc.theWorld.weatherManager.getCurrentWeather();
@@ -59,22 +72,38 @@ public abstract class FogManagerMixin {
 		byte iDimension = (byte)mc.thePlayer.dimension;
 
 		int yPos = (int)mc.thePlayer.getPosition(partialTick).yCoord;
-		//yPos = Math.min(yPos, 255);
-		//yPos = Math.max(yPos, 0);
-		//byte iY = (byte)yPos;
 
-		//Fogger.LOGGER.info("YPos: {}", yPos);
+		int biome = this.mc.theWorld.getBlockBiome(
+			(int)mc.thePlayer.getPosition(partialTick).xCoord,
+			(int)mc.thePlayer.getPosition(partialTick).yCoord,
+			(int)mc.thePlayer.getPosition(partialTick).zCoord
+		).hashCode();
+
+		//this.mc.theWorld.getBiomeProvider().getBiomes();
+		//for (byte iBiome = 0; iBiome < Registries.BIOMES.size(); ++iBiome) {
+		//	Biome biome = Registries.BIOMES.getItemByNumericId(iBiome);
+		//	if (playerBiome.translationKey.equals(biome.translationKey)) {
+		//		Fogger.LOGGER.info("Biome Id: {}", iBiome);
+		//	}
+		//}
+
+		//for (Biome biome : Registries.BIOMES) {
+		//	//biome
+		//}
 
 		for (int i = 0; i < Fogger.fogSettings.length; ++i) {
 			final FogSetting setting = Fogger.fogSettings[i];
 
+			//Fogger.LOGGER.info("Biome: {}, PBiome {}", biome, setting.biome);
+
 			boolean isEffect =
-				setting.weather == iWeather &&
-				setting.world == iDimension &&
-				setting.yLevel <= yPos;
+				setting.world <= iDimension &&
+				setting.weather <= iWeather &&
+				setting.yLevel <= yPos &&
+				(setting.biome == biome || setting.biome == 0); // if not found refer to default biome.
 
 			if (isEffect) {
-				//Fogger.LOGGER.info("Fog: {}", setting.iFogDefinition);
+				Fogger.LOGGER.info("Fog: {}, Setting: {}", setting.iFogDefinition, i);
 				return setting.iFogDefinition;
 			}
 		}
@@ -86,7 +115,6 @@ public abstract class FogManagerMixin {
 		final int iCurrentFogEffect
 	) {
 		FogDefinition currentFogEffect = Fogger.fogDefinitions[iCurrentFogEffect];
-		//FogDefinition lastFogEffect = Fogger.fogDefinitions[iLastFogEffect];
 
 		if (iCurrentFogEffect != iPrevFogEffect) {
 
@@ -98,13 +126,10 @@ public abstract class FogManagerMixin {
 			// Then store values from previous blend as last so we can always blend well.
 			if (iLastFogEffect != iPrevFogEffect) {
 				iLastFogEffect = iPrevFogEffect;
-				lastFogStart = fogStart;
-				lastFogEnd = fogEnd;
-				lastFogColor = fogColor;
+				setLastFog(fogStart, fogEnd, fogColor);
 			} else {
-				FogDefinition lastFogEffect = Fogger.fogDefinitions[iLastFogEffect];
-				lastFogStart = lastFogEffect.start;
-				lastFogEnd = lastFogEffect.end;
+				FogDefinition lfe = Fogger.fogDefinitions[iLastFogEffect];
+				setLastFog(lfe.start, lfe.end, Fogger.fogColors[lfe.iColor]);
 			}
 
 			fogChangeTime = System.currentTimeMillis();
@@ -150,7 +175,6 @@ public abstract class FogManagerMixin {
 		final boolean isCameraPhotoMode = this.mc.currentScreen instanceof GuiPhotoMode;
 		final boolean isCameraInWater = CameraUtil.isUnderLiquid(this.mc.activeCamera, this.mc.theWorld, Material.water, partialTick);
 		final boolean isCameraInLava = CameraUtil.isUnderLiquid(this.mc.activeCamera, this.mc.theWorld, Material.lava, partialTick);
-		final boolean isDimensionNether = this.mc.theWorld.dimension == Dimension.nether;
 
 		if (isCameraPhotoMode) {
 			final float fogDistance = farPlaneDistance * ((GuiPhotoMode)this.mc.currentScreen).getFog(partialTick);
@@ -167,18 +191,8 @@ public abstract class FogManagerMixin {
 			GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_EXP);
 			GL11.glFogf(GL11.GL_FOG_DENSITY, 2.0F);
 		} else {
-			float maxFogDistance = (float) (renderDistance.chunks * 16);
-
-			// We're abandoning the old system to provide control via config for players, modpack makers!
-			//float fogModifier = 1.0F *
-			//	this.mc.theWorld.weatherManager.getWeatherIntensity() *
-			//	this.mc.theWorld.weatherManager.getWeatherPower();
-
-			//Fogger.LOGGER.info("PosY: {}", mc.thePlayer.getPosition(partialTick).yCoord);
-			//Fogger.LOGGER.info("Dim: {}", mc.thePlayer.dimension);
-
+			final float maxFogDistance = (float) (renderDistance.chunks * 16);
 			int iCurrentFogEffect = findFogEffect(partialTick);
-
 			applyFogEffect(iCurrentFogEffect);
 
 			GL11.glFogf(GL11.GL_FOG_START, maxFogDistance * fogStart);
@@ -196,9 +210,6 @@ public abstract class FogManagerMixin {
 			if (OpenGLHelper.enableSphericalFog) {
 				//GL11.glFogi(GL11.GL_FOG_DISTANCE_MODE_NV, GL11.GL_EYE_RADIAL_NV);
 				GL11.glFogi(34138, 34139);
-			}
-			if (isDimensionNether) {
-				GL11.glFogf(GL11.GL_FOG_START, 0.0F);
 			}
 		}
 

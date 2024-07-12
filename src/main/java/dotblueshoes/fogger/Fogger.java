@@ -1,8 +1,12 @@
 package dotBlueShoes.fogger;
 
+import dotBlueShoes.fogger.utility.FogColor;
 import dotBlueShoes.fogger.utility.FogDefinition;
 import dotBlueShoes.fogger.utility.FogSetting;
 import net.fabricmc.api.ModInitializer;
+import net.minecraft.core.data.registry.Registries;
+import net.minecraft.core.world.biome.Biome;
+import net.minecraft.core.world.biome.Biomes;
 import net.minecraft.core.world.weather.Weather;
 import net.minecraft.core.world.weather.WeatherRain;
 import net.minecraft.core.world.weather.WeatherSnow;
@@ -17,6 +21,12 @@ public class Fogger implements ModInitializer, GameStartEntrypoint, RecipeEntryp
     public static final String MOD_ID = "fogger";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
+	//public static int[] biomeLUT;
+
+	public static FogColor[] fogColors = {
+		FogColor.DEFAULT,
+	};
+
 	public static FogDefinition[] fogDefinitions = {
 		FogDefinition.ZERO,
 		FogDefinition.DEFAULT,
@@ -26,19 +36,33 @@ public class Fogger implements ModInitializer, GameStartEntrypoint, RecipeEntryp
 		new FogDefinition(0.00f, 0.25f, (byte)0),
 	};
 
+	// Sorted by:
+	// 1-world, 2-season, 3-weather, 4-yLevel
+
 	public static FogSetting[] fogSettings = {
-		new FogSetting((byte)5, (byte)0, 150, (byte)0, (byte)0, (byte)0, (byte)0), // OVERWORLD-CLEAR-Y>72
-		new FogSetting((byte)1, (byte)0, 0, (byte)0, (byte)0, (byte)0, (byte)0), // WeatherClear
-		new FogSetting((byte)2, (byte)1, 0, (byte)0, (byte)0, (byte)0, (byte)0), // WeatherRain
-		new FogSetting((byte)3, (byte)2, 0, (byte)0, (byte)0, (byte)0, (byte)0), // WeatherSnow
-		new FogSetting((byte)4, (byte)3, 0, (byte)0, (byte)0, (byte)0, (byte)0), // WeatherStorm
-		new FogSetting((byte)5, (byte)4, 0, (byte)0, (byte)0, (byte)0, (byte)0), // WeatherFog
-		new FogSetting((byte)5, (byte)0, 0, (byte)0, (byte)0, (byte)1, (byte)0), // NETHER-DEFAULT
+		/* 0 */ new FogSetting((byte)1, (byte)0, (byte)0, (byte)0, 0,  0, (byte)5), // NETHER-DEFAULT
+		/* 1 */ new FogSetting((byte)0, (byte)0, (byte)4, (byte)0, 0,  0, (byte)5), // WeatherFog
+		/* 2 */ new FogSetting((byte)0, (byte)0, (byte)3, (byte)0, 0,  0, (byte)4), // WeatherStorm
+		/* 3 */ new FogSetting((byte)0, (byte)0, (byte)2, (byte)0, 0,  0, (byte)3), // WeatherSnow
+		/* 4 */ new FogSetting((byte)0, (byte)0, (byte)1, (byte)0, 0,  0, (byte)2), // WeatherRain
+		/* 5 */ new FogSetting((byte)0, (byte)0, (byte)0, (byte)0, 0,  0, (byte)4), // WeatherClear - SeasonalForest
+		/* 6 */ new FogSetting((byte)0, (byte)0, (byte)0, (byte)0, 0,150, (byte)5), // OVERWORLD-CLEAR-Y>72
+		/* 7 */ new FogSetting((byte)0, (byte)0, (byte)0, (byte)0, 0,  0, (byte)1), // WeatherClear
 	};
 
     @Override
     public void onInitialize() {
         LOGGER.info("Fogger initialized.");
+
+		// Create a Look-Up-Table for Biomes to store byte instead of int.
+	    //biomeLUT = new int[Registries.BIOMES.size()];
+	    //for (byte iBiome = 0; iBiome < Registries.BIOMES.size(); ++iBiome) {
+		//    biomeLUT[iBiome] = Registries.BIOMES.getItemByNumericId(iBiome).hashCode();
+	    //}
+
+	    final String biomeStr = "minecraft:overworld.seasonal_forest"; // Read String from file
+	    fogSettings[5].biome = Registries.BIOMES.getItem(biomeStr).hashCode();
+
     }
 
 	@Override
