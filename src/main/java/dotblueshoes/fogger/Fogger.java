@@ -1,52 +1,63 @@
-package dotblueshoes.fogger;
+package dotBlueShoes.fogger;
 
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-//import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.common.MinecraftForge;
+import dotBlueShoes.fogger.utility.FogDefinition;
+import dotBlueShoes.fogger.utility.FogSetting;
+import net.fabricmc.api.ModInitializer;
+import net.minecraft.core.world.weather.Weather;
+import net.minecraft.core.world.weather.WeatherRain;
+import net.minecraft.core.world.weather.WeatherSnow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import turniplabs.halplibe.util.GameStartEntrypoint;
+import turniplabs.halplibe.util.RecipeEntrypoint;
 
-import org.apache.logging.log4j.Logger;
 
-import dotblueshoes.fogger.dependency.*;
-import dotblueshoes.fogger.config.*;
-import dotblueshoes.fogger.event.*;
+public class Fogger implements ModInitializer, GameStartEntrypoint, RecipeEntrypoint {
 
-@Mod( modid = Fogger.MODID, version = Fogger.VERSION, useMetadata = true)
-public class Fogger {
-    public static final String MODID = "fogger";
-    public static final String VERSION = "3";
+    public static final String MOD_ID = "fogger";
+    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-    //@Instance(MODID)
-    //public static Fogger instance;
-    private static Logger logger;
+	public static FogDefinition[] fogDefinitions = {
+		FogDefinition.ZERO,
+		FogDefinition.DEFAULT,
+		new FogDefinition(0.00f, 0.95f, (byte)0),
+		new FogDefinition(0.00f, 0.80f, (byte)0),
+		new FogDefinition(0.00f, 0.50f, (byte)0),
+		new FogDefinition(0.00f, 0.25f, (byte)0),
+	};
 
-    @EventHandler
-    public void preInitialize(FMLPreInitializationEvent event) {
-        logger = event.getModLog();
-        ConfigHandler.initConfig(event.getSuggestedConfigurationFile());
+	public static FogSetting[] fogSettings = {
+		new FogSetting((byte)5, (byte)0, 150, (byte)0, (byte)0, (byte)0, (byte)0), // OVERWORLD-CLEAR-Y>72
+		new FogSetting((byte)1, (byte)0, 0, (byte)0, (byte)0, (byte)0, (byte)0), // WeatherClear
+		new FogSetting((byte)2, (byte)1, 0, (byte)0, (byte)0, (byte)0, (byte)0), // WeatherRain
+		new FogSetting((byte)3, (byte)2, 0, (byte)0, (byte)0, (byte)0, (byte)0), // WeatherSnow
+		new FogSetting((byte)4, (byte)3, 0, (byte)0, (byte)0, (byte)0, (byte)0), // WeatherStorm
+		new FogSetting((byte)5, (byte)4, 0, (byte)0, (byte)0, (byte)0, (byte)0), // WeatherFog
+		new FogSetting((byte)5, (byte)0, 0, (byte)0, (byte)0, (byte)1, (byte)0), // NETHER-DEFAULT
+	};
+
+    @Override
+    public void onInitialize() {
+        LOGGER.info("Fogger initialized.");
     }
 
-    @EventHandler
-    public void initialize(FMLInitializationEvent event) {
-        // MinecraftForge.EVENT_BUS.register(new ConfigHandler()); - GUI thingy
+	@Override
+	public void beforeGameStart() {
 
-        // Registering presence of dependency mods.
-        DynamicSurroundingsDependency.checkPresence();
-		SereneSeasonsDependency.checkPresence();
+	}
 
-        // Registering Fog Event.
-        MinecraftForge.EVENT_BUS.register(new FogHelper());
-        if (!ConfigHandler.isFogGlobal) MinecraftForge.EVENT_BUS.register(new FogEvent(ConfigHandler.getFogDefinitions(), ConfigHandler.getFogMapDefinitions()));
-        else MinecraftForge.EVENT_BUS.register(new GlobalFogEvent());
-    }
+	@Override
+	public void afterGameStart() {
 
-    // this.class.getName();
+	}
 
-    public static void logInfo(String msg) {
-        final String PREFIX = "INFO: ";
-        logger.info(PREFIX + msg);
-    }
+	@Override
+	public void onRecipesReady() {
 
+	}
+
+	@Override
+	public void initNamespaces() {
+
+	}
 }

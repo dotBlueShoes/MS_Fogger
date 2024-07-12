@@ -1,191 +1,125 @@
-buildscript { 
-	repositories {
-		maven { url = 'https://files.minecraftforge.net/maven' }
-		mavenCentral()
-	}
-	dependencies {
-		classpath 'net.minecraftforge.gradle:ForgeGradle:3.+'
-	}
+plugins {
+	id 'babric-loom' version '1.4.+'
+	id 'java'
 }
 
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'maven-publish'
-// | UP TO HERE | Forge Required Code to include.
-apply plugin: 'eclipse'
+group = project.mod_group
+archivesBaseName = project.mod_name
+version = project.mod_version
 
-// Setting up the build variables.
-version = minecraftVersion + "-" + GetVersion()
+loom {
+	gluedMinecraftJar()
+	noIntermediateMappings()
+	customMinecraftManifest.set("https://github.com/Turnip-Labs/bta-manifest-repo/releases/download/v${project.bta_version}/${project.bta_version}.json")
+}
 
-//noinspection GroovyUnusedAssignment
-sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
-compileJava { sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8 }
-
-// Places where the files we're compiling against might be stored.
 repositories {
-	maven { name "Jitpack";			url "https://jitpack.io/" 							}
-	maven { name "CurseForge"; 		url "https://minecraft.curseforge.com/api/maven/" 	}
-	maven { 						url "https://www.cursemaven.com" 					}
-	maven { name "Progwml6 maven"; 	url "https://dvs1.progwml6.com/files/maven/" 		}  // Location of the maven that hosts JEI files.
-	maven { name "ModMaven"; 		url "https://modmaven.k-4u.nl" 						}  // Location of a maven mirror for JEI files, as a fallback.
-	mavenLocal()
-}
-
-// Setting up Minecraft for run.
-minecraft { 
-	mappings channel: "snapshot", version: mappingsVersion
-	runs {
-		client {
-			workingDirectory project.file("run")
-			property "forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP"
-			property "forge.logging.console.level", "debug"
+	mavenCentral()
+	maven { url = "https://jitpack.io" }
+	maven {
+		name = 'Babric'
+		url = 'https://maven.glass-launcher.net/babric'
+	}
+	maven {
+		name = 'Fabric'
+		url = 'https://maven.fabricmc.net/'
+	}
+	ivy {
+		url = "https://github.com/Better-than-Adventure"
+		patternLayout {
+			artifact "[organisation]/releases/download/v[revision]/[module].jar"
+			m2compatible = true
 		}
-		server {
-			property "forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP"
-			property "forge.logging.console.level", "debug"
+		metadataSources { artifact() }
+	}
+	ivy {
+		url = "https://github.com/Turnip-Labs"
+		patternLayout {
+			artifact "[organisation]/releases/download/v[revision]/[module]-[revision].jar"
+			m2compatible = true
 		}
+		metadataSources { artifact() }
+	}
+	ivy {
+		url = "https://github.com/Turnip-Labs"
+		patternLayout {
+			artifact "[organisation]/releases/download/[revision]/[module]-[revision].jar"
+			m2compatible = true
+		}
+		metadataSources { artifact() }
+	}
+	ivy {
+		url = "https://github.com/Turnip-Labs"
+		patternLayout {
+			artifact "[organisation]/releases/download/[revision]/[module]-bta-[revision].jar"
+			m2compatible = true
+		}
+		metadataSources { artifact() }
+	}
+	ivy {
+		url = "https://piston-data.mojang.com"
+		patternLayout {
+			artifact "v1/[organisation]/[revision]/[module].jar"
+			m2compatible = true
+		}
+		metadataSources { artifact() }
+	}
+	ivy {
+		url = "https://github.com/MartinSVK12"
+		patternLayout {
+			artifact "[organisation]/releases/download/[revision]/[module]-[revision].jar"
+			m2compatible = true
+		}
+		metadataSources { artifact() }
 	}
 }
 
-// Needed Compiled Files
 dependencies {
-	minecraft "net.minecraftforge:forge:" + minecraftVersion + '-' + forgeVersion
+	minecraft "bta-download-repo:bta:${project.bta_version}"
+	mappings loom.layered() {}
 
-	// compileOnly - I only compile against it. it does not get included as a mod tho.
-	// fg - ForgeGradle
+	modRuntimeOnly "objects:client:43db9b498cb67058d2e12d394e6507722e71bb45" // https://piston-data.mojang.com/v1/objects/43db9b498cb67058d2e12d394e6507722e71bb45/client.jar
+	modImplementation "fabric-loader:fabric-loader:${project.loader_version}"
 
-	compileOnly fg.deobf("curse.maven:serene-seasons-291874:2710586")
-	compileOnly fg.deobf("curse.maven:orelib-307806:2820815")
-	compileOnly fg.deobf("curse.maven:dynamic-surroundings-238891:3098835")
+	// Helper library
+	// If you do not need Halplibe you can comment this line out or delete this line
+	modImplementation "com.github.Turnip-Labs:bta-halplibe:${project.halplibe_version}"
 
-	// Those don't work due to the: ForgeGradle version, forge version, mappings version and things i don't know.
+	modImplementation "ModMenu:ModMenu:${project.mod_menu_version}"
 
-	//compileOnly fg.deobf("mezz.jei:jei_1.12.2:4.16.1.302:api");
-	//runtimeOnly fg.deobf("mezz.jei:jei_1.12.2:4.16.1.302");
-	//runtimeOnly fg.deobf("curse.maven:jei-238222:3043174");
-}
- 
-// Required for mcmod.info to be loaded in the first place and 
-//  then reloaded with each build. 
-//  Otherwise processResources will not work.
-//noinspection GroovyUnusedAssignment
-sourceSets { main({ output.resourcesDir = output.classesDir }) }
+	implementation "org.slf4j:slf4j-api:1.8.0-beta4"
+	implementation "org.apache.logging.log4j:log4j-slf4j18-impl:2.16.0"
 
-// Processes mcmod.info file variables.
-processResources { 
-	// This will ensure that it will change on build.
-	inputs.property "mcversion", minecraftVersion
-	inputs.property "version", version
-	inputs.property "modid", archivesBaseName
-	// This replaces mcmod.info variables.
-	from(sourceSets.main.resources.srcDirs) {
-		include "mcmod.info"
+	implementation 'com.google.guava:guava:33.0.0-jre'
+	implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
+	var log4jVersion = "2.20.0"
+	implementation("org.apache.logging.log4j:log4j-core:${log4jVersion}")
+	implementation("org.apache.logging.log4j:log4j-api:${log4jVersion}")
+	implementation("org.apache.logging.log4j:log4j-1.2-api:${log4jVersion}")
 
-		expand ([
-			"mcversion": minecraftVersion,
-			"version": version,
-			"modid": archivesBaseName
-		])
-	}
-	// Means copy everything else except the mcmod.info file.
-	from(sourceSets.main.resources.srcDirs) {
-		exclude "mcmod.info"
-	}
+	include(implementation("org.apache.commons:commons-lang3:3.12.0"))
 }
 
-// Manifest File. I Guess it's not very needed. 
-//  But still it shows in the .jar file so let the values be.
+java {
+	sourceCompatibility = JavaVersion.VERSION_1_8
+	targetCompatibility = JavaVersion.VERSION_1_8
+	withSourcesJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.release.set 8
+}
+
 jar {
-	manifest {
-		attributes([
-			"Specification-Title": archivesBaseName,
-			"Specification-Vendor": author,
-			"Specification-Version": "1",
-			"Implementation-Title": name,
-			"Implementation-Version": version,
-			"Implementation-Vendor" :author,
-			"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-		])
+	from("LICENSE") {
+		rename { "${it}_${archivesBaseName}" }
 	}
 }
 
-// Acquires the version via newest git 'tag'/'release'. 
-//  If it fails it gets an "err-version_b" + build_number.
-String GetVersion() {
-	try {
-		return GetGitVersion()
-	} catch (Exception ignored) {
-		// Apparently this gets 3 exceptions therefore it's evaluated 3 times.
-		println("Exception: Setting the version via Git failed!")
-		return "err_version_b" + GetBuildNumber()
-	} 
-}
+processResources {
+	inputs.property "version", version
 
-// Calling git command to acquire major, minor, revision number from tag.
-String GetGitVersion() { 
-	def outStream = new ByteArrayOutputStream()
-
-	//noinspection GroovyUnusedAssignment
-	def result = exec {
-		executable = "git"
-		args = [ "describe", "--tags", "--long" ]
-		standardOutput = outStream
-	}
-
-	String fullVersion = outStream.toString().trim()
-	def matcher = fullVersion =~ /(\d+).(\d+).(\d+)-(.*)/
-	def mj = matcher[0][1]
-	def mn = matcher[0][2]
-	def rv = matcher[0][3]
-
-	def bd = GetBuildNumber()
-	return "${mj}.${mn}.${rv}.${bd}".toString()
-}
-
-// Acquiring Build Number
-String GetBuildNumber() { 
-	def buildFile = file("gradleBuildNumber.properties")
-	if (buildFile.canRead()) {
-		Properties versionProperties = new Properties()
-		versionProperties.load(new FileInputStream(buildFile))
-		return versionProperties["buildNumber"].toString()
-	} 
-	return "error_build_number"
-}
-
-task incrementBuildNumber	// Declaration of the "incrementBuildNumber" task.
-task clearBuildNumber		// Sets build number to 0.
-task clearProject			// Clears the project useful when switching branches of different mdks.
-
-task clearProject.doLast {
-	delete "run", "build", "bin", ".classpath", ".project"
-	// .gradle cannot be removed via this task.
-}
-
-task clearBuildNumber.doLast {
-	def versionBuildFile = file("gradleBuildNumber.properties")
-	if (versionBuildFile.canRead()) {
-		Properties versionProperties = new Properties()
-		versionProperties.load(new FileInputStream(versionBuildFile))
-		versionProperties["buildNumber"] = "0"
-		versionProperties.store(versionBuildFile.newWriter(), null)
-		println("BuildNumber has been set to 0")
-	} else {
-		println("Could not find 'gradleBuildNumber.properties' file! Ignoring setting to zero.")
+	filesMatching("fabric.mod.json") {
+		expand "version": version
 	}
 }
-
-incrementBuildNumber.doFirst {
-	def versionBuildFile = file("gradleBuildNumber.properties")
-	if (versionBuildFile.canRead()) {
-		Properties versionProperties = new Properties()
-		versionProperties.load(new FileInputStream(versionBuildFile))
-		int newNumber = versionProperties["buildNumber"].toInteger() + 1
-		versionProperties["buildNumber"] = newNumber.toString()
-		versionProperties.store(versionBuildFile.newWriter(), null)
-		println("BuildNumber has incremented to: " + newNumber)
-	} else 
-		println("Could not find 'gradleBuildNumber.properties' file! Ignoring increment.")
-}
-
-// Means that it's gonna only increment on the successful builds.
-build.finalizedBy incrementBuildNumber

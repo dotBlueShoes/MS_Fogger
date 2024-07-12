@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "fogger",
+  "version": "${version}",
+
+  "name": "Fogger Mod",
+  "description": "This mod aims to improve fog control.",
+  "authors": [
+    "Turnip Labs",
+		"dotBlueShoes"
+  ],
+  "contact": {
+    "homepage": "",
+    "sources": ""
+  },
+
+	"icon": "icon.png",
+  "license": "CC0-1.0",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+			"dotBlueShoes.fogger.Fogger"
+    ],
+		"beforeGameStart": [
+			"dotBlueShoes.fogger.Fogger"
+		],
+		"afterGameStart": [
+			"dotBlueShoes.fogger.Fogger"
+		],
+		"recipesReady": [
+			"dotBlueShoes.fogger.Fogger"
+		]
+	},
+  "mixins": [
+      "fogger.mixins.json"
+  ],
+
+  "depends": {
+		"minecraft": "^7.2-beta",
+		"fabricloader": ">=0.15.5"
+  },
+  "suggests": {
+  }
+}

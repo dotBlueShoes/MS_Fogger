@@ -1,0 +1,15 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "dotBlueShoes.fogger.mixin.mixins",
+    "compatibilityLevel": "JAVA_8",
+    "mixinPriority": 20,
+    "mixins": [
+    ],
+    "client": [
+      "FogManagerMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+  }
+}
