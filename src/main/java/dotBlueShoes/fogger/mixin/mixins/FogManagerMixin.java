@@ -12,6 +12,7 @@ import net.minecraft.client.render.OpenGLHelper;
 import net.minecraft.client.render.camera.CameraUtil;
 import net.minecraft.core.block.material.Material;
 import net.minecraft.core.data.registry.Registries;
+import net.minecraft.core.util.helper.MathHelper;
 import net.minecraft.core.world.Dimension;
 import net.minecraft.core.world.biome.Biome;
 import net.minecraft.core.world.season.Season;
@@ -50,16 +51,18 @@ public abstract class FogManagerMixin {
 
 	@Unique public float fogStart = 0.0f;
 	@Unique public float fogEnd = 0.0f;
-	@Unique public FogColor fogColor = FogColor.DEFAULT;
+	@Unique public FogColor fogColor = new FogColor(FogColor.DEFAULT.r, FogColor.DEFAULT.g, FogColor.DEFAULT.b);
 
 	@Unique public float lastFogStart = FogDefinition.ZERO.start;
 	@Unique public float lastFogEnd = FogDefinition.ZERO.end;
-	@Unique public FogColor lastFogColor = FogColor.DEFAULT;
+	@Unique public FogColor lastFogColor = new FogColor(FogColor.DEFAULT.r, FogColor.DEFAULT.g, FogColor.DEFAULT.b);
 
 	@Unique public void setLastFog(final float start, final float end, final FogColor color) {
 		lastFogStart = start;
 		lastFogEnd = end;
-		lastFogColor = color;
+		lastFogColor.r = color.r;
+		lastFogColor.g = color.g;
+		lastFogColor.b = color.b;
 	}
 
 	// TODO:
@@ -120,7 +123,7 @@ public abstract class FogManagerMixin {
 				setting.yLevel <= yPos;
 
 			if (isEffect) {
-				Fogger.LOGGER.info("Fog: {}, Setting: {}", setting.iFogDefinition, i);
+				//Fogger.LOGGER.info("Fog: {}, Setting: {}", setting.iFogDefinition, i);
 				return setting.iFogDefinition;
 			}
 		}
@@ -129,9 +132,16 @@ public abstract class FogManagerMixin {
 	}
 
 	@Unique public void applyFogEffect(
-		final int iCurrentFogEffect
+		final int iCurrentFogEffect,
+		final float partialTick
 	) {
-		FogDefinition currentFogEffect = Fogger.fogDefinitions[iCurrentFogEffect];
+		final FogDefinition currentFogEffect = Fogger.fogDefinitions[iCurrentFogEffect];
+		final FogColor currentColor = Fogger.fogColors[currentFogEffect.iColor];
+
+		//Fogger.LOGGER.info("Color: {}", currentFogEffect.iColor);
+		//Fogger.LOGGER.info("r: {}", currentColor.r);
+		//Fogger.LOGGER.info("g: {}", currentColor.g);
+		//Fogger.LOGGER.info("b: {}", currentColor.b);
 
 		if (iCurrentFogEffect != iPrevFogEffect) {
 
@@ -156,11 +166,24 @@ public abstract class FogManagerMixin {
 		final long fogCurrentTime = System.currentTimeMillis();
 		final float duration = fogCurrentTime - fogChangeTime;
 
-		GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_LINEAR);
-
 		if (duration > FOG_CHANGE_TIME_MAX) { // Apply full currentFogEffect.
+			// TODO: Those triggers every call? Why it can trigger only once right?
 			fogStart = currentFogEffect.start;
 			fogEnd = currentFogEffect.end;
+
+			fogColor.r = currentColor.r;
+			fogColor.g = currentColor.g;
+			fogColor.b = currentColor.b;
+
+			if (Fogger.isFogAutoDarkenByNightSky) {
+				float dayProgress = MathHelper.cos(this.mc.theWorld.getCelestialAngle(partialTick) * 3.1415927F * 2.0F) * 2.0F + 0.5F;
+				dayProgress = MathHelper.clamp(dayProgress, 0.0F, 1.0F);
+				//Fogger.LOGGER.info("Day: {}", dayProgress);
+				fogColor.r *= dayProgress;
+				fogColor.g *= dayProgress;
+				fogColor.b *= dayProgress;
+			}
+
 			// This also means that this changes when we're 100% one effect.
 			iLastFogEffect = iCurrentFogEffect;
 		} else { // Apply a mix of current and previous effect.
@@ -170,6 +193,18 @@ public abstract class FogManagerMixin {
 
 			fogStart = (currentFogEffect.start * newLerp) + (lastFogStart * oldLerp);
 			fogEnd = (currentFogEffect.end * newLerp) + (lastFogEnd * oldLerp);
+			fogColor.r = (currentColor.r * newLerp) + (lastFogColor.r * oldLerp);
+			fogColor.g = (currentColor.g * newLerp) + (lastFogColor.g * oldLerp);
+			fogColor.b = (currentColor.b * newLerp) + (lastFogColor.b * oldLerp);
+
+			if (Fogger.isFogAutoDarkenByNightSky) {
+				float dayProgress = MathHelper.cos(this.mc.theWorld.getCelestialAngle(partialTick) * 3.1415927F * 2.0F) * 2.0F + 0.5F;
+				dayProgress = MathHelper.clamp(dayProgress, 0.0F, 1.0F);
+				//Fogger.LOGGER.info("Day: {}", dayProgress);
+				fogColor.r *= dayProgress;
+				fogColor.g *= dayProgress;
+				fogColor.b *= dayProgress;
+			}
 
 			// Ensure that fog start point cannot be higher than end point!
 			fogStart = Math.min(fogStart, fogEnd);
@@ -185,33 +220,44 @@ public abstract class FogManagerMixin {
 
 		RenderDistance renderDistance = this.mc.gameSettings.renderDistance.value;
 
-		GL11.glFog(GL11.GL_FOG_COLOR, this.buffer(this.fogRed, this.fogGreen, this.fogBlue, 0.5F));
-		GL11.glNormal3f(0.0F, -1.0F, 0.0F);
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-
 		final boolean isCameraPhotoMode = this.mc.currentScreen instanceof GuiPhotoMode;
 		final boolean isCameraInWater = CameraUtil.isUnderLiquid(this.mc.activeCamera, this.mc.theWorld, Material.water, partialTick);
 		final boolean isCameraInLava = CameraUtil.isUnderLiquid(this.mc.activeCamera, this.mc.theWorld, Material.lava, partialTick);
 
 		if (isCameraPhotoMode) {
 			final float fogDistance = farPlaneDistance * ((GuiPhotoMode)this.mc.currentScreen).getFog(partialTick);
+			GL11.glFog(GL11.GL_FOG_COLOR, this.buffer(this.fogRed, this.fogGreen, this.fogBlue, 0.5F));
+			GL11.glNormal3f(0.0F, -1.0F, 0.0F);
+			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_LINEAR);
 			GL11.glFogf(GL11.GL_FOG_START, fogDistance * 0.25F);
 			GL11.glFogf(GL11.GL_FOG_END, fogDistance);
 			GL11.glFogf(GL11.GL_FOG_DENSITY, 1.0F);
 		} else if (isCameraInWater) {
 			// FOG_START, FOG_END should also be specified here.
+			GL11.glFog(GL11.GL_FOG_COLOR, this.buffer(this.fogRed, this.fogGreen, this.fogBlue, 0.5F));
+			GL11.glNormal3f(0.0F, -1.0F, 0.0F);
+			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_EXP);
 			GL11.glFogf(GL11.GL_FOG_DENSITY, 0.1F);
 		} else if (isCameraInLava) {
 			// FOG_START, FOG_END should also be specified here.
+			GL11.glFog(GL11.GL_FOG_COLOR, this.buffer(this.fogRed, this.fogGreen, this.fogBlue, 0.5F));
+			GL11.glNormal3f(0.0F, -1.0F, 0.0F);
+			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_EXP);
 			GL11.glFogf(GL11.GL_FOG_DENSITY, 2.0F);
 		} else {
 			final float maxFogDistance = (float) (renderDistance.chunks * 16);
 			int iCurrentFogEffect = findFogEffect(partialTick);
-			applyFogEffect(iCurrentFogEffect);
+			applyFogEffect(iCurrentFogEffect, partialTick);
 
+
+			GL11.glFog(GL11.GL_FOG_COLOR, this.buffer(fogColor.r, fogColor.g, fogColor.b, 0.5F));
+			//GL11.glFog(GL11.GL_FOG_COLOR, this.buffer(FogColor.UnderLava.r, FogColor.UnderLava.g, FogColor.UnderLava.b, 0.5F));
+			GL11.glNormal3f(0.0F, -1.0F, 0.0F);
+			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+			GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_LINEAR);
 			GL11.glFogf(GL11.GL_FOG_START, maxFogDistance * fogStart);
 			GL11.glFogf(GL11.GL_FOG_END, maxFogDistance * fogEnd);
 			GL11.glFogf(GL11.GL_FOG_DENSITY, 1.0F);

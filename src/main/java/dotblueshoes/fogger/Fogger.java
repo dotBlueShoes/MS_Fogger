@@ -22,19 +22,24 @@ public class Fogger implements ModInitializer, GameStartEntrypoint, RecipeEntryp
     public static final String MOD_ID = "fogger";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	//public static int[] biomeLUT;
+	public static boolean isFogColorsOverridden = true;
+	public static boolean isFogAutoDarkenByNightSky = true;
+	public static boolean isFogCustomColorAppliedToBackground = true;
 
 	public static FogColor[] fogColors = {
 		FogColor.DEFAULT,
+		FogColor.SKY_BLUE,
+		FogColor.UnderWaterNBD,
+		FogColor.UnderLava,
 	};
 
 	public static FogDefinition[] fogDefinitions = {
 		FogDefinition.ZERO,
 		FogDefinition.DEFAULT,
 		new FogDefinition(0.00f, 0.95f, (byte)0),
-		new FogDefinition(0.00f, 0.80f, (byte)0),
-		new FogDefinition(0.00f, 0.50f, (byte)0),
-		new FogDefinition(0.00f, 0.25f, (byte)0),
+		new FogDefinition(0.00f, 0.80f, (byte)1),
+		new FogDefinition(0.00f, 0.50f, (byte)2),
+		new FogDefinition(0.00f, 0.25f, (byte)3),
 	};
 
 	// Sorted by:
