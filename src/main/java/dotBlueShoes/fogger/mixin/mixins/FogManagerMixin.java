@@ -14,6 +14,8 @@ import net.minecraft.core.block.material.Material;
 import net.minecraft.core.data.registry.Registries;
 import net.minecraft.core.world.Dimension;
 import net.minecraft.core.world.biome.Biome;
+import net.minecraft.core.world.season.Season;
+import net.minecraft.core.world.season.Seasons;
 import net.minecraft.core.world.weather.Weather;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.*;
@@ -66,6 +68,19 @@ public abstract class FogManagerMixin {
 	//  keys in fogSettings but only spend minimal time there looking at a subset.
 	@Unique public int findFogEffect(final float partialTick) {
 
+		// TODO: Seasons
+		int season = this.mc.theWorld.seasonManager.getCurrentSeason().hashCode();
+
+		// SeasonManager.class, SeasonManagerCycle.class, SeasonManagerSingle.class
+
+		//TODO: Time
+		//Fogger.LOGGER.info("Time: {}", this.mc.theWorld.getWorldTime());
+		// 24000 - day
+		// 168000 - week
+		// 192000 - lunar cycle - 8 phases (there's no lunar cycles tho)
+		long time = this.mc.theWorld.getWorldTime() % 168000;
+		//Fogger.LOGGER.info("Time: {}", time);
+
 		Weather weather = this.mc.theWorld.weatherManager.getCurrentWeather();
 		byte iWeather = (weather == null) ?  0 : (byte)weather.weatherId;
 
@@ -98,9 +113,11 @@ public abstract class FogManagerMixin {
 
 			boolean isEffect =
 				setting.world <= iDimension &&
+				(setting.season == season || setting.season == 0) && // if not found refer to default (global) season.
 				setting.weather <= iWeather &&
-				setting.yLevel <= yPos &&
-				(setting.biome == biome || setting.biome == 0); // if not found refer to default biome.
+				setting.time <= time &&
+				(setting.biome == biome || setting.biome == 0) && // if not found refer to default (global) biome.
+				setting.yLevel <= yPos;
 
 			if (isEffect) {
 				Fogger.LOGGER.info("Fog: {}, Setting: {}", setting.iFogDefinition, i);

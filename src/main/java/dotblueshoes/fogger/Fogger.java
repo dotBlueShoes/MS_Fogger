@@ -7,6 +7,7 @@ import net.fabricmc.api.ModInitializer;
 import net.minecraft.core.data.registry.Registries;
 import net.minecraft.core.world.biome.Biome;
 import net.minecraft.core.world.biome.Biomes;
+import net.minecraft.core.world.season.Seasons;
 import net.minecraft.core.world.weather.Weather;
 import net.minecraft.core.world.weather.WeatherRain;
 import net.minecraft.core.world.weather.WeatherSnow;
@@ -40,14 +41,15 @@ public class Fogger implements ModInitializer, GameStartEntrypoint, RecipeEntryp
 	// 1-world, 2-season, 3-weather, 4-yLevel
 
 	public static FogSetting[] fogSettings = {
-		/* 0 */ new FogSetting((byte)1, (byte)0, (byte)0, (byte)0, 0,  0, (byte)5), // NETHER-DEFAULT
-		/* 1 */ new FogSetting((byte)0, (byte)0, (byte)4, (byte)0, 0,  0, (byte)5), // WeatherFog
-		/* 2 */ new FogSetting((byte)0, (byte)0, (byte)3, (byte)0, 0,  0, (byte)4), // WeatherStorm
-		/* 3 */ new FogSetting((byte)0, (byte)0, (byte)2, (byte)0, 0,  0, (byte)3), // WeatherSnow
-		/* 4 */ new FogSetting((byte)0, (byte)0, (byte)1, (byte)0, 0,  0, (byte)2), // WeatherRain
-		/* 5 */ new FogSetting((byte)0, (byte)0, (byte)0, (byte)0, 0,  0, (byte)4), // WeatherClear - SeasonalForest
-		/* 6 */ new FogSetting((byte)0, (byte)0, (byte)0, (byte)0, 0,150, (byte)5), // OVERWORLD-CLEAR-Y>72
-		/* 7 */ new FogSetting((byte)0, (byte)0, (byte)0, (byte)0, 0,  0, (byte)1), // WeatherClear
+		/* 0 */ new FogSetting((byte)1, 0, (byte)0,       0, 0,  0, (byte)5), // NETHER-DEFAULT
+		/* 1 */ new FogSetting((byte)0, 0, (byte)4,       0, 0,  0, (byte)5), // WeatherFog
+		/* 2 */ new FogSetting((byte)0, 0, (byte)3,       0, 0,  0, (byte)4), // WeatherStorm
+		/* 3 */ new FogSetting((byte)0, 0, (byte)2,       0, 0,  0, (byte)3), // WeatherSnow
+		/* 4 */ new FogSetting((byte)0, 0, (byte)1,       0, 0,  0, (byte)2), // WeatherRain
+		/* 5 */ new FogSetting((byte)0, 0, (byte)0,  144000, 0,  0, (byte)5), // 7th day and up
+		/* 6 */ new FogSetting((byte)0, 0, (byte)0,       0, 0,  0, (byte)4), // WeatherClear - SeasonalForest
+		/* 7 */ new FogSetting((byte)0, 0, (byte)0,       0, 0,150, (byte)5), // OVERWORLD-CLEAR-Y>72
+		/* 8 */ new FogSetting((byte)0, 0, (byte)0,       0, 0,  0, (byte)1), // WeatherClear
 	};
 
     @Override
@@ -60,8 +62,13 @@ public class Fogger implements ModInitializer, GameStartEntrypoint, RecipeEntryp
 		//    biomeLUT[iBiome] = Registries.BIOMES.getItemByNumericId(iBiome).hashCode();
 	    //}
 
+	    final String seasonStr = "overworld.spring";
+	    fogSettings[6].season = Seasons.getSeason(seasonStr).hashCode();
+
 	    final String biomeStr = "minecraft:overworld.seasonal_forest"; // Read String from file
-	    fogSettings[5].biome = Registries.BIOMES.getItem(biomeStr).hashCode();
+	    fogSettings[6].biome = Registries.BIOMES.getItem(biomeStr).hashCode();
+
+	    //Seasons.getAllSeasons();
 
     }
 

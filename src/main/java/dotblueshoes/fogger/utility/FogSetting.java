@@ -9,12 +9,12 @@ public class FogSetting {
 	public byte iFogDefinition = 0; // max 256 fogDefinitions
 	public byte weather = 0;        // max 256 weathers
 	public int yLevel = 0;          // - Works with +/- and above 255 blocks.
-	public byte season = 0;         // Max 256 seasons
+	public int season = 0;         // - Pointer Address and not a byte index!
 	public int biome = 0;           // - Pointer Address and not a byte index!
 	public byte world = 0;          // Max 256 dimensions
-	public long time = 0;           // - 64-bit // TODO: Make it smaller!
+	public int time = 0;           // - 64-bit // TODO: Make it smaller!
 
-	public FogSetting(byte world, byte season, byte whether, byte time, int biome, int yLevel, byte iFogDefinition) {
+	public FogSetting(byte world, int season, byte whether, int time, int biome, int yLevel, byte iFogDefinition) {
 		this.iFogDefinition = iFogDefinition;
 		this.weather = whether;
 		this.yLevel = yLevel;
