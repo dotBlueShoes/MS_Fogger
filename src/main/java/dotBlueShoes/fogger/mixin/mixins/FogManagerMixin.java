@@ -11,18 +11,12 @@ import net.minecraft.client.render.FogManager;
 import net.minecraft.client.render.OpenGLHelper;
 import net.minecraft.client.render.camera.CameraUtil;
 import net.minecraft.core.block.material.Material;
-import net.minecraft.core.data.registry.Registries;
 import net.minecraft.core.util.helper.MathHelper;
-import net.minecraft.core.world.Dimension;
-import net.minecraft.core.world.biome.Biome;
-import net.minecraft.core.world.season.Season;
-import net.minecraft.core.world.season.Seasons;
 import net.minecraft.core.world.weather.Weather;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.*;
 
 import java.nio.FloatBuffer;
-import java.util.Objects;
 
 @Mixin(
 	value = FogManager.class,
@@ -30,32 +24,25 @@ import java.util.Objects;
 )
 public abstract class FogManagerMixin {
 
-	//@Shadow @Final public static int FOG_MODE_SKY;
-	//@Shadow @Final public static int FOG_MODE_NORMAL;
 	@Shadow @Final public Minecraft mc;
 	@Shadow public float fogRed;
 	@Shadow public float fogGreen;
 	@Shadow public float fogBlue;
-	//@Shadow public float fogBrightnessOld;
-	//@Shadow public float fogBrightness;
-	//@Shadow @Final private FloatBuffer fogColorBuffer;
-	//@Shadow public abstract void updateBrightness();
-	//@Shadow public abstract void updateFogColor(float partialTick);
 	@Shadow protected abstract FloatBuffer buffer(float r, float g, float b, float a);
 
 	@Unique int iLastFogEffect = 0; // One to see whether we triggered/entered a new effect.
 	@Unique int iPrevFogEffect = 0; // One to compare with the last applied effect.
 
-	@Unique static final private long FOG_CHANGE_TIME_MAX = 5000; // 5 sec
+	@Unique static final private long FOG_CHANGE_TIME_MAX = 10000; // 5 sec
 	@Unique public long fogChangeTime;
 
 	@Unique public float fogStart = 0.0f;
 	@Unique public float fogEnd = 0.0f;
-	@Unique public FogColor fogColor = new FogColor(FogColor.DEFAULT.r, FogColor.DEFAULT.g, FogColor.DEFAULT.b);
+	@Unique public FogColor fogColor = new FogColor(FogColor.ZERO); // that's a cpy!
 
 	@Unique public float lastFogStart = FogDefinition.ZERO.start;
 	@Unique public float lastFogEnd = FogDefinition.ZERO.end;
-	@Unique public FogColor lastFogColor = new FogColor(FogColor.DEFAULT.r, FogColor.DEFAULT.g, FogColor.DEFAULT.b);
+	@Unique public FogColor lastFogColor = new FogColor(FogColor.ZERO); // that's a cpy!
 
 	@Unique public void setLastFog(final float start, final float end, final FogColor color) {
 		lastFogStart = start;
@@ -71,18 +58,10 @@ public abstract class FogManagerMixin {
 	//  keys in fogSettings but only spend minimal time there looking at a subset.
 	@Unique public int findFogEffect(final float partialTick) {
 
-		// TODO: Seasons
 		int season = this.mc.theWorld.seasonManager.getCurrentSeason().hashCode();
 
-		// SeasonManager.class, SeasonManagerCycle.class, SeasonManagerSingle.class
-
-		//TODO: Time
-		//Fogger.LOGGER.info("Time: {}", this.mc.theWorld.getWorldTime());
-		// 24000 - day
-		// 168000 - week
-		// 192000 - lunar cycle - 8 phases (there's no lunar cycles tho)
+		// long means: 24000 - day, 168000 - week, 192000 - lunar cycle - 8 phases (there's no lunar cycles tho)
 		long time = this.mc.theWorld.getWorldTime() % 168000;
-		//Fogger.LOGGER.info("Time: {}", time);
 
 		Weather weather = this.mc.theWorld.weatherManager.getCurrentWeather();
 		byte iWeather = (weather == null) ?  0 : (byte)weather.weatherId;
@@ -97,22 +76,8 @@ public abstract class FogManagerMixin {
 			(int)mc.thePlayer.getPosition(partialTick).zCoord
 		).hashCode();
 
-		//this.mc.theWorld.getBiomeProvider().getBiomes();
-		//for (byte iBiome = 0; iBiome < Registries.BIOMES.size(); ++iBiome) {
-		//	Biome biome = Registries.BIOMES.getItemByNumericId(iBiome);
-		//	if (playerBiome.translationKey.equals(biome.translationKey)) {
-		//		Fogger.LOGGER.info("Biome Id: {}", iBiome);
-		//	}
-		//}
-
-		//for (Biome biome : Registries.BIOMES) {
-		//	//biome
-		//}
-
 		for (int i = 0; i < Fogger.fogSettings.length; ++i) {
 			final FogSetting setting = Fogger.fogSettings[i];
-
-			//Fogger.LOGGER.info("Biome: {}, PBiome {}", biome, setting.biome);
 
 			boolean isEffect =
 				setting.world <= iDimension &&
@@ -131,6 +96,14 @@ public abstract class FogManagerMixin {
 		return 1; // FogDefinition.DEFAULT
 	}
 
+	@Unique public void darkenColorByCelestialAngle(final float partialTick) {
+		float dayProgress = MathHelper.cos(this.mc.theWorld.getCelestialAngle(partialTick) * 3.1415927F * 2.0F) * 2.0F + 0.5F;
+		dayProgress = MathHelper.clamp(dayProgress, 0.0F, 1.0F);
+		fogColor.r *= dayProgress;
+		fogColor.g *= dayProgress;
+		fogColor.b *= dayProgress;
+	}
+
 	@Unique public void applyFogEffect(
 		final int iCurrentFogEffect,
 		final float partialTick
@@ -138,16 +111,7 @@ public abstract class FogManagerMixin {
 		final FogDefinition currentFogEffect = Fogger.fogDefinitions[iCurrentFogEffect];
 		final FogColor currentColor = Fogger.fogColors[currentFogEffect.iColor];
 
-		//Fogger.LOGGER.info("Color: {}", currentFogEffect.iColor);
-		//Fogger.LOGGER.info("r: {}", currentColor.r);
-		//Fogger.LOGGER.info("g: {}", currentColor.g);
-		//Fogger.LOGGER.info("b: {}", currentColor.b);
-
 		if (iCurrentFogEffect != iPrevFogEffect) {
-
-			//Fogger.LOGGER.info("cur: {}", iCurrentFogEffect);
-			//Fogger.LOGGER.info("pre: {}", iPrevFogEffect);
-			//Fogger.LOGGER.info("lst: {}", iLastFogEffect);
 
 			// If during last change we didn't hit FOG_CHANGE_TIME_MAX
 			// Then store values from previous blend as last so we can always blend well.
@@ -167,7 +131,6 @@ public abstract class FogManagerMixin {
 		final float duration = fogCurrentTime - fogChangeTime;
 
 		if (duration > FOG_CHANGE_TIME_MAX) { // Apply full currentFogEffect.
-			// TODO: Those triggers every call? Why it can trigger only once right?
 			fogStart = currentFogEffect.start;
 			fogEnd = currentFogEffect.end;
 
@@ -175,16 +138,8 @@ public abstract class FogManagerMixin {
 			fogColor.g = currentColor.g;
 			fogColor.b = currentColor.b;
 
-			if (Fogger.isFogAutoDarkenByNightSky) {
-				float dayProgress = MathHelper.cos(this.mc.theWorld.getCelestialAngle(partialTick) * 3.1415927F * 2.0F) * 2.0F + 0.5F;
-				dayProgress = MathHelper.clamp(dayProgress, 0.0F, 1.0F);
-				//Fogger.LOGGER.info("Day: {}", dayProgress);
-				fogColor.r *= dayProgress;
-				fogColor.g *= dayProgress;
-				fogColor.b *= dayProgress;
-			}
+			if (Fogger.isFogAutoDarkenByNightSky) darkenColorByCelestialAngle(partialTick);
 
-			// This also means that this changes when we're 100% one effect.
 			iLastFogEffect = iCurrentFogEffect;
 		} else { // Apply a mix of current and previous effect.
 
@@ -197,14 +152,7 @@ public abstract class FogManagerMixin {
 			fogColor.g = (currentColor.g * newLerp) + (lastFogColor.g * oldLerp);
 			fogColor.b = (currentColor.b * newLerp) + (lastFogColor.b * oldLerp);
 
-			if (Fogger.isFogAutoDarkenByNightSky) {
-				float dayProgress = MathHelper.cos(this.mc.theWorld.getCelestialAngle(partialTick) * 3.1415927F * 2.0F) * 2.0F + 0.5F;
-				dayProgress = MathHelper.clamp(dayProgress, 0.0F, 1.0F);
-				//Fogger.LOGGER.info("Day: {}", dayProgress);
-				fogColor.r *= dayProgress;
-				fogColor.g *= dayProgress;
-				fogColor.b *= dayProgress;
-			}
+			if (Fogger.isFogAutoDarkenByNightSky) darkenColorByCelestialAngle(partialTick);
 
 			// Ensure that fog start point cannot be higher than end point!
 			fogStart = Math.min(fogStart, fogEnd);
@@ -252,23 +200,18 @@ public abstract class FogManagerMixin {
 			int iCurrentFogEffect = findFogEffect(partialTick);
 			applyFogEffect(iCurrentFogEffect, partialTick);
 
-
 			GL11.glFog(GL11.GL_FOG_COLOR, this.buffer(fogColor.r, fogColor.g, fogColor.b, 0.5F));
-			//GL11.glFog(GL11.GL_FOG_COLOR, this.buffer(FogColor.UnderLava.r, FogColor.UnderLava.g, FogColor.UnderLava.b, 0.5F));
 			GL11.glNormal3f(0.0F, -1.0F, 0.0F);
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_LINEAR);
 			GL11.glFogf(GL11.GL_FOG_START, maxFogDistance * fogStart);
-			GL11.glFogf(GL11.GL_FOG_END, maxFogDistance * fogEnd);
-			GL11.glFogf(GL11.GL_FOG_DENSITY, 1.0F);
 
-			// TODO: This needs fixing later. prob.
-			//if (fogMode == -1) { // -1 STANDS FOR [SKY RENDER]
-			//	Fogger.LOGGER.info("FogMode == -1!");
-			//	GL11.glFogf(GL11.GL_FOG_START, 0.0F);
-			//	GL11.glFogf(GL11.GL_FOG_END, 0.25F);
-			//	//GL11.glFogf(GL11.GL_FOG_END, fogDistance * 0.8F);
-			//}
+			// TODO: This can be written better.
+			// -1 STANDS FOR [SKY RENDER]
+			if (fogMode == -1) GL11.glFogf(GL11.GL_FOG_END, maxFogDistance * fogEnd * 0.8F);
+			else GL11.glFogf(GL11.GL_FOG_END, maxFogDistance * fogEnd);
+
+			GL11.glFogf(GL11.GL_FOG_DENSITY, 1.0F);
 
 			if (OpenGLHelper.enableSphericalFog) {
 				//GL11.glFogi(GL11.GL_FOG_DISTANCE_MODE_NV, GL11.GL_EYE_RADIAL_NV);
@@ -278,6 +221,15 @@ public abstract class FogManagerMixin {
 
 		GL11.glEnable(GL11.GL_COLOR_MATERIAL);
 		GL11.glColorMaterial(GL11.GL_FRONT, GL11.GL_AMBIENT);
+	}
+
+	/**
+	 * @author dotBlueShoes
+	 * @reason The reason is. There's no reason. Contact Me.
+	 */
+	@Overwrite
+	public void updateFogColor(float partialTick) {
+		GL11.glClearColor(fogColor.r, fogColor.g, fogColor.b, 0.0F);
 	}
 
 }

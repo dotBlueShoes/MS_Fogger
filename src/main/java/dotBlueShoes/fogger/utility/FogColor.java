@@ -10,8 +10,14 @@ public class FogColor {
 		this.b = b;
 	}
 
-	static final public FogColor DEFAULT = new FogColor(0.50f, 0.50f, 0.50f);
-	static final public FogColor ZERO = new FogColor(0.00f, 0.00f, 0.00f);
+	public FogColor(FogColor fogColor) {
+		this.r = fogColor.r;
+		this.g = fogColor.g;
+		this.b = fogColor.b;
+	}
+
+	static final public FogColor ZERO = new FogColor(1.00f, 1.00f, 1.00f);
+	static final public FogColor DEFAULT = new FogColor(0.65098f, 0.8f, 1.0f);
 	static final public FogColor SKY_BLUE = new FogColor(0.65098f, 0.8f, 1.0f);
 	static final public FogColor UnderWaterNBD = new FogColor(0.02f, 0.02f, 0.2f); // NonBiomeDependant
 	static final public FogColor UnderLava = new FogColor(0.6f, 0.1f, 0.0f);

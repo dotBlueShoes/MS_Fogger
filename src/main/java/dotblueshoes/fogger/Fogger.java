@@ -27,6 +27,7 @@ public class Fogger implements ModInitializer, GameStartEntrypoint, RecipeEntryp
 	public static boolean isFogCustomColorAppliedToBackground = true;
 
 	public static FogColor[] fogColors = {
+		FogColor.ZERO,
 		FogColor.DEFAULT,
 		FogColor.SKY_BLUE,
 		FogColor.UnderWaterNBD,
@@ -36,10 +37,10 @@ public class Fogger implements ModInitializer, GameStartEntrypoint, RecipeEntryp
 	public static FogDefinition[] fogDefinitions = {
 		FogDefinition.ZERO,
 		FogDefinition.DEFAULT,
-		new FogDefinition(0.00f, 0.95f, (byte)0),
+		new FogDefinition(0.00f, 0.95f, (byte)1),
 		new FogDefinition(0.00f, 0.80f, (byte)1),
-		new FogDefinition(0.00f, 0.50f, (byte)2),
-		new FogDefinition(0.00f, 0.25f, (byte)3),
+		new FogDefinition(0.00f, 0.50f, (byte)1),
+		new FogDefinition(0.00f, 0.25f, (byte)1),
 	};
 
 	// Sorted by:
