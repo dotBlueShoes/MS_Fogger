@@ -24,6 +24,8 @@ public class FogSetting {
 		this.time = time;
 	}
 
+	//public static final FogSetting VANILLA_RAIN
+
 	// VANILLA BIOMES -> Biomes.class // NOPE
 	// 00 - OVERWORLD_RAINFOREST
 	// 01 - OVERWORLD_SWAMPLAND

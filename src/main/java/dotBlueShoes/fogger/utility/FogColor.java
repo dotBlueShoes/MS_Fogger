@@ -16,6 +16,10 @@ public class FogColor {
 		this.b = fogColor.b;
 	}
 
+	public String toConfig(final String propertyName) {
+		return (char)propertyName.length() + propertyName + Float.toString(r) + Float.toString(g) + Float.toString(b);
+	}
+
 	static final public FogColor ZERO = new FogColor(1.00f, 1.00f, 1.00f);
 	static final public FogColor DEFAULT = new FogColor(0.65098f, 0.8f, 1.0f);
 	static final public FogColor SKY_BLUE = new FogColor(0.65098f, 0.8f, 1.0f);

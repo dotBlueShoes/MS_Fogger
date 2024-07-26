@@ -1,5 +1,6 @@
 package dotBlueShoes.fogger;
 
+import dotBlueShoes.fogger.config.MSConfigHandler;
 import dotBlueShoes.fogger.utility.FogColor;
 import dotBlueShoes.fogger.utility.FogDefinition;
 import dotBlueShoes.fogger.utility.FogSetting;
@@ -80,7 +81,16 @@ public class Fogger implements ModInitializer, GameStartEntrypoint, RecipeEntryp
 
 	@Override
 	public void beforeGameStart() {
-
+		MSConfigHandler config = new MSConfigHandler(MOD_ID);
+		config.create();
+		//Config.Update();
+		//LOGGER.info("int: {}", Config.cfg.getInt("Sample Sample.foggerInt"));
+		//LOGGER.info("bool: {}", Config.cfg.getBoolean("Sample.foggerBool"));
+		//LOGGER.info("float: {}", Config.cfg.getFloat("Sample.foggerFloat"));
+		//LOGGER.info("double: {}", Config.cfg.getDouble("Sample.foggerDouble"));
+		//LOGGER.info("int: {}", Config.cfg.getInt("Sample.foggerInt"));
+		//LOGGER.info("string: {}", Config.cfg.getString("Sample.foggerString"));
+		//LOGGER.info("length: {}", Config.fogDefinitions.length);
 	}
 
 	@Override

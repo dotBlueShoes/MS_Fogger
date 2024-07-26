@@ -2,8 +2,8 @@ package dotBlueShoes.fogger.utility;
 
 public class FogDefinition {
 
-	public float start = 0;
-	public float end = 0;
+	public float start = 0.0f;
+	public float end = 0.0f;
 	public byte iColor = 0;
 
 	public FogDefinition(float start, float end, byte iColor) {
