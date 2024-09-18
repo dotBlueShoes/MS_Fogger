@@ -81,8 +81,9 @@ public class Fogger implements ModInitializer, GameStartEntrypoint, RecipeEntryp
 
 	@Override
 	public void beforeGameStart() {
-		MSConfigHandler config = new MSConfigHandler(MOD_ID);
-		config.create();
+		//MSConfigHandler config = new MSConfigHandler(MOD_ID);
+		//config.create();
+
 		//Config.Update();
 		//LOGGER.info("int: {}", Config.cfg.getInt("Sample Sample.foggerInt"));
 		//LOGGER.info("bool: {}", Config.cfg.getBoolean("Sample.foggerBool"));

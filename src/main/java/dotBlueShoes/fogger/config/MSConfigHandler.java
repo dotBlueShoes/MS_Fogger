@@ -114,27 +114,20 @@ public class MSConfigHandler {
 
 			{
 
-				final byte[] PROPERTY_ARRAY_COLORS = "FogColors".getBytes();
-				final byte[] PROPERTY_ARRAY_DEFINITIONS = "FogDefinitions".getBytes();
-				final byte[] PROPERTY_ARRAY_SETTINGS = "FogSettings".getBytes();
+				//final byte[] PROPERTY_ARRAY_COLORS = "FogColors".getBytes();
+				//final byte[] PROPERTY_ARRAY_DEFINITIONS = "FogDefinitions".getBytes();
+				//final byte[] PROPERTY_ARRAY_SETTINGS = "FogSettings".getBytes();
 
-				IProperty[] properties = new IProperty[] {
-					new PropertyFogColors()
+				IProperty[] PROPERTIES = new IProperty[] {
+					new PropertyFogColors(),
+					new PropertyFogDefinitions(),
+					new PropertyFogSettings(),
 				};
-
-				Fogger.LOGGER.info(properties[0].getName());
 
 				// !!!!
 				// TODO: The order (which property we read first) is important
 				// So no matter what we're first looking for colors, then definitions, then settings.
 				// !!!!
-
-				// In the future, I might replace it with a list so that when an element is found I could remove it from search queue.
-				final byte[][] PROPERTIES = {
-					PROPERTY_ARRAY_COLORS,
-					PROPERTY_ARRAY_DEFINITIONS,
-					PROPERTY_ARRAY_SETTINGS
-				};
 
 				int flag_position = 0;
 
@@ -166,22 +159,31 @@ public class MSConfigHandler {
 
 					}
 
-					property: for (int iProperty = 0; iProperty < PROPERTIES.length; ++iProperty) {
+					// Go through each property in array.
+					propertyLoop: for (int iProperty = 0; iProperty < PROPERTIES.length; ++iProperty) {
+
+						String propertyName = PROPERTIES[iProperty].getName();
 						int iPropertySign = 0;
-						for (; iPropertySign < PROPERTIES[iProperty].length; ++iPropertySign) {
-							if (data.charAt(flag_position + iPropertySign) != PROPERTIES[iProperty][iPropertySign]) {
-								continue property;
+
+						// Match property
+						for (; iPropertySign < propertyName.length(); ++iPropertySign) {
+							if (data.charAt(flag_position + iPropertySign) != propertyName.charAt(iPropertySign)) {
+								continue propertyLoop;
 							}
 						}
 
-						// We land here when a property is found!
-						Fogger.LOGGER.info(String.valueOf(iProperty));
-
-						// Skip what we read.
+						// Skip property name we have already read.
 						flag_position += iPropertySign;
 
-						// Now each property has its own reader.
-						// PROPERTIES[iProperty].read(flag_position);
+						// Run the property reader.
+						int propertyReadBytes = PROPERTIES[iProperty].read(data, flag_position);
+
+						// Skip property bytes we have already read.
+						flag_position = propertyReadBytes;
+
+						// Because we have already found the property in this piece of text
+						//  we skip newer iterations.
+						break propertyLoop;
 					}
 
 					++flag_position;

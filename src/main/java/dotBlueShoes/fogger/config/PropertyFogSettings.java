@@ -2,11 +2,10 @@ package dotBlueShoes.fogger.config;
 
 import dotBlueShoes.fogger.Fogger;
 
-public class PropertyFogColors implements IProperty {
-
+public class PropertyFogSettings implements IProperty{
 	@Override
-	public final String getName() {
-		return "FogColors";
+	public String getName() {
+		return "FogSettings";
 	}
 
 	@Override
@@ -44,19 +43,5 @@ public class PropertyFogColors implements IProperty {
 		}
 
 		return propertyReadBytes;
-
-		// Skip spaces/tabs/newlines if exists
-		// Skip comment if exists
-		// USER DEFINED
-		//  READ Array element that consists of:
-		//  - READ String
-		//  - READ float
-		//  - READ float
-		//  - READ float
-		// End reading at '}' sign
-
-		// Based on that information initialize FogColors array (define it's size first!).
-		// Based on that information store names somewhere along the way for further processing.
 	}
-
 }
