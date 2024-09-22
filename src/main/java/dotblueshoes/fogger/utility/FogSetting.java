@@ -1,22 +1,18 @@
 package dotBlueShoes.fogger.utility;
 
-import net.minecraft.core.block.Block;
-import net.minecraft.core.world.biome.*;
-import net.minecraft.core.world.weather.Weather;
-
 public class FogSetting {
 
-	public byte iFogDefinition = 0; // max 256 fogDefinitions
-	public byte weather = 0;        // max 256 weathers
-	public int yLevel = 0;          // - Works with +/- and above 255 blocks.
-	public int season = 0;         // - Pointer Address and not a byte index!
-	public int biome = 0;           // - Pointer Address and not a byte index!
-	public byte world = 0;          // Max 256 dimensions
-	public int time = 0;           // - 64-bit // TODO: Make it smaller!
+	public int iFogDefinition; // nope // max 256 fogDefinitions
+	public int weather;        // nope // max 256 weathers
+	public int yLevel;         // - Works with +/- and above 255 blocks.
+	public int season;         // - Pointer Address and not a byte index!
+	public int biome;          // - Pointer Address and not a byte index!
+	public int world;          // nope // Max 256 dimensions
+	public int time;           // - 64-bit // TODO: Make it smaller!
 
-	public FogSetting(byte world, int season, byte whether, int time, int biome, int yLevel, byte iFogDefinition) {
+	public FogSetting(int world, int season, int weather, int time, int biome, int yLevel, int iFogDefinition) {
 		this.iFogDefinition = iFogDefinition;
-		this.weather = whether;
+		this.weather = weather;
 		this.yLevel = yLevel;
 		this.season = season;
 		this.biome = biome;
@@ -25,7 +21,6 @@ public class FogSetting {
 	}
 
 	//public static final FogSetting VANILLA_RAIN
-
 	// VANILLA BIOMES -> Biomes.class // NOPE
 	// 00 - OVERWORLD_RAINFOREST
 	// 01 - OVERWORLD_SWAMPLAND
