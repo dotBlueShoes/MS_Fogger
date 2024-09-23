@@ -20,6 +20,27 @@ public class FogSetting {
 		this.time = time;
 	}
 
+	@Override
+	public String toString() {
+		String message = "";
+		message += "world: ";
+		message += world;
+		message += " season: ";
+		message += season;
+		message += " weather: ";
+		message += weather;
+		message += " time: ";
+		message += time;
+		message += " biome: ";
+		message += biome;
+		message += " yLevel: ";
+		message += yLevel;
+		message += " iDefinition: ";
+		message += iFogDefinition;
+		message += ";";
+		return message;
+	}
+
 	//public static final FogSetting VANILLA_RAIN
 	// VANILLA BIOMES -> Biomes.class // NOPE
 	// 00 - OVERWORLD_RAINFOREST

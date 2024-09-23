@@ -123,7 +123,7 @@ public class ConfigHandler {
 
 						// We only end up here if the color was not found in the loop.
 
-						Fogger.LOGGER.info("Invalid name: {}", configData.fogDefinitions[iDefinition].nameColor);
+						Fogger.LOGGER.error("Invalid name: {}", configData.fogDefinitions[iDefinition].nameColor);
 						throw new RuntimeException("Config: fogDefinitions -> Color under specified name was not found!");
 					}
 				}
@@ -134,40 +134,41 @@ public class ConfigHandler {
 						for (int iDefinition = 0; iDefinition < configData.fogDefinitions.length; ++iDefinition) {
 							if (configData.fogDefinitions[iDefinition].name.equals(configData.fogSettings[iSetting].nameDefinition)) {
 
-								int season = 0;
-								int biome = 0;
-
-								if (configData.fogSettings[iSetting].season != null) {
-									season = Seasons.getSeason(configData.fogSettings[iSetting].season).hashCode();
-									Fogger.LOGGER.info("Season: {}", season);
-								}
-
-								if (configData.fogSettings[iSetting].biome != null) {
-									biome = Registries.BIOMES.getItem(configData.fogSettings[iSetting].biome).hashCode();
-									Fogger.LOGGER.info("Biome: {}", biome);
-								}
-
-								Fogger.fogSettings[iSetting] = new FogSetting(
+								FogSetting fogSetting = new FogSetting(
 									configData.fogSettings[iSetting].world,
-									season,
+									getSeason(configData.fogSettings[iSetting].season),
 									configData.fogSettings[iSetting].weather,
 									configData.fogSettings[iSetting].time,
-									biome,
+									getBiome(configData.fogSettings[iSetting].biome),
 									configData.fogSettings[iSetting].yLevel,
 									iDefinition
 								);
 
-								continue settings;
+								// 1. Get first element on stack that should be bubble-moved.
+								int iTop = getSortTop(fogSetting, iSetting);
 
+								// 2. Now bubble-move all elements from there down. Going from End to Start.
+								for (int iBottom = iSetting; iBottom > iTop; --iBottom) {
+									Fogger.fogSettings[iBottom] = Fogger.fogSettings[iBottom - 1];
+								}
+
+								// 3. ADD to ARRAY
+								Fogger.fogSettings[iTop] = fogSetting;
+
+								continue settings;
 							}
 						}
 
 						// We only end up here if the definition was not found in the loop.
-						Fogger.LOGGER.info("Invalid name: {}", configData.fogSettings[iSetting].nameDefinition);
+						Fogger.LOGGER.error("Invalid name: {}", configData.fogSettings[iSetting].nameDefinition);
 						throw new RuntimeException("Config: fogSettings -> Definition under specified name was not found!");
 					}
 				}
 
+				//log
+				//log for (int i = 0; i < configData.fogSettings.length; ++i) {
+				//log 	Fogger.LOGGER.info("{}, {}", i, Fogger.fogSettings[i]);
+				//log }
 
 			}
 
@@ -177,6 +178,68 @@ public class ConfigHandler {
 			//noinspection CallToPrintStackTrace
 			exception.printStackTrace();
 		}
+	}
+
+	private int getSortTop(FogSetting fogSetting, int iSetting) {
+		int iTop = 0;
+
+		for (; iTop < iSetting; ++iTop) {
+
+			boolean isAWorld = Fogger.fogSettings[iTop].world < fogSetting.world;
+			boolean isASeason = Fogger.fogSettings[iTop].season < fogSetting.season;
+			boolean isAWeather = Fogger.fogSettings[iTop].weather < fogSetting.weather;
+			boolean isATime = Fogger.fogSettings[iTop].time < fogSetting.time;
+			boolean isABiome = Fogger.fogSettings[iTop].biome < fogSetting.biome;
+			boolean isAYLevel = Fogger.fogSettings[iTop].yLevel < fogSetting.yLevel;
+
+			boolean isWorld = Fogger.fogSettings[iTop].world == fogSetting.world;
+			boolean isSeason = Fogger.fogSettings[iTop].season == fogSetting.season;
+			boolean isWeather = Fogger.fogSettings[iTop].weather == fogSetting.weather;
+			boolean isTime = Fogger.fogSettings[iTop].time == fogSetting.time;
+			boolean isBiome = Fogger.fogSettings[iTop].biome == fogSetting.biome;
+			boolean isYLevel = Fogger.fogSettings[iTop].yLevel == fogSetting.yLevel;
+
+			// SORT (get top element we need to move)
+			// (1) by world,
+			// (2) by season,
+			// (3) by weather,
+			// (4) by Time,
+			// (5) by Biome,
+			// (6) by yLevel,
+
+			if (
+				isAWorld ||
+					isWorld && isASeason ||
+					isWorld && isSeason && isAWeather ||
+					isWorld && isSeason && isWeather && isATime ||
+					isWorld && isSeason && isWeather && isTime && isABiome ||
+					isWorld && isSeason && isWeather && isTime && isBiome && isAYLevel
+			) {
+				break;
+			}
+		}
+
+		return iTop;
+	}
+
+	private int getSeason(String seasonName) {
+		int season = 0;
+
+		if (seasonName != null) {
+			season = Seasons.getSeason(seasonName).hashCode();
+		}
+
+		return season;
+	}
+
+	private int getBiome(String biomeName) {
+		int biome = 0;
+
+		if (biomeName != null) {
+			biome = Registries.BIOMES.getItem(biomeName).hashCode();
+		}
+
+		return biome;
 	}
 
 }
