@@ -90,7 +90,6 @@ public class ConfigHandler {
 				Fogger.fogColors = new FogColor[configData.fogColors.length];
 
 				{ // BOOLS
-					Fogger.isFogCustomColorAppliedToBackground = configData.isFogCustomColorAppliedToBackground;
 					Fogger.isFogAutoDarkenByNightSky = configData.isFogAutoDarkenByNightSky;
 					Fogger.isFogColorsOverridden = configData.isFogColorsOverridden;
 				}

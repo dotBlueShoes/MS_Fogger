@@ -5,7 +5,6 @@ public class ConfigData {
 	public String _comment = "Fogger's Configuration File";
 	public boolean isFogColorsOverridden                = true;
 	public boolean isFogAutoDarkenByNightSky            = true;
-	public boolean isFogCustomColorAppliedToBackground  = true;
 
 	public PropertyFogColor[] fogColors = {
 		new PropertyFogColor("zero",        "", 1.00f,      1.00f,  1.00f   ),

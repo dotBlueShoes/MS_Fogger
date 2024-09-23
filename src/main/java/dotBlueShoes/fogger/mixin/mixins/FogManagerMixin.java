@@ -172,6 +172,9 @@ public abstract class FogManagerMixin {
 		final boolean isCameraInWater = CameraUtil.isUnderLiquid(this.mc.activeCamera, this.mc.theWorld, Material.water, partialTick);
 		final boolean isCameraInLava = CameraUtil.isUnderLiquid(this.mc.activeCamera, this.mc.theWorld, Material.lava, partialTick);
 
+		// TODO
+		// Why if's? This should be just 5 different methods each for said draw...
+
 		if (isCameraPhotoMode) {
 			final float fogDistance = farPlaneDistance * ((GuiPhotoMode)this.mc.currentScreen).getFog(partialTick);
 			GL11.glFog(GL11.GL_FOG_COLOR, this.buffer(this.fogRed, this.fogGreen, this.fogBlue, 0.5F));
@@ -196,20 +199,36 @@ public abstract class FogManagerMixin {
 			GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_EXP);
 			GL11.glFogf(GL11.GL_FOG_DENSITY, 2.0F);
 		} else {
-			final float maxFogDistance = (float) (renderDistance.chunks * 16);
-			int iCurrentFogEffect = findFogEffect(partialTick);
-			applyFogEffect(iCurrentFogEffect, partialTick);
 
-			GL11.glFog(GL11.GL_FOG_COLOR, this.buffer(fogColor.r, fogColor.g, fogColor.b, 0.5F));
-			GL11.glNormal3f(0.0F, -1.0F, 0.0F);
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-			GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_LINEAR);
-			GL11.glFogf(GL11.GL_FOG_START, maxFogDistance * fogStart);
+			final int FOG_TYPE_SKY = -1;
 
-			// TODO: This can be written better.
-			// -1 STANDS FOR [SKY RENDER]
-			if (fogMode == -1) GL11.glFogf(GL11.GL_FOG_END, maxFogDistance * fogEnd * 0.8F);
-			else GL11.glFogf(GL11.GL_FOG_END, maxFogDistance * fogEnd);
+			if (fogMode == FOG_TYPE_SKY) {
+
+				final float maxFogDistance = (float) (renderDistance.chunks * 16);
+				int iCurrentFogEffect = findFogEffect(partialTick);
+				applyFogEffect(iCurrentFogEffect, partialTick);
+
+				GL11.glFog(GL11.GL_FOG_COLOR, this.buffer(0, 0, 0, 0.5F));
+				GL11.glNormal3f(0.0F, -1.0F, 0.0F);
+				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+				GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_LINEAR);
+				GL11.glFogf(GL11.GL_FOG_START, maxFogDistance * fogStart);
+				GL11.glFogf(GL11.GL_FOG_END, maxFogDistance * fogEnd * 0.8F);
+
+			} else {
+
+				final float maxFogDistance = (float) (renderDistance.chunks * 16);
+				int iCurrentFogEffect = findFogEffect(partialTick);
+				applyFogEffect(iCurrentFogEffect, partialTick);
+
+				GL11.glFog(GL11.GL_FOG_COLOR, this.buffer(fogColor.r, fogColor.g, fogColor.b, 0.5F));
+				GL11.glNormal3f(0.0F, -1.0F, 0.0F);
+				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+				GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_LINEAR);
+				GL11.glFogf(GL11.GL_FOG_START, maxFogDistance * fogStart);
+				GL11.glFogf(GL11.GL_FOG_END, maxFogDistance * fogEnd);
+
+			}
 
 			GL11.glFogf(GL11.GL_FOG_DENSITY, 1.0F);
 

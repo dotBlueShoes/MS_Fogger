@@ -16,7 +16,6 @@ public class Fogger implements ModInitializer, GameStartEntrypoint, RecipeEntryp
     public static final String MOD_ID = "fogger";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	public static boolean isFogCustomColorAppliedToBackground = true;
 	public static boolean isFogAutoDarkenByNightSky = true;
 	public static boolean isFogColorsOverridden = true;
 
