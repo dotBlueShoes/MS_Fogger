@@ -6,6 +6,10 @@ public class ConfigData {
 	public boolean isFogColorsOverridden                = true;
 	public boolean isFogAutoDarkenByNightSky            = true;
 
+	public PropertyFogColor defaultFogColor = new PropertyFogColor("default", "Fallback color.", 0.65098f, 0.8f, 1.0f);
+	public PropertyFogDefinition defaultFogDefinition = new PropertyFogDefinition("default", "Fallback definition.", 0.00f, 0.90f, "default");
+	public PropertyFogSetting defaultFogSetting = new PropertyFogSetting("default", "Fallback setting.", 0, null, 0, 0, null, 0, "default");
+
 	public PropertyFogColor[] fogColors = {
 		new PropertyFogColor("zero",        "", 1.00f,      1.00f,  1.00f   ),
 		new PropertyFogColor("default",     "", 0.65098f,   0.8f,   1.0f    ),

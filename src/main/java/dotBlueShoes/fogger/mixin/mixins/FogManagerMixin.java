@@ -208,7 +208,7 @@ public abstract class FogManagerMixin {
 				int iCurrentFogEffect = findFogEffect(partialTick);
 				applyFogEffect(iCurrentFogEffect, partialTick);
 
-				GL11.glFog(GL11.GL_FOG_COLOR, this.buffer(0, 0, 0, 0.5F));
+				GL11.glFog(GL11.GL_FOG_COLOR, this.buffer(fogColor.r, fogColor.g, fogColor.b, 0.5F));
 				GL11.glNormal3f(0.0F, -1.0F, 0.0F);
 				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 				GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_LINEAR);

@@ -13,6 +13,18 @@ import turniplabs.halplibe.util.RecipeEntrypoint;
 
 public class Fogger implements ModInitializer, GameStartEntrypoint, RecipeEntrypoint {
 
+	// TODO:
+	//  - Why is nether black?
+	//  - Default FogColor Config + FogManagerMixin logic.
+	//  - Default FogDefinition Config + FogManagerMixin logic.
+	//  - Prep values so that it's vanilla by default.
+	//  - Move this project to newest BTA version.
+	//  - Create a Look-Up-Table for Biomes to store byte instead of int.
+	//  biomeLUT = new int[Registries.BIOMES.size()];
+	//  for (byte iBiome = 0; iBiome < Registries.BIOMES.size(); ++iBiome) {
+	//      biomeLUT[iBiome] = Registries.BIOMES.getItemByNumericId(iBiome).hashCode();
+	//  }
+
     public static final String MOD_ID = "fogger";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
@@ -32,13 +44,6 @@ public class Fogger implements ModInitializer, GameStartEntrypoint, RecipeEntryp
 	public void beforeGameStart() {
 		ConfigHandler config = new ConfigHandler(MOD_ID);
 		config.create();
-
-		// TODO:
-		//  Create a Look-Up-Table for Biomes to store byte instead of int.
-		//  biomeLUT = new int[Registries.BIOMES.size()];
-		//  for (byte iBiome = 0; iBiome < Registries.BIOMES.size(); ++iBiome) {
-		//      biomeLUT[iBiome] = Registries.BIOMES.getItemByNumericId(iBiome).hashCode();
-		//  }
 	}
 
 	@Override

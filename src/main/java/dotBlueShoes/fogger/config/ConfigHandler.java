@@ -183,20 +183,21 @@ public class ConfigHandler {
 		int iTop = 0;
 
 		for (; iTop < iSetting; ++iTop) {
+			FogSetting nextFogSetting = Fogger.fogSettings[iTop];
 
-			boolean isAWorld = Fogger.fogSettings[iTop].world < fogSetting.world;
-			boolean isASeason = Fogger.fogSettings[iTop].season < fogSetting.season;
-			boolean isAWeather = Fogger.fogSettings[iTop].weather < fogSetting.weather;
-			boolean isATime = Fogger.fogSettings[iTop].time < fogSetting.time;
-			boolean isABiome = Fogger.fogSettings[iTop].biome < fogSetting.biome;
-			boolean isAYLevel = Fogger.fogSettings[iTop].yLevel < fogSetting.yLevel;
+			boolean isAWorld    = nextFogSetting.world      < fogSetting.world;
+			boolean isASeason   = nextFogSetting.season     < fogSetting.season;
+			boolean isAWeather  = nextFogSetting.weather    < fogSetting.weather;
+			boolean isATime     = nextFogSetting.time       < fogSetting.time;
+			boolean isABiome    = nextFogSetting.biome      < fogSetting.biome;
+			boolean isAYLevel   = nextFogSetting.yLevel     < fogSetting.yLevel;
 
-			boolean isWorld = Fogger.fogSettings[iTop].world == fogSetting.world;
-			boolean isSeason = Fogger.fogSettings[iTop].season == fogSetting.season;
-			boolean isWeather = Fogger.fogSettings[iTop].weather == fogSetting.weather;
-			boolean isTime = Fogger.fogSettings[iTop].time == fogSetting.time;
-			boolean isBiome = Fogger.fogSettings[iTop].biome == fogSetting.biome;
-			boolean isYLevel = Fogger.fogSettings[iTop].yLevel == fogSetting.yLevel;
+			boolean isWorld     = nextFogSetting.world      == fogSetting.world;
+			boolean isSeason    = nextFogSetting.season     == fogSetting.season;
+			boolean isWeather   = nextFogSetting.weather    == fogSetting.weather;
+			boolean isTime      = nextFogSetting.time       == fogSetting.time;
+			boolean isBiome     = nextFogSetting.biome      == fogSetting.biome;
+			boolean isYLevel    = nextFogSetting.yLevel     == fogSetting.yLevel;
 
 			// SORT (get top element we need to move)
 			// (1) by world,
