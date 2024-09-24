@@ -12,11 +12,12 @@ public class ConfigData {
 	public PropertyFogSetting defaultFogSetting = new PropertyFogSetting("default", "Fallback setting.", 0, null, 0, 0, null, 0, "default");
 
 	public PropertyFogColor[] fogColors = {
-		new PropertyFogColor("zero",        "", 1.00f,      1.00f,  1.00f   ),
-		new PropertyFogColor("default",     "", 0.65098f,   0.8f,   1.0f    ),
-		new PropertyFogColor("blue_sky",    "", 0.65098f,   0.8f,   1.0f    ),
-		new PropertyFogColor("under_water", "", 0.02f,      0.02f,  0.2f    ),
-		new PropertyFogColor("under_lava",  "", 0.6f,       0.1f,   0.0f    ),
+		new PropertyFogColor("zero",        "", 1.00f,      1.00f,      1.00f   ),
+		new PropertyFogColor("default",     "", 0.65098f,   0.8f,       1.0f    ),
+		new PropertyFogColor("blue_sky",    "", 0.65098f,   0.8f,       1.0f    ),
+		new PropertyFogColor("nether",      "", 0.49609f,   0.07813f,   0.125f  ),
+		new PropertyFogColor("under_water", "", 0.02f,      0.02f,      0.2f    ),
+		new PropertyFogColor("under_lava",  "", 0.6f,       0.1f,       0.0f    ),
 	};
 
 	public PropertyFogDefinition[] fogDefinitions = {
@@ -26,10 +27,11 @@ public class ConfigData {
 		new PropertyFogDefinition("normal",     "", 0.00f, 0.80f, "default"     ),
 		new PropertyFogDefinition("short",      "", 0.00f, 0.50f, "under_lava"  ),
 		new PropertyFogDefinition("tiny",       "", 0.00f, 0.25f, "default"     ),
+		new PropertyFogDefinition("nether",     "", 0.00f, 0.80f, "nether"      ),
 	};
 
 	public PropertyFogSetting[] fogSettings = {
-		new PropertyFogSetting("nether_default",            "", 1, null,                0, 0,      null,                                    0,      "tiny"   ),
+		new PropertyFogSetting("nether_default",            "", 1, null,                0, 0,      null,                                    0,      "nether" ),
 		new PropertyFogSetting("overworld_weather_fog",     "", 0, null,                4, 0,      null,                                    0,      "tiny"   ),
 		new PropertyFogSetting("overworld_weather_storm",   "", 0, null,                3, 0,      null,                                    0,      "short"  ),
 		new PropertyFogSetting("overworld_weather_snow",    "", 0, null,                2, 0,      null,                                    0,      "normal" ),

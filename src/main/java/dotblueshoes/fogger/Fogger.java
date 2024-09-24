@@ -14,9 +14,12 @@ import turniplabs.halplibe.util.RecipeEntrypoint;
 public class Fogger implements ModInitializer, GameStartEntrypoint, RecipeEntrypoint {
 
 	// TODO:
-	//  - Why is nether black?
+	//  - Make nether set an instant fog effect.
 	//  - Default FogColor Config + FogManagerMixin logic.
 	//  - Default FogDefinition Config + FogManagerMixin logic.
+	//  - config version checker.
+	//  - 256 int config colors + validation.
+	//  - fog range validation.
 	//  - Prep values so that it's vanilla by default.
 	//  - Create a Look-Up-Table for Biomes to store byte instead of int.
 	//  biomeLUT = new int[Registries.BIOMES.size()];

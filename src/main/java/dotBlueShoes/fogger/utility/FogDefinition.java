@@ -12,6 +12,11 @@ public class FogDefinition {
 		this.iColor = iColor;
 	}
 
-	public static final FogDefinition ZERO = new FogDefinition(0.00f, 0.00f, 0);
+	public FogDefinition(FogDefinition other) {
+		this.start = other.start;
+		this.end = other.end;
+		this.iColor = other.iColor;
+	}
 
+	public static final FogDefinition ZERO = new FogDefinition(0.00f, 0.00f, 0);
 }

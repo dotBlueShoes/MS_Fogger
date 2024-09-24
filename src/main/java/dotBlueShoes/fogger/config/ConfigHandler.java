@@ -85,9 +85,9 @@ public class ConfigHandler {
 			ConfigData configData = gson.fromJson(data, ConfigData.class);
 
 			{ // PARSING
-				Fogger.fogDefinitions = new FogDefinition[configData.fogDefinitions.length];
+				Fogger.fogDefinitions = new FogDefinition[configData.fogDefinitions.length]; // + zero (additional fallback setting)
 				Fogger.fogSettings = new FogSetting[configData.fogSettings.length];
-				Fogger.fogColors = new FogColor[configData.fogColors.length];
+				Fogger.fogColors = new FogColor[configData.fogColors.length]; // + zero (additional fallback setting)
 
 				{ // BOOLS
 					Fogger.isFogAutoDarkenByNightSky = configData.isFogAutoDarkenByNightSky;
@@ -95,6 +95,7 @@ public class ConfigHandler {
 				}
 
 				{ // COLORS
+					//Fogger.fogColors[0] = new FogColor(FogColor.ZERO);
 					for (int i = 0; i < configData.fogColors.length; ++i) {
 						Fogger.fogColors[i] = new FogColor(
 							configData.fogColors[i].r,
@@ -105,6 +106,7 @@ public class ConfigHandler {
 				}
 
 				{ // DEFINITIONS
+					//Fogger.fogDefinitions[0] = new FogDefinition(FogDefinition.ZERO);
 					definitions: for (int iDefinition = 0; iDefinition < configData.fogDefinitions.length; ++iDefinition) {
 
 						for (int iColor = 0; iColor < configData.fogColors.length; ++iColor) {
@@ -165,9 +167,9 @@ public class ConfigHandler {
 				}
 
 				//log
-				//log for (int i = 0; i < configData.fogSettings.length; ++i) {
-				//log 	Fogger.LOGGER.info("{}, {}", i, Fogger.fogSettings[i]);
-				//log }
+				for (int i = 0; i < configData.fogSettings.length; ++i) {
+					Fogger.LOGGER.info("{}, {}", i, Fogger.fogSettings[i]);
+				}
 
 			}
 

@@ -47,6 +47,10 @@ public abstract class FogManagerMixin {
 	@Unique public float lastFogEnd = FogDefinition.ZERO.end;
 	@Unique public FogColor lastFogColor = new FogColor(FogColor.ZERO); // that's a cpy!
 
+	//@Unique public void resetFog() {
+	//
+	//}
+
 	@Unique public void setLastFog(final float start, final float end, final FogColor color) {
 		lastFogStart = start;
 		lastFogEnd = end;
@@ -97,6 +101,8 @@ public abstract class FogManagerMixin {
 
 	@Unique public void darkenColorByCelestialAngle(final float partialTick) {
 		float dayProgress = MathHelper.cos(this.mc.theWorld.getCelestialAngle(partialTick) * 3.1415927F * 2.0F) * 2.0F + 0.5F;
+		//Fogger.LOGGER.info("progress: {}", this.mc.theWorld.getCelestialAngle(partialTick)); // 0.5f nether, full = 1.0f
+		//Fogger.LOGGER.info("color: {}, {}, {}", fogColor.r, fogColor.g, fogColor.b);
 		dayProgress = MathHelper.clamp(dayProgress, 0.0F, 1.0F);
 		fogColor.r *= dayProgress;
 		fogColor.g *= dayProgress;
@@ -104,6 +110,26 @@ public abstract class FogManagerMixin {
 	}
 
 	@Unique public void setupFogEffect(
+		final float partialTick
+	) {
+		final int iCurrentFogEffect = findFogEffect(partialTick);
+		final FogDefinition currentFogEffect = Fogger.fogDefinitions[iCurrentFogEffect];
+		final FogColor currentColor = Fogger.fogColors[currentFogEffect.iColor];
+
+		// INSTANT Setting. (aka no blend)
+		iPrevFogEffect = iCurrentFogEffect;
+		iLastFogEffect = iCurrentFogEffect;
+
+		fogStart = currentFogEffect.start;
+		fogEnd = currentFogEffect.end;
+		fogColor.r = currentColor.r;
+		fogColor.g = currentColor.g;
+		fogColor.b = currentColor.b;
+
+		if (Fogger.isFogAutoDarkenByNightSky) darkenColorByCelestialAngle(partialTick);
+	}
+
+	@Unique public void setupFogEffectBlend(
 		final float partialTick
 	) {
 		final int iCurrentFogEffect = findFogEffect(partialTick);
@@ -287,7 +313,7 @@ public abstract class FogManagerMixin {
 		if (isCameraPhotoMode)      fogDensity = 1.0F;
 		else if (isCameraInWater)   setupFogWater(partialTick);
 		else if (isCameraInLava)    setupFogLava(partialTick);
-		else                        setupFogEffect(partialTick);
+		else                        setupFogEffectBlend(partialTick);
 
 		GL11.glClearColor(fogColor.r, fogColor.g, fogColor.b, 0.0F);
 	}
