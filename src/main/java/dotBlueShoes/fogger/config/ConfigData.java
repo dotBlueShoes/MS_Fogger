@@ -3,6 +3,7 @@ package dotBlueShoes.fogger.config;
 public class ConfigData {
 
 	public String _comment = "Fogger's Configuration File";
+	public String version = "1.0";
 	public boolean isFogColorsOverridden                = true;
 	public boolean isFogAutoDarkenByNightSky            = true;
 

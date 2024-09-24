@@ -18,12 +18,14 @@ public class Fogger implements ModInitializer, GameStartEntrypoint, RecipeEntryp
 	//  - Default FogColor Config + FogManagerMixin logic.
 	//  - Default FogDefinition Config + FogManagerMixin logic.
 	//  - Prep values so that it's vanilla by default.
-	//  - Move this project to newest BTA version.
 	//  - Create a Look-Up-Table for Biomes to store byte instead of int.
 	//  biomeLUT = new int[Registries.BIOMES.size()];
 	//  for (byte iBiome = 0; iBiome < Registries.BIOMES.size(); ++iBiome) {
 	//      biomeLUT[iBiome] = Registries.BIOMES.getItemByNumericId(iBiome).hashCode();
 	//  }
+	//  - findFogEffect() function/mechanism could be optimized by presetting ranges
+	//  of said dimensions, weathers, biomes so we wouldn't lose time looking through all
+	//  keys in fogSettings but only spend minimal time there looking at a subset.
 
     public static final String MOD_ID = "fogger";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);

@@ -10,8 +10,10 @@ import net.minecraft.client.option.enums.RenderDistance;
 import net.minecraft.client.render.FogManager;
 import net.minecraft.client.render.OpenGLHelper;
 import net.minecraft.client.render.camera.CameraUtil;
+import net.minecraft.client.render.colorizer.Colorizers;
 import net.minecraft.core.block.material.Material;
 import net.minecraft.core.util.helper.MathHelper;
+import net.minecraft.core.world.World;
 import net.minecraft.core.world.weather.Weather;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.*;
@@ -24,10 +26,11 @@ import java.nio.FloatBuffer;
 )
 public abstract class FogManagerMixin {
 
+	@Unique final int GL11_GL_FOG_DISTANCE_MODE_NV = 34138;
+	@Unique final int GL11_GL_EYE_RADIAL_NV = 34139;
+	@Unique float fogDensity = 1.0f;
+
 	@Shadow @Final public Minecraft mc;
-	@Shadow public float fogRed;
-	@Shadow public float fogGreen;
-	@Shadow public float fogBlue;
 	@Shadow protected abstract FloatBuffer buffer(float r, float g, float b, float a);
 
 	@Unique int iLastFogEffect = 0; // One to see whether we triggered/entered a new effect.
@@ -52,10 +55,6 @@ public abstract class FogManagerMixin {
 		lastFogColor.b = color.b;
 	}
 
-	// TODO:
-	// This function/mechanism could be optimized by presetting ranges
-	//  of said dimensions, weathers, biomes so we wouldn't lose time looking through all
-	//  keys in fogSettings but only spend minimal time there looking at a subset.
 	@Unique public int findFogEffect(final float partialTick) {
 
 		int season = this.mc.theWorld.seasonManager.getCurrentSeason().hashCode();
@@ -104,10 +103,10 @@ public abstract class FogManagerMixin {
 		fogColor.b *= dayProgress;
 	}
 
-	@Unique public void applyFogEffect(
-		final int iCurrentFogEffect,
+	@Unique public void setupFogEffect(
 		final float partialTick
 	) {
+		final int iCurrentFogEffect = findFogEffect(partialTick);
 		final FogDefinition currentFogEffect = Fogger.fogDefinitions[iCurrentFogEffect];
 		final FogColor currentColor = Fogger.fogColors[currentFogEffect.iColor];
 
@@ -157,6 +156,96 @@ public abstract class FogManagerMixin {
 			// Ensure that fog start point cannot be higher than end point!
 			fogStart = Math.min(fogStart, fogEnd);
 		}
+
+		fogDensity = 1.0F;
+	}
+
+	@Unique
+	public void setupFogWater(float partialTick) {
+		float red, green, blue;
+
+		if (this.mc.gameSettings.biomeWater.value) {
+			World world = this.mc.theWorld;
+
+			int x = MathHelper.floor_double(this.mc.activeCamera.getX(partialTick));
+			int z = MathHelper.floor_double(this.mc.activeCamera.getZ(partialTick));
+
+			double temp = world.getBlockTemperature(x, z);
+			double humid = world.getBlockHumidity(x, z);
+			int waterColor = Colorizers.water.getColor(temp, humid);
+
+			red = (float)(waterColor >> 16 & 255) / 255.0F;
+			green = (float)(waterColor >> 8 & 255) / 255.0F;
+			blue = (float)(waterColor & 255) / 255.0F;
+
+			red = MathHelper.clamp(red, 0.0F, 1.0F);
+			green = MathHelper.clamp(green, 0.0F, 1.0F);
+			blue = MathHelper.clamp(blue, 0.0F, 1.0F);
+
+			red *= 0.5F;
+			green *= 0.5F;
+			blue *= 0.5F;
+
+		} else {
+			red = 0.02F;
+			green = 0.02F;
+			blue = 0.2F;
+		}
+
+		fogColor = new FogColor(red, green, blue);
+		fogDensity = 0.1F;
+
+		// RESET. So when player exits the water fog comes back to normal.
+		iLastFogEffect = 0;
+		iPrevFogEffect = 0;
+	}
+
+	@Unique
+	public void setupFogLava(float ignoredPartialTick) {
+		float red, green, blue;
+
+		red = 0.6F;
+		green = 0.1F;
+		blue = 0.0F;
+
+		fogColor = new FogColor(red, green, blue);
+		fogDensity = 2.0F;
+
+		// RESET. So when player exits the water fog comes back to normal.
+		iLastFogEffect = 0;
+		iPrevFogEffect = 0;
+	}
+
+	@Unique
+	public void applyFogType(int type) {
+		GL11.glFog(GL11.GL_FOG_COLOR, this.buffer(fogColor.r, fogColor.g, fogColor.b, 0.5F));
+		GL11.glNormal3f(0.0F, -1.0F, 0.0F);
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		GL11.glFogi(GL11.GL_FOG_MODE, type);
+		GL11.glFogf(GL11.GL_FOG_DENSITY, fogDensity);
+	}
+
+	@Unique
+	public void applyFogLinear(float fogStrength) {
+		RenderDistance renderDistance = this.mc.gameSettings.renderDistance.value;
+		final float maxFogDistance = (float) (renderDistance.chunks * 16);
+
+		applyFogType(GL11.GL_LINEAR);
+		GL11.glFogf(GL11.GL_FOG_START, maxFogDistance * fogStart);
+		GL11.glFogf(GL11.GL_FOG_END, maxFogDistance * fogEnd * fogStrength);
+
+		if (OpenGLHelper.enableSphericalFog) {
+			GL11.glFogi(GL11_GL_FOG_DISTANCE_MODE_NV, GL11_GL_EYE_RADIAL_NV);
+		}
+	}
+
+	@Unique
+	public void applyFogPhotoMode(float farPlaneDistance, float partialTick) {
+		final float maxFogDistance = farPlaneDistance * ((GuiPhotoMode)this.mc.currentScreen).getFog(partialTick);
+
+		applyFogType(GL11.GL_LINEAR);
+		GL11.glFogf(GL11.GL_FOG_START, maxFogDistance * 0.25F);
+		GL11.glFogf(GL11.GL_FOG_END, maxFogDistance);
 	}
 
 	/**
@@ -166,77 +255,19 @@ public abstract class FogManagerMixin {
 	@Overwrite
 	public void setupFog(int fogMode, float farPlaneDistance, float partialTick) {
 
-		RenderDistance renderDistance = this.mc.gameSettings.renderDistance.value;
+		// This method is called from 2 places. For sky and for terrain.
+		final int FOG_TYPE_SKY = -1;
 
 		final boolean isCameraPhotoMode = this.mc.currentScreen instanceof GuiPhotoMode;
 		final boolean isCameraInWater = CameraUtil.isUnderLiquid(this.mc.activeCamera, this.mc.theWorld, Material.water, partialTick);
 		final boolean isCameraInLava = CameraUtil.isUnderLiquid(this.mc.activeCamera, this.mc.theWorld, Material.lava, partialTick);
 
-		// TODO
-		// Why if's? This should be just 5 different methods each for said draw...
+		final float fogStrength = (fogMode == FOG_TYPE_SKY) ? 0.8F : 1.0f;
 
-		if (isCameraPhotoMode) {
-			final float fogDistance = farPlaneDistance * ((GuiPhotoMode)this.mc.currentScreen).getFog(partialTick);
-			GL11.glFog(GL11.GL_FOG_COLOR, this.buffer(this.fogRed, this.fogGreen, this.fogBlue, 0.5F));
-			GL11.glNormal3f(0.0F, -1.0F, 0.0F);
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-			GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_LINEAR);
-			GL11.glFogf(GL11.GL_FOG_START, fogDistance * 0.25F);
-			GL11.glFogf(GL11.GL_FOG_END, fogDistance);
-			GL11.glFogf(GL11.GL_FOG_DENSITY, 1.0F);
-		} else if (isCameraInWater) {
-			// FOG_START, FOG_END should also be specified here.
-			GL11.glFog(GL11.GL_FOG_COLOR, this.buffer(this.fogRed, this.fogGreen, this.fogBlue, 0.5F));
-			GL11.glNormal3f(0.0F, -1.0F, 0.0F);
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-			GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_EXP);
-			GL11.glFogf(GL11.GL_FOG_DENSITY, 0.1F);
-		} else if (isCameraInLava) {
-			// FOG_START, FOG_END should also be specified here.
-			GL11.glFog(GL11.GL_FOG_COLOR, this.buffer(this.fogRed, this.fogGreen, this.fogBlue, 0.5F));
-			GL11.glNormal3f(0.0F, -1.0F, 0.0F);
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-			GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_EXP);
-			GL11.glFogf(GL11.GL_FOG_DENSITY, 2.0F);
-		} else {
-
-			final int FOG_TYPE_SKY = -1;
-
-			if (fogMode == FOG_TYPE_SKY) {
-
-				final float maxFogDistance = (float) (renderDistance.chunks * 16);
-				int iCurrentFogEffect = findFogEffect(partialTick);
-				applyFogEffect(iCurrentFogEffect, partialTick);
-
-				GL11.glFog(GL11.GL_FOG_COLOR, this.buffer(fogColor.r, fogColor.g, fogColor.b, 0.5F));
-				GL11.glNormal3f(0.0F, -1.0F, 0.0F);
-				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-				GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_LINEAR);
-				GL11.glFogf(GL11.GL_FOG_START, maxFogDistance * fogStart);
-				GL11.glFogf(GL11.GL_FOG_END, maxFogDistance * fogEnd * 0.8F);
-
-			} else {
-
-				final float maxFogDistance = (float) (renderDistance.chunks * 16);
-				int iCurrentFogEffect = findFogEffect(partialTick);
-				applyFogEffect(iCurrentFogEffect, partialTick);
-
-				GL11.glFog(GL11.GL_FOG_COLOR, this.buffer(fogColor.r, fogColor.g, fogColor.b, 0.5F));
-				GL11.glNormal3f(0.0F, -1.0F, 0.0F);
-				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-				GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_LINEAR);
-				GL11.glFogf(GL11.GL_FOG_START, maxFogDistance * fogStart);
-				GL11.glFogf(GL11.GL_FOG_END, maxFogDistance * fogEnd);
-
-			}
-
-			GL11.glFogf(GL11.GL_FOG_DENSITY, 1.0F);
-
-			if (OpenGLHelper.enableSphericalFog) {
-				//GL11.glFogi(GL11.GL_FOG_DISTANCE_MODE_NV, GL11.GL_EYE_RADIAL_NV);
-				GL11.glFogi(34138, 34139);
-			}
-		}
+		if (isCameraPhotoMode)      applyFogPhotoMode(farPlaneDistance, partialTick);
+		else if (isCameraInWater)   applyFogType(GL11.GL_EXP);
+		else if (isCameraInLava)    applyFogType(GL11.GL_EXP);
+		else                        applyFogLinear(fogStrength); // Change in behaviour! Called for sky-callee when other criteria fail.
 
 		GL11.glEnable(GL11.GL_COLOR_MATERIAL);
 		GL11.glColorMaterial(GL11.GL_FRONT, GL11.GL_AMBIENT);
@@ -248,6 +279,16 @@ public abstract class FogManagerMixin {
 	 */
 	@Overwrite
 	public void updateFogColor(float partialTick) {
+
+		final boolean isCameraPhotoMode = this.mc.currentScreen instanceof GuiPhotoMode;
+		final boolean isCameraInWater = CameraUtil.isUnderLiquid(this.mc.activeCamera, this.mc.theWorld, Material.water, partialTick);
+		final boolean isCameraInLava = CameraUtil.isUnderLiquid(this.mc.activeCamera, this.mc.theWorld, Material.lava, partialTick);
+
+		if (isCameraPhotoMode)      fogDensity = 1.0F;
+		else if (isCameraInWater)   setupFogWater(partialTick);
+		else if (isCameraInLava)    setupFogLava(partialTick);
+		else                        setupFogEffect(partialTick);
+
 		GL11.glClearColor(fogColor.r, fogColor.g, fogColor.b, 0.0F);
 	}
 
