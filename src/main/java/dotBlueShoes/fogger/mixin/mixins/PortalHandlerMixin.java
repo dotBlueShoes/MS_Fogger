@@ -1,6 +1,7 @@
 package dotBlueShoes.fogger.mixin.mixins;
 
 import dotBlueShoes.fogger.Fogger;
+import dotBlueShoes.fogger.Manager;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.util.helper.MathHelper;
 import net.minecraft.core.world.Dimension;
@@ -98,11 +99,13 @@ public abstract class PortalHandlerMixin {
 			// 1. setupFogEffect() has to be outside mixin to access it from here.
 			// 2. Partial Tick is needed.
 			//setupFogEffect(0);
+			Manager.setFogToZero(); // RESET. So when player teleports fog comes back to normal.
+			//Fogger.LOGGER.info("dim: {}", world.dimension);
 
 			entity.moveTo(newEntityX, newEntityY - 0.5, newEntityZ, entity.yRot, 0.0F);
 			entity.xd = entity.yd = entity.zd = 0.0;
 
-			Fogger.LOGGER.info("dim: {}", world.dimension);
+
 
 			return true;
 		} else {

@@ -1,6 +1,7 @@
 package dotBlueShoes.fogger.mixin.mixins;
 
 import dotBlueShoes.fogger.Fogger;
+import dotBlueShoes.fogger.Manager;
 import dotBlueShoes.fogger.utility.FogColor;
 import dotBlueShoes.fogger.utility.FogDefinition;
 import dotBlueShoes.fogger.utility.FogSetting;
@@ -28,36 +29,9 @@ public abstract class FogManagerMixin {
 
 	@Unique final int GL11_GL_FOG_DISTANCE_MODE_NV = 34138;
 	@Unique final int GL11_GL_EYE_RADIAL_NV = 34139;
-	@Unique float fogDensity = 1.0f;
 
 	@Shadow @Final public Minecraft mc;
 	@Shadow protected abstract FloatBuffer buffer(float r, float g, float b, float a);
-
-	@Unique int iLastFogEffect = 0; // One to see whether we triggered/entered a new effect.
-	@Unique int iPrevFogEffect = 0; // One to compare with the last applied effect.
-
-	@Unique static final private long FOG_CHANGE_TIME_MAX = 10000; // 5 sec
-	@Unique public long fogChangeTime;
-
-	@Unique public float fogStart = 0.0f;
-	@Unique public float fogEnd = 0.0f;
-	@Unique public FogColor fogColor = new FogColor(FogColor.ZERO); // that's a cpy!
-
-	@Unique public float lastFogStart = FogDefinition.ZERO.start;
-	@Unique public float lastFogEnd = FogDefinition.ZERO.end;
-	@Unique public FogColor lastFogColor = new FogColor(FogColor.ZERO); // that's a cpy!
-
-	//@Unique public void resetFog() {
-	//
-	//}
-
-	@Unique public void setLastFog(final float start, final float end, final FogColor color) {
-		lastFogStart = start;
-		lastFogEnd = end;
-		lastFogColor.r = color.r;
-		lastFogColor.g = color.g;
-		lastFogColor.b = color.b;
-	}
 
 	@Unique public int findFogEffect(final float partialTick) {
 
@@ -99,16 +73,6 @@ public abstract class FogManagerMixin {
 		return 1; // FogDefinition.DEFAULT
 	}
 
-	@Unique public void darkenColorByCelestialAngle(final float partialTick) {
-		float dayProgress = MathHelper.cos(this.mc.theWorld.getCelestialAngle(partialTick) * 3.1415927F * 2.0F) * 2.0F + 0.5F;
-		//Fogger.LOGGER.info("progress: {}", this.mc.theWorld.getCelestialAngle(partialTick)); // 0.5f nether, full = 1.0f
-		//Fogger.LOGGER.info("color: {}, {}, {}", fogColor.r, fogColor.g, fogColor.b);
-		dayProgress = MathHelper.clamp(dayProgress, 0.0F, 1.0F);
-		fogColor.r *= dayProgress;
-		fogColor.g *= dayProgress;
-		fogColor.b *= dayProgress;
-	}
-
 	@Unique public void setupFogEffect(
 		final float partialTick
 	) {
@@ -117,16 +81,16 @@ public abstract class FogManagerMixin {
 		final FogColor currentColor = Fogger.fogColors[currentFogEffect.iColor];
 
 		// INSTANT Setting. (aka no blend)
-		iPrevFogEffect = iCurrentFogEffect;
-		iLastFogEffect = iCurrentFogEffect;
+		Manager.iPrevFogEffect = iCurrentFogEffect;
+		Manager.iLastFogEffect = iCurrentFogEffect;
 
-		fogStart = currentFogEffect.start;
-		fogEnd = currentFogEffect.end;
-		fogColor.r = currentColor.r;
-		fogColor.g = currentColor.g;
-		fogColor.b = currentColor.b;
+		Manager.fogStart = currentFogEffect.start;
+		Manager.fogEnd = currentFogEffect.end;
+		Manager.fogColor.r = currentColor.r;
+		Manager.fogColor.g = currentColor.g;
+		Manager.fogColor.b = currentColor.b;
 
-		if (Fogger.isFogAutoDarkenByNightSky) darkenColorByCelestialAngle(partialTick);
+		if (Fogger.isFogAutoDarkenByNightSky) Manager.darkenColorByCelestialAngle(this.mc, partialTick);
 	}
 
 	@Unique public void setupFogEffectBlend(
@@ -136,54 +100,54 @@ public abstract class FogManagerMixin {
 		final FogDefinition currentFogEffect = Fogger.fogDefinitions[iCurrentFogEffect];
 		final FogColor currentColor = Fogger.fogColors[currentFogEffect.iColor];
 
-		if (iCurrentFogEffect != iPrevFogEffect) {
+		if (iCurrentFogEffect != Manager.iPrevFogEffect) {
 
 			// If during last change we didn't hit FOG_CHANGE_TIME_MAX
 			// Then store values from previous blend as last so we can always blend well.
-			if (iLastFogEffect != iPrevFogEffect) {
-				iLastFogEffect = iPrevFogEffect;
-				setLastFog(fogStart, fogEnd, fogColor);
+			if (Manager.iLastFogEffect != Manager.iPrevFogEffect) {
+				Manager.iLastFogEffect = Manager.iPrevFogEffect;
+				Manager.setLastFog(Manager.fogStart, Manager.fogEnd, Manager.fogColor);
 			} else {
-				FogDefinition lfe = Fogger.fogDefinitions[iLastFogEffect];
-				setLastFog(lfe.start, lfe.end, Fogger.fogColors[lfe.iColor]);
+				FogDefinition lfe = Fogger.fogDefinitions[Manager.iLastFogEffect];
+				Manager.setLastFog(lfe.start, lfe.end, Fogger.fogColors[lfe.iColor]);
 			}
 
-			fogChangeTime = System.currentTimeMillis();
-			iPrevFogEffect = iCurrentFogEffect;
+			Manager.fogChangeTime = System.currentTimeMillis();
+			Manager.iPrevFogEffect = iCurrentFogEffect;
 		}
 
 		final long fogCurrentTime = System.currentTimeMillis();
-		final float duration = fogCurrentTime - fogChangeTime;
+		final float duration = fogCurrentTime - Manager.fogChangeTime;
 
-		if (duration > FOG_CHANGE_TIME_MAX) { // Apply full currentFogEffect.
-			fogStart = currentFogEffect.start;
-			fogEnd = currentFogEffect.end;
+		if (duration > Manager.FOG_CHANGE_TIME_MAX) { // Apply full currentFogEffect.
+			Manager.fogStart = currentFogEffect.start;
+			Manager.fogEnd = currentFogEffect.end;
 
-			fogColor.r = currentColor.r;
-			fogColor.g = currentColor.g;
-			fogColor.b = currentColor.b;
+			Manager.fogColor.r = currentColor.r;
+			Manager.fogColor.g = currentColor.g;
+			Manager.fogColor.b = currentColor.b;
 
-			if (Fogger.isFogAutoDarkenByNightSky) darkenColorByCelestialAngle(partialTick);
+			if (Fogger.isFogAutoDarkenByNightSky) Manager.darkenColorByCelestialAngle(this.mc, partialTick);
 
-			iLastFogEffect = iCurrentFogEffect;
+			Manager.iLastFogEffect = iCurrentFogEffect;
 		} else { // Apply a mix of current and previous effect.
 
-			final float newLerp = duration / FOG_CHANGE_TIME_MAX;
+			final float newLerp = duration / Manager.FOG_CHANGE_TIME_MAX;
 			final float oldLerp = 1.0f - newLerp;
 
-			fogStart = (currentFogEffect.start * newLerp) + (lastFogStart * oldLerp);
-			fogEnd = (currentFogEffect.end * newLerp) + (lastFogEnd * oldLerp);
-			fogColor.r = (currentColor.r * newLerp) + (lastFogColor.r * oldLerp);
-			fogColor.g = (currentColor.g * newLerp) + (lastFogColor.g * oldLerp);
-			fogColor.b = (currentColor.b * newLerp) + (lastFogColor.b * oldLerp);
+			Manager.fogStart = (currentFogEffect.start * newLerp) + (Manager.lastFogStart * oldLerp);
+			Manager.fogEnd = (currentFogEffect.end * newLerp) + (Manager.lastFogEnd * oldLerp);
+			Manager.fogColor.r = (currentColor.r * newLerp) + (Manager.lastFogColor.r * oldLerp);
+			Manager.fogColor.g = (currentColor.g * newLerp) + (Manager.lastFogColor.g * oldLerp);
+			Manager.fogColor.b = (currentColor.b * newLerp) + (Manager.lastFogColor.b * oldLerp);
 
-			if (Fogger.isFogAutoDarkenByNightSky) darkenColorByCelestialAngle(partialTick);
+			if (Fogger.isFogAutoDarkenByNightSky) Manager.darkenColorByCelestialAngle(this.mc, partialTick);
 
 			// Ensure that fog start point cannot be higher than end point!
-			fogStart = Math.min(fogStart, fogEnd);
+			Manager.fogStart = Math.min(Manager.fogStart, Manager.fogEnd);
 		}
 
-		fogDensity = 1.0F;
+		Manager.fogDensity = 1.0F;
 	}
 
 	@Unique
@@ -218,12 +182,10 @@ public abstract class FogManagerMixin {
 			blue = 0.2F;
 		}
 
-		fogColor = new FogColor(red, green, blue);
-		fogDensity = 0.1F;
+		Manager.fogColor = new FogColor(red, green, blue);
+		Manager.fogDensity = 0.1F;
 
-		// RESET. So when player exits the water fog comes back to normal.
-		iLastFogEffect = 0;
-		iPrevFogEffect = 0;
+		Manager.setFogToZero(); // RESET. So when player exits the water fog comes back to normal.
 	}
 
 	@Unique
@@ -234,21 +196,19 @@ public abstract class FogManagerMixin {
 		green = 0.1F;
 		blue = 0.0F;
 
-		fogColor = new FogColor(red, green, blue);
-		fogDensity = 2.0F;
+		Manager.fogColor = new FogColor(red, green, blue);
+		Manager.fogDensity = 2.0F;
 
-		// RESET. So when player exits the water fog comes back to normal.
-		iLastFogEffect = 0;
-		iPrevFogEffect = 0;
+		Manager.setFogToZero(); // RESET. So when player exits the lava fog comes back to normal.
 	}
 
 	@Unique
 	public void applyFogType(int type) {
-		GL11.glFog(GL11.GL_FOG_COLOR, this.buffer(fogColor.r, fogColor.g, fogColor.b, 0.5F));
+		GL11.glFog(GL11.GL_FOG_COLOR, this.buffer(Manager.fogColor.r, Manager.fogColor.g, Manager.fogColor.b, 0.5F));
 		GL11.glNormal3f(0.0F, -1.0F, 0.0F);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glFogi(GL11.GL_FOG_MODE, type);
-		GL11.glFogf(GL11.GL_FOG_DENSITY, fogDensity);
+		GL11.glFogf(GL11.GL_FOG_DENSITY, Manager.fogDensity);
 	}
 
 	@Unique
@@ -257,8 +217,8 @@ public abstract class FogManagerMixin {
 		final float maxFogDistance = (float) (renderDistance.chunks * 16);
 
 		applyFogType(GL11.GL_LINEAR);
-		GL11.glFogf(GL11.GL_FOG_START, maxFogDistance * fogStart);
-		GL11.glFogf(GL11.GL_FOG_END, maxFogDistance * fogEnd * fogStrength);
+		GL11.glFogf(GL11.GL_FOG_START, maxFogDistance * Manager.fogStart);
+		GL11.glFogf(GL11.GL_FOG_END, maxFogDistance * Manager.fogEnd * fogStrength);
 
 		if (OpenGLHelper.enableSphericalFog) {
 			GL11.glFogi(GL11_GL_FOG_DISTANCE_MODE_NV, GL11_GL_EYE_RADIAL_NV);
@@ -310,12 +270,12 @@ public abstract class FogManagerMixin {
 		final boolean isCameraInWater = CameraUtil.isUnderLiquid(this.mc.activeCamera, this.mc.theWorld, Material.water, partialTick);
 		final boolean isCameraInLava = CameraUtil.isUnderLiquid(this.mc.activeCamera, this.mc.theWorld, Material.lava, partialTick);
 
-		if (isCameraPhotoMode)      fogDensity = 1.0F;
+		if (isCameraPhotoMode)      Manager.fogDensity = 1.0F;
 		else if (isCameraInWater)   setupFogWater(partialTick);
 		else if (isCameraInLava)    setupFogLava(partialTick);
 		else                        setupFogEffectBlend(partialTick);
 
-		GL11.glClearColor(fogColor.r, fogColor.g, fogColor.b, 0.0F);
+		GL11.glClearColor(Manager.fogColor.r, Manager.fogColor.g, Manager.fogColor.b, 0.0F);
 	}
 
 }
