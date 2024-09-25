@@ -85,6 +85,12 @@ public class ConfigHandler {
 			ConfigData configData = gson.fromJson(data, ConfigData.class);
 
 			{ // PARSING
+
+				if (!configData.version.equals(ConfigData.VERSION)) {
+					Fogger.LOGGER.error("Config version changed! Required version is: {}. Please refer to the mod documentation, as your fogger.json is outdated.", ConfigData.VERSION);
+					throw new RuntimeException("Config: version -> Please refer to the mod documentation, as your fogger.json is outdated.");
+				}
+
 				final int definitionZeroOffset = 1;
 				final int defaultValueOffset = 1;
 				final int colorZeroOffset = 1;
@@ -227,9 +233,9 @@ public class ConfigHandler {
 				}
 
 				//log
-				for (int i = 0; i < configData.fogSettings.length; ++i) {
-					Fogger.LOGGER.info("{}, {}", i, Fogger.fogSettings[i]);
-				}
+				//for (int i = 0; i < Fogger.fogSettings.length; ++i) {
+				//	Fogger.LOGGER.info("{}, {}", i, Fogger.fogSettings[i]);
+				//}
 
 			}
 

@@ -15,9 +15,6 @@ public class Fogger implements ModInitializer, GameStartEntrypoint, RecipeEntryp
 
 	// TODO:
 	//  - Make nether set an instant fog effect.
-	//  - Default FogColor Config + FogManagerMixin logic.
-	//  - Default FogDefinition Config + FogManagerMixin logic.
-	//  - config version checker.
 	//  - 256 int config colors + validation.
 	//  - fog range validation.
 	//  - Prep values so that it's vanilla by default.
