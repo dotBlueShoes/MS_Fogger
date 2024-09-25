@@ -8,7 +8,7 @@ public class ConfigData {
 
 		public PropertyFogColor fogColor = new PropertyFogColor(
 			"default", "Fallback color.",
-			0.65098f, 0.8f, 1.0f
+			166, 204, 255
 		);
 
 		public PropertyFogDefinition fogDefinition = new PropertyFogDefinition(
@@ -33,11 +33,11 @@ public class ConfigData {
 	public DefaultValues defaultValues = new DefaultValues();
 
 	public PropertyFogColor[] fogColors = {
-		new PropertyFogColor("white",   "", 1.00000f, 1.00000f, 1.00000f),
-		new PropertyFogColor("black",   "", 0.00000f, 0.00000f, 0.00000f),
-		new PropertyFogColor("nether",  "", 0.49609f, 0.07813f, 0.12500f),
-		new PropertyFogColor("snow",    "", 0.90000f, 0.90000f, 0.90000f),
-		new PropertyFogColor("magical", "", 0.68235f, 0.64705f, 1.00000f),
+		new PropertyFogColor("white",   "", 255, 255, 255),
+		new PropertyFogColor("black",   "", 0,   0,   0  ),
+		new PropertyFogColor("nether",  "", 127, 20,  32 ),
+		new PropertyFogColor("snow",    "", 230, 230, 230),
+		new PropertyFogColor("magical", "", 174, 165, 255),
 	};
 
 	public PropertyFogDefinition[] fogDefinitions = {

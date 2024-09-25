@@ -107,16 +107,16 @@ public class ConfigHandler {
 				{ // COLORS
 					Fogger.fogColors[0] = new FogColor(FogColor.ZERO);
 					Fogger.fogColors[1] = new FogColor(
-						configData.defaultValues.fogColor.r,
-						configData.defaultValues.fogColor.g,
-						configData.defaultValues.fogColor.b
+						(float) configData.defaultValues.fogColor.r / 255,
+						(float) configData.defaultValues.fogColor.g / 255,
+						(float) configData.defaultValues.fogColor.b / 255
 					);
 
 					for (int i = 0; i < configData.fogColors.length; ++i) {
 						Fogger.fogColors[i + colorZeroOffset + defaultValueOffset] = new FogColor(
-							configData.fogColors[i].r,
-							configData.fogColors[i].g,
-							configData.fogColors[i].b
+							(float) configData.fogColors[i].r / 255,
+							(float) configData.fogColors[i].g / 255,
+							(float) configData.fogColors[i].b / 255
 						);
 					}
 				}
