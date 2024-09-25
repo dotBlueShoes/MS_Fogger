@@ -85,9 +85,13 @@ public class ConfigHandler {
 			ConfigData configData = gson.fromJson(data, ConfigData.class);
 
 			{ // PARSING
-				Fogger.fogDefinitions = new FogDefinition[configData.fogDefinitions.length]; // + zero (additional fallback setting)
-				Fogger.fogSettings = new FogSetting[configData.fogSettings.length];
-				Fogger.fogColors = new FogColor[configData.fogColors.length]; // + zero (additional fallback setting)
+				final int definitionZeroOffset = 1;
+				final int defaultValueOffset = 1;
+				final int colorZeroOffset = 1;
+
+				Fogger.fogDefinitions = new FogDefinition[configData.fogDefinitions.length + definitionZeroOffset + defaultValueOffset]; // + zero (additional fallback setting)
+				Fogger.fogSettings = new FogSetting[configData.fogSettings.length + defaultValueOffset];
+				Fogger.fogColors = new FogColor[configData.fogColors.length + colorZeroOffset + defaultValueOffset]; // + zero (additional fallback setting)
 
 				{ // BOOLS
 					Fogger.isFogAutoDarkenByNightSky = configData.isFogAutoDarkenByNightSky;
@@ -95,9 +99,15 @@ public class ConfigHandler {
 				}
 
 				{ // COLORS
-					//Fogger.fogColors[0] = new FogColor(FogColor.ZERO);
+					Fogger.fogColors[0] = new FogColor(FogColor.ZERO);
+					Fogger.fogColors[1] = new FogColor(
+						configData.defaultValues.fogColor.r,
+						configData.defaultValues.fogColor.g,
+						configData.defaultValues.fogColor.b
+					);
+
 					for (int i = 0; i < configData.fogColors.length; ++i) {
-						Fogger.fogColors[i] = new FogColor(
+						Fogger.fogColors[i + colorZeroOffset + defaultValueOffset] = new FogColor(
 							configData.fogColors[i].r,
 							configData.fogColors[i].g,
 							configData.fogColors[i].b
@@ -106,16 +116,31 @@ public class ConfigHandler {
 				}
 
 				{ // DEFINITIONS
-					//Fogger.fogDefinitions[0] = new FogDefinition(FogDefinition.ZERO);
+					Fogger.fogDefinitions[0] = new FogDefinition(FogDefinition.ZERO);
+					Fogger.fogDefinitions[1] = new FogDefinition(
+						configData.defaultValues.fogDefinition.start,
+						configData.defaultValues.fogDefinition.end,
+						1 // HACK. HARDCODED 0-1st position in array.
+					);
+
 					definitions: for (int iDefinition = 0; iDefinition < configData.fogDefinitions.length; ++iDefinition) {
 
 						for (int iColor = 0; iColor < configData.fogColors.length; ++iColor) {
 							if (configData.fogColors[iColor].name.equals(configData.fogDefinitions[iDefinition].nameColor)) {
 
-								Fogger.fogDefinitions[iDefinition] = new FogDefinition(
+								Fogger.fogDefinitions[iDefinition + definitionZeroOffset + defaultValueOffset] = new FogDefinition(
 									configData.fogDefinitions[iDefinition].start,
 									configData.fogDefinitions[iDefinition].end,
-									iColor
+									iColor + colorZeroOffset + defaultValueOffset
+								);
+
+								continue definitions;
+							} else if (configData.defaultValues.fogColor.name.equals(configData.fogDefinitions[iDefinition].nameColor)) {
+
+								Fogger.fogDefinitions[iDefinition + definitionZeroOffset + defaultValueOffset] = new FogDefinition(
+									configData.fogDefinitions[iDefinition].start,
+									configData.fogDefinitions[iDefinition].end,
+									1 // HACK. HARDCODED 0-1st position in array.
 								);
 
 								continue definitions;
@@ -142,7 +167,31 @@ public class ConfigHandler {
 									configData.fogSettings[iSetting].time,
 									getBiome(configData.fogSettings[iSetting].biome),
 									configData.fogSettings[iSetting].yLevel,
-									iDefinition
+									iDefinition + definitionZeroOffset + defaultValueOffset
+								);
+
+								// 1. Get first element on stack that should be bubble-moved.
+								int iTop = getSortTop(fogSetting, iSetting);
+
+								// 2. Now bubble-move all elements from there down. Going from End to Start.
+								for (int iBottom = iSetting; iBottom > iTop; --iBottom) {
+									Fogger.fogSettings[iBottom] = Fogger.fogSettings[iBottom - 1];
+								}
+
+								// 3. ADD to ARRAY
+								Fogger.fogSettings[iTop] = fogSetting;
+
+								continue settings;
+							} else if (configData.defaultValues.fogDefinition.name.equals(configData.fogSettings[iSetting].nameDefinition)) {
+
+								FogSetting fogSetting = new FogSetting(
+									configData.fogSettings[iSetting].world,
+									getSeason(configData.fogSettings[iSetting].season),
+									configData.fogSettings[iSetting].weather,
+									configData.fogSettings[iSetting].time,
+									getBiome(configData.fogSettings[iSetting].biome),
+									configData.fogSettings[iSetting].yLevel,
+									1 // HACK. HARDCODED 0-1st position in array.
 								);
 
 								// 1. Get first element on stack that should be bubble-moved.
@@ -164,6 +213,17 @@ public class ConfigHandler {
 						Fogger.LOGGER.error("Invalid name: {}", configData.fogSettings[iSetting].nameDefinition);
 						throw new RuntimeException("Config: fogSettings -> Definition under specified name was not found!");
 					}
+
+					// Default value is at the very end of the array.
+					Fogger.fogSettings[configData.fogSettings.length] = new FogSetting(
+						configData.defaultValues.fogSetting.world,
+						getSeason(configData.defaultValues.fogSetting.season),
+						configData.defaultValues.fogSetting.weather,
+						configData.defaultValues.fogSetting.time,
+						getBiome(configData.defaultValues.fogSetting.biome),
+						configData.defaultValues.fogSetting.yLevel,
+						1 // HACK. HARDCODED 0-1st position in array.
+					);
 				}
 
 				//log
