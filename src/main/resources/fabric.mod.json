@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+	"schemaVersion": 1,
   "id": "fogger",
   "version": "${version}",
 
@@ -40,6 +40,6 @@
 		"minecraft": "^7.2-beta",
 		"fabricloader": ">=0.15.5"
   },
-  "suggests": {
-  }
+	"suggests": {
+	}
 }

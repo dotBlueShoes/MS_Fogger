@@ -5,9 +5,23 @@ public class ConfigData {
 	public static String VERSION = "1.0";
 
 	public static class DefaultValues {
-		public PropertyFogColor fogColor = new PropertyFogColor("default", "Fallback color.", 0.65098f, 0.8f, 1.0f);
-		public PropertyFogDefinition fogDefinition = new PropertyFogDefinition("default", "Fallback definition.", 0.00f, 0.90f, "default");
-		public PropertyFogSetting fogSetting = new PropertyFogSetting("default", "Fallback setting.", 0, null, 0, 0, null, 0, "default");
+
+		public PropertyFogColor fogColor = new PropertyFogColor(
+			"default", "Fallback color.",
+			0.65098f, 0.8f, 1.0f
+		);
+
+		public PropertyFogDefinition fogDefinition = new PropertyFogDefinition(
+			"default", "Fallback definition.",
+			0.00f, 0.90f, "default"
+
+		);
+
+		public PropertyFogSetting fogSetting = new PropertyFogSetting(
+			"default", "Fallback setting.",
+			0, null, 0, 0, null, 0, "default"
+		);
+
 	}
 
 	public String _comment = "Fogger's Configuration File";
@@ -19,52 +33,42 @@ public class ConfigData {
 	public DefaultValues defaultValues = new DefaultValues();
 
 	public PropertyFogColor[] fogColors = {
-		//// 00 - OVERWORLD_RAINFOREST
-		//// 01 - OVERWORLD_SWAMPLAND
-		//// 02 - OVERWORLD_SEASONAL_FOREST
-		//// 03 - OVERWORLD_FOREST
-		//// 04 - OVERWORLD_GRASSLANDS
-		//// 05 - OVERWORLD_OUTBACK
-		//// 06 - OVERWORLD_SHRUBLAND
-		//// 07 - OVERWORLD_TAIGA
-		//// 08 - OVERWORLD_BOREAL_FOREST
-		//// 09 - OVERWORLD_DESERT
-		//// 10 - OVERWORLD_PLAINS
-		//// 11 - OVERWORLD_GLACIER
-		//// 12 - OVERWORLD_TUNDRA
-		//// 13 - OVERWORLD_MEADOW
-		//// 14 - NETHER_NETHER
-		//// 15 - PARADISE_PARADISE
-		//// 16 - OVERWORLD_BIRCH_FOREST
-		//// 17 - OVERWORLD_RETRO
-		//// 18 - OVERWORLD_HELL
-		//// 19 - OVERWORLD_SWAMPLAND_MUDDY
-		//// 20 - OVERWORLD_OUTBACK_GRASSY
-		//// 21 - OVERWORLD_CAATINGA
-		//// 22 - OVERWORLD_CAATINGA_PLAINS
-		new PropertyFogColor("blue_sky",    "", 0.65098f,   0.8f,       1.0f    ),
-		new PropertyFogColor("nether",      "", 0.49609f,   0.07813f,   0.125f  ),
-		new PropertyFogColor("under_water", "", 0.02f,      0.02f,      0.2f    ),
-		new PropertyFogColor("under_lava",  "", 0.6f,       0.1f,       0.0f    ),
+		new PropertyFogColor("white",   "", 1.00000f, 1.00000f, 1.00000f),
+		new PropertyFogColor("black",   "", 0.00000f, 0.00000f, 0.00000f),
+		new PropertyFogColor("nether",  "", 0.49609f, 0.07813f, 0.12500f),
+		new PropertyFogColor("snow",    "", 0.90000f, 0.90000f, 0.90000f),
+		new PropertyFogColor("magical", "", 0.68235f, 0.64705f, 1.00000f),
 	};
 
 	public PropertyFogDefinition[] fogDefinitions = {
-		new PropertyFogDefinition("far",        "", 0.00f, 0.95f, "default"     ),
-		new PropertyFogDefinition("normal",     "", 0.00f, 0.80f, "default"     ),
-		new PropertyFogDefinition("short",      "", 0.00f, 0.50f, "under_lava"  ),
-		new PropertyFogDefinition("tiny",       "", 0.00f, 0.25f, "default"     ),
-		new PropertyFogDefinition("nether",     "", 0.00f, 0.80f, "nether"      ),
+		new PropertyFogDefinition("nether",     "", 0.00f, 0.50f, "nether"  ),
+		new PropertyFogDefinition("snow",       "", 0.00f, 0.30f, "snow"    ),
+		new PropertyFogDefinition("high",       "", 0.00f, 0.50f, "default" ),
+		new PropertyFogDefinition("very_high",  "", 0.00f, 0.30f, "white"   ),
+		new PropertyFogDefinition("cold",       "", 0.00f, 0.75f, "default" ),
+		new PropertyFogDefinition("colder",     "", 0.00f, 0.55f, "default" ),
+		new PropertyFogDefinition("magical",    "", 0.00f, 0.60f, "magical" ),
 	};
 
 	public PropertyFogSetting[] fogSettings = {
-		new PropertyFogSetting("nether_default",            "", 1, null,                0, 0,      null,                                    0,      "nether" ),
-		new PropertyFogSetting("overworld_weather_fog",     "", 0, null,                4, 0,      null,                                    0,      "tiny"   ),
-		new PropertyFogSetting("overworld_weather_storm",   "", 0, null,                3, 0,      null,                                    0,      "short"  ),
-		new PropertyFogSetting("overworld_weather_snow",    "", 0, null,                2, 0,      null,                                    0,      "normal" ),
-		new PropertyFogSetting("overworld_weather_rain",    "", 0, null,                1, 0,      null,                                    0,      "far"    ),
-		new PropertyFogSetting("after_the_7_day",           "", 0, null,                0, 144000, null,                                    0,      "tiny"   ),
-		new PropertyFogSetting("seasonal_forest_clear",     "", 0, "overworld.spring",  0, 0,      "minecraft:overworld.seasonal_forest",   0,      "short"  ),
-		new PropertyFogSetting("overworld_clear_y72up",     "", 0, null,                0, 0,      null,                                    150,    "tiny"   ),
+		new PropertyFogSetting("nether",        "", 1, null,               0, 0, null,                                  64,     "nether"),
+		new PropertyFogSetting("s_snow",        "", 0, "overworld.summer", 2, 0, null,                                  64,     "snow"),
+		new PropertyFogSetting("s_very_high",   "", 0, "overworld.summer", 0, 0, null,                                  250,    "very_high"),
+		new PropertyFogSetting("s_high",        "", 0, "overworld.summer", 0, 0, null,                                  150,    "high"),
+		new PropertyFogSetting("summer",        "", 0, "overworld.summer", 0, 0, null,                                  64,     "default"),
+		new PropertyFogSetting("a_snow",        "", 0, "overworld.autumn", 2, 0, null,                                  64,     "snow"),
+		new PropertyFogSetting("a_very_high",   "", 0, "overworld.autumn", 0, 0, null,                                  250,    "very_high"),
+		new PropertyFogSetting("a_high",        "", 0, "overworld.autumn", 0, 0, null,                                  150,    "high"),
+		new PropertyFogSetting("autumn",        "", 0, "overworld.autumn", 0, 0, null,                                  64,     "cold"),
+		new PropertyFogSetting("w_magical",     "", 0, "overworld.winter", 2, 0, "minecraft:overworld.seasonal_forest", 64,     "magical"),
+		new PropertyFogSetting("w_snow",        "", 0, "overworld.winter", 2, 0, null,                                  64,     "snow"),
+		new PropertyFogSetting("w_very_high",   "", 0, "overworld.winter", 0, 0, null,                                  250,    "very_high"),
+		new PropertyFogSetting("w_high",        "", 0, "overworld.winter", 0, 0, null,                                  150,    "high"),
+		new PropertyFogSetting("winter",        "", 0, "overworld.winter", 0, 0, null,                                  64,     "colder"),
+		new PropertyFogSetting("s_snow",        "", 0, "overworld.spring", 2, 0, null,                                  64,     "snow"),
+		new PropertyFogSetting("s_very_high",   "", 0, "overworld.spring", 0, 0, null,                                  250,    "very_high"),
+		new PropertyFogSetting("s_high",        "", 0, "overworld.spring", 0, 0, null,                                  150,    "high"),
+		new PropertyFogSetting("spring",        "", 0, "overworld.spring", 0, 0, null,                                  64,     "cold"),
 	};
 
 }
