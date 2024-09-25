@@ -15,9 +15,12 @@ public class Fogger implements ModInitializer, GameStartEntrypoint, RecipeEntryp
 
 	// TODO:
 	//  - Make nether set an instant fog effect.
-	//  - 256 int config colors + validation.
+	//  - block-length fog - like in previous version.
+	//  - github wiki
+	//  - build number script
+	//  - tag, github page
+	//  - release
 	//  - fog range validation.
-	//  - Prep values so that it's vanilla by default.
 	//  - Create a Look-Up-Table for Biomes to store byte instead of int.
 	//  biomeLUT = new int[Registries.BIOMES.size()];
 	//  for (byte iBiome = 0; iBiome < Registries.BIOMES.size(); ++iBiome) {

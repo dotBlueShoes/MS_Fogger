@@ -35,7 +35,7 @@ public class ConfigData {
 	public PropertyFogColor[] fogColors = {
 		new PropertyFogColor("white",   "", 255, 255, 255),
 		new PropertyFogColor("black",   "", 0,   0,   0  ),
-		new PropertyFogColor("nether",  "", 127, 20,  32 ),
+		new PropertyFogColor("nether",  "", 87,  20,  32 ),
 		new PropertyFogColor("snow",    "", 230, 230, 230),
 		new PropertyFogColor("magical", "", 174, 165, 255),
 	};
@@ -47,7 +47,7 @@ public class ConfigData {
 		new PropertyFogDefinition("very_high",  "", 0.00f, 0.30f, "white"   ),
 		new PropertyFogDefinition("cold",       "", 0.00f, 0.75f, "default" ),
 		new PropertyFogDefinition("colder",     "", 0.00f, 0.55f, "default" ),
-		new PropertyFogDefinition("magical",    "", 0.00f, 0.60f, "magical" ),
+		new PropertyFogDefinition("magical",    "", 0.00f, 0.45f, "magical" ),
 	};
 
 	public PropertyFogSetting[] fogSettings = {
