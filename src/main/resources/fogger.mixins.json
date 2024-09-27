@@ -9,6 +9,7 @@
     ],
     "client": [
         "WorldTypeNetherMixin",
+        "EntityPlayerSPMixin",
         "PortalHandlerMixin",
         "FogManagerMixin"
     ],

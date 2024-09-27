@@ -2,6 +2,7 @@ package dotBlueShoes.fogger.mixin.mixins;
 
 import dotBlueShoes.fogger.Fogger;
 import dotBlueShoes.fogger.Manager;
+import dotBlueShoes.fogger.utility.FogColor;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.util.helper.MathHelper;
 import net.minecraft.core.world.Dimension;
@@ -95,16 +96,18 @@ public abstract class PortalHandlerMixin {
 				newEntityZ += 0.5;
 			}
 
-			// HERE - TODO: make nether set an instant fog effect.
-			// 1. setupFogEffect() has to be outside mixin to access it from here.
-			// 2. Partial Tick is needed.
-			//setupFogEffect(0);
-			Manager.setFogToZero(); // RESET. So when player teleports fog comes back to normal.
-			//Fogger.LOGGER.info("dim: {}", world.dimension);
-
 			entity.moveTo(newEntityX, newEntityY - 0.5, newEntityZ, entity.yRot, 0.0F);
 			entity.xd = entity.yd = entity.zd = 0.0;
 
+			{
+				if (Fogger.isFogZeroColorized) {
+					final int fogDefId = Manager.findFogEffect(world, entity);
+					final int fogColorId = Fogger.fogDefinitions[fogDefId].iColor;
+					final FogColor color = Fogger.fogColors[fogColorId];
+					Manager.setFogZeroColor(color.r, color.g, color.b);
+				}
+				Manager.setFogToZero(); // RESET. So when player teleports fog comes back to normal.
+			}
 
 
 			return true;

@@ -51,7 +51,7 @@ public class ConfigData {
 	};
 
 	public PropertyFogSetting[] fogSettings = {
-		new PropertyFogSetting("nether",        "", 1, null,               0, 0, null,                                  64,     "nether"),
+		new PropertyFogSetting("nether",        "", 1, null,               0, 0, null,                                  0,      "nether"),
 		new PropertyFogSetting("s_snow",        "", 0, "overworld.summer", 2, 0, null,                                  64,     "snow"),
 		new PropertyFogSetting("s_very_high",   "", 0, "overworld.summer", 0, 0, null,                                  250,    "very_high"),
 		new PropertyFogSetting("s_high",        "", 0, "overworld.summer", 0, 0, null,                                  150,    "high"),

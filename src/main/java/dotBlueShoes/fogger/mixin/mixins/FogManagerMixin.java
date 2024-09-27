@@ -4,7 +4,6 @@ import dotBlueShoes.fogger.Fogger;
 import dotBlueShoes.fogger.Manager;
 import dotBlueShoes.fogger.utility.FogColor;
 import dotBlueShoes.fogger.utility.FogDefinition;
-import dotBlueShoes.fogger.utility.FogSetting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiPhotoMode;
 import net.minecraft.client.option.enums.RenderDistance;
@@ -15,7 +14,6 @@ import net.minecraft.client.render.colorizer.Colorizers;
 import net.minecraft.core.block.material.Material;
 import net.minecraft.core.util.helper.MathHelper;
 import net.minecraft.core.world.World;
-import net.minecraft.core.world.weather.Weather;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.*;
 
@@ -33,50 +31,10 @@ public abstract class FogManagerMixin {
 	@Shadow @Final public Minecraft mc;
 	@Shadow protected abstract FloatBuffer buffer(float r, float g, float b, float a);
 
-	@Unique public int findFogEffect(final float partialTick) {
-
-		int season = this.mc.theWorld.seasonManager.getCurrentSeason().hashCode();
-
-		// long means: 24000 - day, 168000 - week, 192000 - lunar cycle - 8 phases (there's no lunar cycles tho)
-		long time = this.mc.theWorld.getWorldTime() % 168000;
-
-		Weather weather = this.mc.theWorld.weatherManager.getCurrentWeather();
-		byte iWeather = (weather == null) ?  0 : (byte)weather.weatherId;
-
-		byte iDimension = (byte)mc.thePlayer.dimension;
-
-		int yPos = (int)mc.thePlayer.getPosition(partialTick).yCoord;
-
-		int biome = this.mc.theWorld.getBlockBiome(
-			(int)mc.thePlayer.getPosition(partialTick).xCoord,
-			(int)mc.thePlayer.getPosition(partialTick).yCoord,
-			(int)mc.thePlayer.getPosition(partialTick).zCoord
-		).hashCode();
-
-		for (int i = 0; i < Fogger.fogSettings.length; ++i) {
-			final FogSetting setting = Fogger.fogSettings[i];
-
-			boolean isEffect =
-				setting.world <= iDimension &&
-				(setting.season == season || setting.season == 0) && // if not found refer to default (global) season.
-				setting.weather <= iWeather &&
-				setting.time <= time &&
-				(setting.biome == biome || setting.biome == 0) && // if not found refer to default (global) biome.
-				setting.yLevel <= yPos;
-
-			if (isEffect) {
-				//Fogger.LOGGER.info("Fog: {}, Setting: {}", setting.iFogDefinition, i);
-				return setting.iFogDefinition;
-			}
-		}
-
-		return 1; // FogDefinition.DEFAULT
-	}
-
 	@Unique public void setupFogEffect(
 		final float partialTick
 	) {
-		final int iCurrentFogEffect = findFogEffect(partialTick);
+		final int iCurrentFogEffect = Manager.findFogEffect(this.mc.theWorld, this.mc.thePlayer);
 		final FogDefinition currentFogEffect = Fogger.fogDefinitions[iCurrentFogEffect];
 		final FogColor currentColor = Fogger.fogColors[currentFogEffect.iColor];
 
@@ -90,13 +48,13 @@ public abstract class FogManagerMixin {
 		Manager.fogColor.g = currentColor.g;
 		Manager.fogColor.b = currentColor.b;
 
-		if (Fogger.isFogAutoDarkenByNightSky) Manager.darkenColorByCelestialAngle(this.mc, partialTick);
+		if (Fogger.isFogAutoDarkenByNightSky) Manager.darkenColorByCelestialAngle(this.mc.theWorld, partialTick);
 	}
 
 	@Unique public void setupFogEffectBlend(
 		final float partialTick
 	) {
-		final int iCurrentFogEffect = findFogEffect(partialTick);
+		final int iCurrentFogEffect = Manager.findFogEffect(this.mc.theWorld, this.mc.thePlayer);
 		final FogDefinition currentFogEffect = Fogger.fogDefinitions[iCurrentFogEffect];
 		final FogColor currentColor = Fogger.fogColors[currentFogEffect.iColor];
 
@@ -127,7 +85,7 @@ public abstract class FogManagerMixin {
 			Manager.fogColor.g = currentColor.g;
 			Manager.fogColor.b = currentColor.b;
 
-			if (Fogger.isFogAutoDarkenByNightSky) Manager.darkenColorByCelestialAngle(this.mc, partialTick);
+			if (Fogger.isFogAutoDarkenByNightSky) Manager.darkenColorByCelestialAngle(this.mc.theWorld, partialTick);
 
 			Manager.iLastFogEffect = iCurrentFogEffect;
 		} else { // Apply a mix of current and previous effect.
@@ -141,7 +99,7 @@ public abstract class FogManagerMixin {
 			Manager.fogColor.g = (currentColor.g * newLerp) + (Manager.lastFogColor.g * oldLerp);
 			Manager.fogColor.b = (currentColor.b * newLerp) + (Manager.lastFogColor.b * oldLerp);
 
-			if (Fogger.isFogAutoDarkenByNightSky) Manager.darkenColorByCelestialAngle(this.mc, partialTick);
+			if (Fogger.isFogAutoDarkenByNightSky) Manager.darkenColorByCelestialAngle(this.mc.theWorld, partialTick);
 
 			// Ensure that fog start point cannot be higher than end point!
 			Manager.fogStart = Math.min(Manager.fogStart, Manager.fogEnd);
@@ -185,6 +143,7 @@ public abstract class FogManagerMixin {
 		Manager.fogColor = new FogColor(red, green, blue);
 		Manager.fogDensity = 0.1F;
 
+		if (Fogger.isFogZeroColorized) Manager.setFogZeroColor(red, green, blue);
 		Manager.setFogToZero(); // RESET. So when player exits the water fog comes back to normal.
 	}
 
@@ -199,6 +158,7 @@ public abstract class FogManagerMixin {
 		Manager.fogColor = new FogColor(red, green, blue);
 		Manager.fogDensity = 2.0F;
 
+		if (Fogger.isFogZeroColorized) Manager.setFogZeroColor(red, green, blue);
 		Manager.setFogToZero(); // RESET. So when player exits the lava fog comes back to normal.
 	}
 
@@ -219,10 +179,6 @@ public abstract class FogManagerMixin {
 		applyFogType(GL11.GL_LINEAR);
 		GL11.glFogf(GL11.GL_FOG_START, maxFogDistance * Manager.fogStart);
 		GL11.glFogf(GL11.GL_FOG_END, maxFogDistance * Manager.fogEnd * fogStrength);
-
-		if (OpenGLHelper.enableSphericalFog) {
-			GL11.glFogi(GL11_GL_FOG_DISTANCE_MODE_NV, GL11_GL_EYE_RADIAL_NV);
-		}
 	}
 
 	@Unique
@@ -250,14 +206,24 @@ public abstract class FogManagerMixin {
 
 		final float fogStrength = (fogMode == FOG_TYPE_SKY) ? 0.8F : 1.0f;
 
+		// TODO: no if statements needed. just document what and why.
 		if (isCameraPhotoMode)      applyFogPhotoMode(farPlaneDistance, partialTick);
 		else if (isCameraInWater)   applyFogType(GL11.GL_EXP);
 		else if (isCameraInLava)    applyFogType(GL11.GL_EXP);
 		else                        applyFogLinear(fogStrength); // Change in behaviour! Called for sky-callee when other criteria fail.
 
+		if (OpenGLHelper.enableSphericalFog) {
+			GL11.glFogi(GL11_GL_FOG_DISTANCE_MODE_NV, GL11_GL_EYE_RADIAL_NV);
+		}
+
 		GL11.glEnable(GL11.GL_COLOR_MATERIAL);
 		GL11.glColorMaterial(GL11.GL_FRONT, GL11.GL_AMBIENT);
 	}
+
+	// EventFog has:
+	//  - priority property
+	//  - timer property (when timer expires fog ends) (-1 for infinite)
+	//  - enabling and disabling mechanism (I guess a bool) (minecraft is not written in play-stop way but in rather if set do that way so why not)
 
 	/**
 	 * @author dotBlueShoes

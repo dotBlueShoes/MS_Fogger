@@ -35,6 +35,7 @@ public class Fogger implements ModInitializer, GameStartEntrypoint, RecipeEntryp
 
 	public static boolean isFogAutoDarkenByNightSky = true;
 	public static boolean isFogColorsOverridden = true;
+	public static boolean isFogZeroColorized = true;
 
 	public static FogDefinition[] fogDefinitions = {};
 	public static FogSetting[] fogSettings = {};
